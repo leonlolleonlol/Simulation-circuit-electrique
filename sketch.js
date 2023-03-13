@@ -14,7 +14,7 @@ let array;
 
 function draw() {
   // put drawing code here
-  //background(0);
+  background(0);
   createResistor(array[0]);
   createBatterie(array[1]);
   createResistor1();
