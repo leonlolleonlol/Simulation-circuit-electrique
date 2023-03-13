@@ -10,7 +10,7 @@ function setup() {
   let batterie = {x:100-10, y:100 - 20, sec_width:20, sec_height:40}
 
   array= [resisteur, batterie];
-  createCanvas(windowWidth, windowHeight);
+  createCanvas(windowWidth-310, windowHeight-40);
 
 }
 let array;
@@ -21,7 +21,6 @@ function draw() {
   createResistor(array[0]);
   createBatterie(array[1]);
   createFils();
-  
 }
 
 function createResistor(resisteur){
