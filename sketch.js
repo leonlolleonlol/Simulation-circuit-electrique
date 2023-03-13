@@ -17,33 +17,13 @@ function draw() {
   //background(0);
   createResistor(array[0]);
   createBatterie(array[1]);
-
-  testColor();
+  createResistor1();
+  createResistor2();
+  createResistor3();
   createFils();
   
 }
 
-function testColor(){
-  let resisteur = {x:600, y:400, taille:50};
-  noStroke();
-  let grad = drawingContext.createRadialGradient(resisteur.x, resisteur.y, 10, resisteur.x , resisteur.y, 30);
-  grad.addColorStop(0,"#bc4e9c");
-  grad.addColorStop(1,'#f80759');
-  drawingContext.fillStyle = grad;
-  circle(resisteur.x, resisteur.y, resisteur.taille);
-  fill('#5771c1');
-  triangle(resisteur.x - 80, resisteur.y, resisteur.x - 30, resisteur.y - 20, resisteur.x - 30, resisteur.y + 20);
-  triangle(resisteur.x + 80, resisteur.y, resisteur.x + 30, resisteur.y + 20, resisteur.x + 30, resisteur.y - 20);
-}
-
-function createResistor(resisteur){
-  noStroke();
-  fill('#299bf6');
-  circle(resisteur.x, resisteur.y, resisteur.taille);
-  fill('#a358a8');
-  triangle(resisteur.x - 80, resisteur.y, resisteur.x - 30, resisteur.y - 20, resisteur.x - 30, resisteur.y + 20);
-  triangle(resisteur.x + 80, resisteur.y, resisteur.x + 30, resisteur.y + 20, resisteur.x + 30, resisteur.y - 20);
-}
 
 function createFils(){
   noFill();
@@ -55,6 +35,60 @@ function createFils(){
   line(220, 50, 220, 150);
 
 }
+//RÉSISTEUR-------------------------------------------------------------
+
+function createResistor(resisteur){
+  noStroke();
+  fill('#299bf6');
+  circle(resisteur.x, resisteur.y, resisteur.taille);
+  fill('#a358a8');
+  triangle(resisteur.x - 80, resisteur.y, resisteur.x - 30, resisteur.y - 20, resisteur.x - 30, resisteur.y + 20);
+  triangle(resisteur.x + 80, resisteur.y, resisteur.x + 30, resisteur.y + 20, resisteur.x + 30, resisteur.y - 20);
+}
+function createResistor1(){
+  let resisteur = {x:400, y:200, taille:50};
+  push();
+  noStroke();
+  let grad = drawingContext.createRadialGradient(resisteur.x, resisteur.y, 10, resisteur.x , resisteur.y, 30);
+  grad.addColorStop(0,"#bc4e9c");
+  grad.addColorStop(1,'#f80759');
+  drawingContext.fillStyle = grad;
+  circle(resisteur.x, resisteur.y, resisteur.taille);
+  fill('#5771c1');
+  triangle(resisteur.x - 80, resisteur.y, resisteur.x - 30, resisteur.y - 20, resisteur.x - 30, resisteur.y + 20);
+  triangle(resisteur.x + 80, resisteur.y, resisteur.x + 30, resisteur.y + 20, resisteur.x + 30, resisteur.y - 20);
+  pop();
+}
+function createResistor2(){
+  let resisteur = {x:400, y:300, taille:50};
+  noStroke();
+  push();
+  let grad = drawingContext.createRadialGradient(resisteur.x, resisteur.y, 10, resisteur.x , resisteur.y, 30);
+  grad.addColorStop(0,"#bc4e9c");
+  grad.addColorStop(1,'#f80759');
+  drawingContext.fillStyle = grad;
+  circle(resisteur.x, resisteur.y, resisteur.taille);
+  fill('#5771c1');
+  triangle(resisteur.x - 80, resisteur.y, resisteur.x - 30, resisteur.y - 20, resisteur.x - 30, resisteur.y + 20);
+  triangle(resisteur.x + 80, resisteur.y, resisteur.x + 30, resisteur.y + 20, resisteur.x + 30, resisteur.y - 20);
+  pop();
+}
+function createResistor3(){
+  let resisteur = {x:400, y:400, taille:50};
+  push();
+  noStroke();
+  let grad = drawingContext.createRadialGradient(resisteur.x, resisteur.y, 10, resisteur.x , resisteur.y, 30);
+  grad.addColorStop(0,"#bc4e9c");
+  grad.addColorStop(1,'#f80759');
+  drawingContext.fillStyle = grad;
+  circle(resisteur.x, resisteur.y, resisteur.taille);
+  fill('#5771c1');
+  triangle(resisteur.x - 80, resisteur.y, resisteur.x - 30, resisteur.y - 20, resisteur.x - 30, resisteur.y + 20);
+  triangle(resisteur.x + 80, resisteur.y, resisteur.x + 30, resisteur.y + 20, resisteur.x + 30, resisteur.y - 20);
+  pop();
+}
+
+
 //BATTERIE--------------------------------------------------------------
 
 function createBatterie(batterie){
