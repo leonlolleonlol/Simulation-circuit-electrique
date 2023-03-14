@@ -3,6 +3,8 @@
 <style>
 body{
   display: flex;
+  background-color: #000000;
+
 }
 table, th, td {
   border:1px solid black;
@@ -14,10 +16,14 @@ td{
   height: 10%;
   width: 10%;
 }
+td:hover {
+  background-color: #ff0000;
+}
+
 </style>
 <body>
 
-<table style="width:20%">
+<table style="width:10%">
   <tr>
     <td>
       <img src="images-composantes/batterie.png"></td>
@@ -79,7 +85,7 @@ td{
       Boutton 20</td>
   </tr>
   <tr>
-    <td colspan="2"><a href="testfile.html">Visit W3Schools.com!</a></td> 
+    <td style="background-color: orange;"colspan="2"><a href="testfile.html">Return home</a></td> 
   </tr>
 </table>
 <script src="lib/p5.min.js"></script>
