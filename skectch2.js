@@ -58,9 +58,7 @@ function draw() {
 
   drawPointGrid();
   for (let element of components) {
-    if (element.type == "batterie") createBatterie(element,grid.translateX,grid.translateY);
-    else if (element.type == "resisteur") createResistor(element,grid.translateX,grid.translateY);
-    else if (element.type == "ampoule") createAmpoule(element,grid.translateX,grid.translateY);
+    createComponent(element);
   }
   drawFils();
 }
@@ -147,6 +145,14 @@ function drawFils() {
   for (let element of fils) {
     line(element.xi + grid.translateX, element.yi + grid.translateY, element.xf + grid.translateX, element.yf + grid.translateY);
   }
+}
+function createComponent(element) {
+  if (element.type == "batterie")
+    createBatterie(element, grid.translateX, grid.translateY);
+  else if (element.type == "resisteur")
+    createResistor(element, grid.translateX, grid.translateY);
+  else if (element.type == "ampoule")
+    createAmpoule(element, grid.translateX, grid.translateY);
 }
 
 function createResistor(resisteur, offX, offY) {
