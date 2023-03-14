@@ -14,9 +14,9 @@ function setup() {
     translateY: 0,
   };
   resisteur = {
-    x: 100,
-    y: 70,
-    taille: 50,
+    x: 58,
+    y: 55,
+    taille: 25,
     drag: false,
     isDragged: dragResistor,
     xOffsetDrag: 0.0,
@@ -24,10 +24,10 @@ function setup() {
     type: "resisteur",
   };
   batterie = {
-    x: 100,
-    y: 150,
-    width: 100,
-    height: 40,
+    x: 58,
+    y: 95,
+    width: 50,
+    height: 20,
     drag: false,
     isDragged: dragBatterie,
     xOffsetDrag: 0.0,
@@ -36,8 +36,8 @@ function setup() {
   };
 
   ampoule = {
-    x: 100,
-    y: 230,
+    x: 58,
+    y: 135,
     taille: 50,
     drag: false,
     isDragged: dragAmpoule,
@@ -68,7 +68,7 @@ function drawComponentsChooser() {
   strokeWeight(4);
   stroke("rgba(52,52,52,0.78)");
   for (let i = 0; i < 3; i++) {
-    rect(15, 40 + 80 * i, 170, 60);
+    rect(15, 40 + 40 * i, 85, 30);
   }
   if(batterie!=origin)
   createBatterie(batterie,0,0);
@@ -163,39 +163,39 @@ function createResistor(resisteur, offX, offY) {
   fill("#a358a8");
   if (resisteur.drag)
     triangle(
-      resisteur.x - 84 + offX,
+      resisteur.x - 42 + offX,
       resisteur.y + offY,
-      resisteur.x - 32+ offX,
-      resisteur.y - 22 + offY,
-      resisteur.x - 32 + offX,
-      resisteur.y + 22+ offY
+      resisteur.x - 16+ offX,
+      resisteur.y - 11 + offY,
+      resisteur.x - 16 + offX,
+      resisteur.y + 11+ offY
     );
   else
     triangle(
-      resisteur.x - 80 + offX,
+      resisteur.x - 40 + offX,
       resisteur.y + offY,
-      resisteur.x - 30 + offX,
-      resisteur.y - 20 + offY,
-      resisteur.x - 30 + offX,
-      resisteur.y + 20 + offY
+      resisteur.x - 15 + offX,
+      resisteur.y - 10 + offY,
+      resisteur.x - 15 + offX,
+      resisteur.y + 10 + offY
     );
   if (resisteur.drag)
     triangle(
-      resisteur.x + 84 + offX,
+      resisteur.x + 42 + offX,
       resisteur.y + offY,
-      resisteur.x + 32 + offX,
-      resisteur.y + 22 + offY,
-      resisteur.x + 32 + offX,
-      resisteur.y - 22 + offY
+      resisteur.x + 16 + offX,
+      resisteur.y + 11 + offY,
+      resisteur.x + 16 + offX,
+      resisteur.y - 11 + offY
     );
   else
     triangle(
-      resisteur.x + 80 + offX,
+      resisteur.x + 40 + offX,
       resisteur.y + offY,
-      resisteur.x + 30 + offX,
-      resisteur.y + 20 + offY,
-      resisteur.x + 30 + offX,
-      resisteur.y - 20 + offY
+      resisteur.x + 15 + offX,
+      resisteur.y + 10 + offY,
+      resisteur.x + 15 + offX,
+      resisteur.y - 10 + offY
     );
 }
 
@@ -219,7 +219,7 @@ function createBatterie(batterie, offX, offY) {
       batterie.y - batterie.height / 2 - 2 + offY,
       batterie.width + 4,
       batterie.height + 4,
-      10
+      5
     );
   else
     rect(
@@ -259,18 +259,18 @@ function dragAmpoule(element, offsetX, offsetY) {
 }
 function dragResistor(element, offsetX, offsetY) {
   if (
-    (mouseX - offsetX > element.x - 80 &&
-      mouseX - offsetX < element.x - 30 &&
-      mouseY - offsetY > element.y - 20 &&
-      mouseY - offsetY < element.y + 20) ||
+    (mouseX - offsetX > element.x - 40 &&
+      mouseX - offsetX < element.x - 15 &&
+      mouseY - offsetY > element.y - 10 &&
+      mouseY - offsetY < element.y + 10) ||
     (mouseX - offsetX > element.x - element.taille / 2 &&
       mouseX - offsetX < element.x + element.taille / 2 &&
       mouseY - offsetY > element.y - element.taille / 2 &&
       mouseY - offsetY < element.y + element.taille / 2) ||
-    (mouseX - offsetX > element.x + 30 &&
-      mouseX - offsetX < element.x + 80 &&
-      mouseY - offsetY > element.y - 20 &&
-      mouseY - offsetY < element.y + 20)
+    (mouseX - offsetX > element.x + 15 &&
+      mouseX - offsetX < element.x + 40 &&
+      mouseY - offsetY > element.y - 10 &&
+      mouseY - offsetY < element.y + 10)
   )
     return true;
   else return false;
