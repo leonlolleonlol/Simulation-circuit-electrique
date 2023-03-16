@@ -5,7 +5,7 @@ let components;
 let fils;
 let grid;
 function setup() {
-  createCanvas(720, 400);
+  createCanvas(windowWidth-25, windowHeight-25);
   grid = {
     offsetX: 300,
     offsetY: 20,
@@ -25,9 +25,9 @@ function setup() {
   };
   batterie = {
     x: 58,
-    y: 95,
-    width: 50,
-    height: 20,
+    y: 110,
+    width: 60,
+    height: 30,
     drag: false,
     isDragged: dragBatterie,
     xOffsetDrag: 0.0,
@@ -37,8 +37,8 @@ function setup() {
 
   ampoule = {
     x: 58,
-    y: 135,
-    taille: 50,
+    y: 160,
+    taille: 40,
     drag: false,
     isDragged: dragAmpoule,
     xOffsetDrag: 0.0,
@@ -73,7 +73,7 @@ function drawComponentsChooser() {
   strokeWeight(4);
   stroke("rgba(52,52,52,0.78)");
   for (let i = 0; i < 3; i++) {
-    rect(15, 40 + 40 * i, 85, 30);
+    rect(0, 35 + 50 * i, 120, 50);
   }
   if(batterie!=origin)
   createBatterie(batterie,0,0);
@@ -168,16 +168,16 @@ function createResistor(resisteur, offX, offY) {
   fill("#a358a8");
   if (resisteur.drag)
     triangle(
-      resisteur.x - 42 + offX,
+      resisteur.x - 50 + offX,
       resisteur.y + offY,
-      resisteur.x - 16+ offX,
+      resisteur.x - 16 + offX,
       resisteur.y - 11 + offY,
       resisteur.x - 16 + offX,
-      resisteur.y + 11+ offY
+      resisteur.y + 11 + offY
     );
   else
     triangle(
-      resisteur.x - 40 + offX,
+      resisteur.x - 50 + offX,
       resisteur.y + offY,
       resisteur.x - 15 + offX,
       resisteur.y - 10 + offY,
@@ -186,7 +186,7 @@ function createResistor(resisteur, offX, offY) {
     );
   if (resisteur.drag)
     triangle(
-      resisteur.x + 42 + offX,
+      resisteur.x + 50 + offX,
       resisteur.y + offY,
       resisteur.x + 16 + offX,
       resisteur.y + 11 + offY,
@@ -195,7 +195,7 @@ function createResistor(resisteur, offX, offY) {
     );
   else
     triangle(
-      resisteur.x + 40 + offX,
+      resisteur.x + 50 + offX,
       resisteur.y + offY,
       resisteur.x + 15 + offX,
       resisteur.y + 10 + offY,
@@ -224,7 +224,7 @@ function createBatterie(batterie, offX, offY) {
       batterie.y - batterie.height / 2 - 2 + offY,
       batterie.width + 4,
       batterie.height + 4,
-      5
+      500
     );
   else
     rect(
