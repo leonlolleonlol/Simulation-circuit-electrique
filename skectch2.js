@@ -5,7 +5,7 @@ let components;
 let fils;
 let grid;
 function setup() {
-  createCanvas(windowWidth-25, windowHeight-25);
+  createCanvas(windowWidth-75, windowHeight-40);
   grid = {
     offsetX: 300,
     offsetY: 20,
@@ -26,7 +26,7 @@ function setup() {
   batterie = {
     x: 58,
     y: 110,
-    width: 60,
+    width: 100,
     height: 30,
     drag: false,
     isDragged: dragBatterie,
