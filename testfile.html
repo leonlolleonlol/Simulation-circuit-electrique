@@ -1,9 +1,113 @@
 <!DOCTYPE html>
 <html>
   <style>
+    b {
+  text-shadow: 4px 4px red;
+  font-size: 26px;
+
+}
     button:hover {
       background-color: #ff0000;
     }
+    .button {
+  text-align: left;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  transition-duration: 0.4s;
+  cursor: pointer;
+  width: 75px;
+  height: 75px;
+}
+
+.button1 {
+  background-color: white; 
+  color: black; 
+  border: 2px solid #000000;
+}
+
+.button1:hover {
+  background-color: #000000;
+  color: white;
+}
+diva {
+  width: 100px;
+  height: 100px;
+  background-color: red;
+  position: relative;
+  animation-name: example;
+  animation-duration: 10s;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
+a{
+text-align: left;
+}
+
+@keyframes example {
+  0%   {left:15px; top:0px;}
+  25%  {left:1516px; top:0px;}
+  50%  {left:1516px; top:500px;}
+  75%  {left:15px; top:500px;}
+  100% {left:15px; top:0px;}
+}
+ 
+#animated_div {
+width:200px;
+height:50px;
+background: #92B901;
+color: #ffffff;
+position: relative;
+font-weight:bold;
+font-size:26px;
+padding:10px;
+animation:animated_div 5s 1;
+-moz-animation:animated_div 5s 1;
+-webkit-animation:animated_div 5s 1;
+-o-animation:animated_div 5s 1;
+border-radius:5px;
+-webkit-border-radius:5px;
+}
+
+@keyframes animated_div
+{
+0% {transform: rotate(0deg);left:0px;}
+25% {transform: rotate(20deg);left:0px;}
+50% {transform: rotate(0deg);left:1000px;}
+55% {transform: rotate(0deg);left:1000px;}
+70% {transform: rotate(0deg);left:1000px;background:#1ec7e6;}
+100% {transform: rotate(-360deg);left:0px;}
+}
+
+@-webkit-keyframes animated_div
+{
+0% {-webkit-transform: rotate(0deg);left:0px;}
+25% {-webkit-transform: rotate(20deg);left:0px;}
+50% {-webkit-transform: rotate(0deg);left:500px;}
+55% {-webkit-transform: rotate(0deg);left:500px;}
+70% {-webkit-transform: rotate(0deg);left:500px;background:#1ec7e6;}
+100% {-webkit-transform: rotate(-360deg);left:0px;}
+}
+
+@-moz-keyframes animated_div
+{
+0%  {-moz-transform: rotate(0deg);left:0px;}
+25% {-moz-transform: rotate(20deg);left:0px;}
+50%  {-moz-transform: rotate(0deg);left:500px;}
+55%  {-moz-transform: rotate(0deg);left:500px;}
+70%  {-moz-transform: rotate(0deg);left:500px;background:#1ec7e6;}
+100% {-moz-transform: rotate(-360deg);left:0px;}
+}
+
+@-o-keyframes animated_div
+{
+0% {transform: rotate(0deg);left:0px;}
+25% {transform: rotate(20deg);left:0px;}
+50%  {transform: rotate(0deg);left:500px;}
+55%  {transform: rotate(0deg);left:500px;}
+70%  {transform: rotate(0deg);left:500px;background:#1ec7e6;}
+100% {transform: rotate(-360deg);left:0px;}
+}
   </style>
 <head>
 <title>W3.CSS Template</title>
@@ -19,7 +123,7 @@
     <a href="#home" class="w3-bar-item w3-button"><b>SCE</b></a>
     <!-- Float links to the right. Hide them on small screens -->
     <div class="w3-right w3-hide-small">
-      <a href="#about" class="w3-bar-item w3-button">About</a>
+      <a href="#about" class="w3-bar-item w3-button">À propos</a>
       <a href="#contact" class="w3-bar-item w3-button">Contact</a>
     </div>
   </div>
@@ -39,9 +143,9 @@
 
   <!-- About Section -->
   <hr>
-  <br></br>
+  <br><div id="animated_div">S A L U T !</div></br>
   <div class="w3-container w3-padding-32" id="about">
-    <h3 class="w3-border-bottom w3-border-light-grey w3-padding-16">About</h3>
+    <h3 class="w3-border-bottom w3-border-light-grey w3-padding-16">À propos</h3>
     <p>
       Ceci est un projet d'intégration de programmation durant la session d'hiver 2023 pour les étudiants de <abbr title="Sciences informatiques et mathématiques">SIM</abbr> à <a href="https://www.bdeb.qc.ca/">BdeB!</a>
     </p>
@@ -50,14 +154,18 @@
       Notre programme va être avant tout une interface pour visualiser les intéractions entre les différents composants électriques dans des circuit électriques.
       Notre mission est d'encourager les étudiants en prendre plus de plaisir dans leur cours d'électricité et magnétisme et de ne pas couler ce cours.
     </p>
+    <p>
+      Si vous êtes <s>capables</s> intéréssés, cliquez sur le bouton noir pour voir notre projet Github.
+    </p>
   </div>
-
+  <diva><button class="button button1"><a href="https://github.com/olivierstKronos/Simulation-circuit-electrique"><img src="images/github-mark-white.png" alt="Girl in a jacket"width="60" height="60"></img></a></button></diva>
   <div class="w3-row-padding w3-grayscale">
     <div class="w3-col l3 m6 w3-margin-bottom">
       <img src="https://www.w3schools.com/w3images/team2.jpg" alt="John" style="width:100%">
       <h3>Léon Kojakian</h3>
       <p class="w3-opacity">Front-end</p>
-      <p>Salut! J'ai contribué à ce projet en faisant ce site web avec HTML.</p>
+      <p>Salut! J'ai contribué à ce projet en faisant ce site web avec HTML et <b>CSS.</b>
+      </p>
     </div>
     <div class="w3-col l3 m6 w3-margin-bottom">
       <img src="https://www.w3schools.com/w3images/team1.jpg" alt="Jane" style="width:100%">
@@ -82,7 +190,7 @@
   <!-- Contact Section -->
   <div class="w3-container w3-padding-32" id="contact">
     <h3 class="w3-border-bottom w3-border-light-grey w3-padding-16">Contact</h3>
-    <p>Lets get in touch and talk about your next project.</p>
+    <p>Let's get in touch and talk about your next project.</p>
     <form action="/action_page.php" target="_blank">
       <input class="w3-input w3-border" type="text" placeholder="Name" required name="Name">
       <input class="w3-input w3-section w3-border" type="text" placeholder="Email" required name="Email">
@@ -105,7 +213,7 @@
 
 <!-- Footer -->
 <footer class="w3-center w3-black w3-padding-16">
-  <h4>Powered by us</h4>
+  <h4>Powered by w3schools</h4>
 </footer>
 
 </body>
