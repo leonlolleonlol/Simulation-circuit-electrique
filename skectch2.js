@@ -4,8 +4,9 @@ let origin;
 let components;
 let fils;
 let grid;
+let button;
 function setup() {
-  createCanvas(windowWidth-75, windowHeight-40);
+  createCanvas(windowWidth-50, windowHeight-30);
   grid = {
     offsetX: 300,
     offsetY: 20,
@@ -15,7 +16,7 @@ function setup() {
   };
   resisteur = {
     x: 58,
-    y: 55,
+    y: 60+215,
     taille: 25,
     drag: false,
     isDragged: dragResistor,
@@ -25,7 +26,7 @@ function setup() {
   };
   batterie = {
     x: 58,
-    y: 110,
+    y: 325,
     width: 100,
     height: 30,
     drag: false,
@@ -37,7 +38,7 @@ function setup() {
 
   ampoule = {
     x: 58,
-    y: 160,
+    y: 160+215,
     taille: 40,
     drag: false,
     isDragged: dragAmpoule,
@@ -63,6 +64,10 @@ function draw() {
   if (origin != null) {
     createComponent(draggedElement);
   }
+  button = createButton('Recommencer de nouveau');
+  button.position(40, 760);
+  button.size(120,50)
+  button.mousePressed(refresh);
 }
 
 function drawComponentsChooser() {
@@ -72,8 +77,8 @@ function drawComponentsChooser() {
   fill("rgba(128,128,128,0.59)");
   strokeWeight(4);
   stroke("rgba(52,52,52,0.78)");
-  for (let i = 0; i < 3; i++) {
-    rect(0, 35 + 50 * i, 120, 50);
+  for (let i = 0; i < 10; i++) {
+    rect(0, 250 + 50 * i, 120, 50);
   }
   if(batterie!=origin)
   createBatterie(batterie,0,0);
@@ -85,6 +90,10 @@ function drawComponentsChooser() {
 
 function drawPointGrid() {
   stroke("black");
+  setGrid();
+}
+function setGrid()
+{
   strokeWeight(6);
   for (let i = 0; i * grid.tailleCell < windowWidth - grid.offsetX; i++) {
     for (let j = 0; j * grid.tailleCell < windowHeight - grid.offsetY; j++) {
@@ -102,19 +111,7 @@ function drawPointGrid() {
 function drawPointLineGrid() {
   drawLineGrid();
   stroke("gray");
-  strokeWeight(6);
-  for (let i = 0; i * grid.tailleCell < windowWidth - grid.offsetX; i++) {
-    for (let j = 0; j * grid.tailleCell < windowHeight - grid.offsetY; j++) {
-      if (
-        !(grid.translateX % grid.tailleCell < 0 && i == 0) &&
-        !(grid.translateY % grid.tailleCell < 0 && j == 0)
-      )
-        point(
-          grid.offsetX + i * grid.tailleCell + (grid.translateX % grid.tailleCell),
-          grid.offsetY + j * grid.tailleCell + (grid.translateY % grid.tailleCell)
-        );
-    }
-  }
+  setGrid();
 }
 
 function drawLineGrid() {
@@ -253,14 +250,12 @@ function dragBatterie(element, offsetX, offsetY) {
   );
 }
 function dragAmpoule(element, offsetX, offsetY) {
-  if (
+  return (
     mouseX - offsetX > element.x - element.taille / 2 &&
-    mouseX - offsetX< element.x + element.taille / 2 &&
+    mouseX - offsetX < element.x + element.taille / 2 &&
     mouseY - offsetY > element.y - element.taille / 2 &&
     mouseY - offsetY < element.y + element.taille / 2
-  )
-    return true;
-  else return false;
+  );
 }
 function dragResistor(element, offsetX, offsetY) {
   if (
@@ -268,10 +263,7 @@ function dragResistor(element, offsetX, offsetY) {
       mouseX - offsetX < element.x - 15 &&
       mouseY - offsetY > element.y - 10 &&
       mouseY - offsetY < element.y + 10) ||
-    (mouseX - offsetX > element.x - element.taille / 2 &&
-      mouseX - offsetX < element.x + element.taille / 2 &&
-      mouseY - offsetY > element.y - element.taille / 2 &&
-      mouseY - offsetY < element.y + element.taille / 2) ||
+    dragAmpoule(element,offsetX,offsetY)||
     (mouseX - offsetX > element.x + 15 &&
       mouseX - offsetX < element.x + 40 &&
       mouseY - offsetY > element.y - 10 &&
@@ -405,5 +397,9 @@ function mouseReleased() {
   } else if (draggedFil != null) {
     draggedFil = null;
   }
+}
+
+function refresh() {
+  setup();
 }
 
