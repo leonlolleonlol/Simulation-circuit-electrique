@@ -242,35 +242,21 @@ function createAmpoule(ampoule, offX, offY) {
 }
 
 function dragBatterie(element, offsetX, offsetY) {
-  return (
-    mouseX - offsetX > element.x - element.width / 2 &&
-    mouseX - offsetX < element.x + element.width / 2 &&
-    mouseY - offsetY > element.y - element.height / 2 &&
-    mouseY - offsetY < element.y + element.height / 2
-  );
+  return dragGeneral(element, offsetX, offsetY,element.width,element.height);
 }
 function dragAmpoule(element, offsetX, offsetY) {
-  return (
-    mouseX - offsetX > element.x - element.taille / 2 &&
-    mouseX - offsetX < element.x + element.taille / 2 &&
-    mouseY - offsetY > element.y - element.taille / 2 &&
-    mouseY - offsetY < element.y + element.taille / 2
-  );
+  return dragGeneral(element, offsetX, offsetY,element.taille,element.taille);
 }
 function dragResistor(element, offsetX, offsetY) {
-  if (
-    (mouseX - offsetX > element.x - 40 &&
-      mouseX - offsetX < element.x - 15 &&
-      mouseY - offsetY > element.y - 10 &&
-      mouseY - offsetY < element.y + 10) ||
-    dragAmpoule(element,offsetX,offsetY)||
-    (mouseX - offsetX > element.x + 15 &&
-      mouseX - offsetX < element.x + 40 &&
-      mouseY - offsetY > element.y - 10 &&
-      mouseY - offsetY < element.y + 10)
-  )
-    return true;
-  else return false;
+  return dragGeneral(element, offsetX, offsetY,batterie.width,batterie.height);
+}
+function dragGeneral(element, offsetX, offsetY,elementWidth,elementHeight){
+  return (
+    mouseX - offsetX > element.x - elementWidth / 2 &&
+    mouseX - offsetX < element.x + elementWidth / 2 &&
+    mouseY - offsetY > element.y - elementHeight / 2 &&
+    mouseY - offsetY < element.y + elementHeight / 2
+  );
 }
 function findGridLockX(offset) {
   return (
@@ -383,7 +369,7 @@ function mouseDragged() {
   } else if (draggedFil != null) {
     draggedFil.xf = findGridLockX(grid.translateX);
     draggedFil.yf = findGridLockY(grid.translateY);
-  } else {
+  } else if (mouseX>300){
     grid.translateX += mouseX - pmouseX;
     grid.translateY += mouseY - pmouseY;
   }
@@ -402,4 +388,3 @@ function mouseReleased() {
 function refresh() {
   setup();
 }
-
