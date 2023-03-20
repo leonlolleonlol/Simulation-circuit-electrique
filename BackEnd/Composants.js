@@ -1,9 +1,13 @@
 class Composants {
-   
-    constructor(x, y){
-        this.x = x;
-        this.y = y
+
+    constructor(courant){
+        // on crée automatiquement une classe de tension
+        
+        this.courant = courant
+        this.tension = Tension()
+        this.composantesCircuits = {}
     }
+    
 } 
 
 class Resisteur extends Composants{
@@ -15,8 +19,10 @@ class Diode extends Composants{
 class Ampoule extends Composants{
 }
 class Batterie extends Composants{
+
 }
 class Switch extends Composants{
 }
 class Noeuds extends Composants{
 }
+
