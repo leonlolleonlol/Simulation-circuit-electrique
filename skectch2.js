@@ -1,14 +1,19 @@
-let draggedElement = null;
-let draggedFil = null;
+let draggedElement;
+let draggedFil;
 let origin;
 let components;
 let fils;
 let grid;
 let firstButton;
 let secondButton;
-let actions=[];
-let undoActions=0;
+let actions;
 function setup() {
+  actions=[];
+  fils=[];
+  components=[];
+  draggedElement=null;
+  draggedFil=null;
+  origin=null;
   createCanvas(windowWidth-50, windowHeight-30);
   grid = {
     offsetX: 300,
@@ -298,6 +303,7 @@ function mousePressed() {
     };
     components[components.length] = nelement;
     draggedElement = nelement;
+    actions[actions.length]='composante';
   } else if (resisteur.isDragged(resisteur,0,0)) {
     origin = resisteur;
     nelement = {
@@ -312,6 +318,7 @@ function mousePressed() {
     };
     components[components.length] = nelement;
     draggedElement = nelement;
+    actions[actions.length]='composante';
   } else if (ampoule.isDragged(ampoule,0,0)) {
     origin = ampoule;
     nelement = {
@@ -326,6 +333,7 @@ function mousePressed() {
     };
     components[components.length] = nelement;
     draggedElement = nelement;
+    actions[actions.length]='composante';
   } else {
     for (let element of components) {
       if (element.isDragged(element,grid.translateX,grid.translateY)) {
@@ -335,25 +343,30 @@ function mousePressed() {
         draggedElement.yOffsetDrag = mouseY - draggedElement.y;
         break;
       }
-      actions[actions.length]=false;
     }//mouseX - offsetX > element.x - 10
-    if (draggedElement == null) {
-      if (
-        (((mouseX - grid.offsetX - grid.translateX) % grid.tailleCell < 20 ||
-          (mouseX - grid.offsetX - grid.translateX+20) % grid.tailleCell < 20)) &&
-        (((mouseY - grid.offsetY-grid.translateY) % grid.tailleCell < 20 ||
-          (mouseY - grid.offsetY-grid.translateY+20) % grid.tailleCell < 20))
-      ) {
-        fil = {
-          xi: findGridLockX(grid.translateX),
-          yi: findGridLockY(grid.translateY),
-          xf: findGridLockX(grid.translateX),
-          yf: findGridLockY(grid.translateY),
-          type: "fil",
-        };
-        draggedFil = fil;
-        fils[fils.length] = fil;
-        actions[actions.length]=true;
+    if(mouseX>300)
+    {
+      if (draggedElement == null)
+      {
+        if
+        (
+          (((mouseX - grid.offsetX - grid.translateX) % grid.tailleCell < 20 ||
+            (mouseX - grid.offsetX - grid.translateX+20) % grid.tailleCell < 20)) &&
+          (((mouseY - grid.offsetY-grid.translateY) % grid.tailleCell < 20 ||
+            (mouseY - grid.offsetY-grid.translateY+20) % grid.tailleCell < 20))
+        )
+        {
+          fil = {
+            xi: findGridLockX(grid.translateX),
+            yi: findGridLockY(grid.translateY),
+            xf: findGridLockX(grid.translateX),
+            yf: findGridLockY(grid.translateY),
+            type: "fil",
+          };
+          draggedFil = fil;
+          fils[fils.length] = fil;
+          actions[actions.length]='fil';
+        }
       }
     }
   }
@@ -396,19 +409,11 @@ function mouseReleased() {
 
 function refresh() {
   setup();
-  actions=null;
 }
 function undo() {
-  undoActions++;
-  console.log(actions.length);
-    if(actions[actions.length])
-      for (let index = 0; index < undoActions; index++)
-      {
-        fils.pop();
-      }
-    else
-      for (let index = 0; index < undoActions; index++)
-      {
-        components.pop();
-      };
+    if(actions[actions.length-1]=='fil')
+      fils.pop();
+    else if(actions[actions.length-1]=='composante')
+      components.pop();
+    actions.pop();
 }
