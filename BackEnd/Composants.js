@@ -30,7 +30,7 @@ class Ampoule extends Composants{
 }
 class Batterie extends Composants{
     constructor(){
-        this.tension = 10;
+        tension = 10;
     }
 
     setTension(x){
