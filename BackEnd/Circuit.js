@@ -1,16 +1,17 @@
 let circuit = [new Batterie];
+
 function ajouterComposante(composante){
     circuit.push(composante);
 }
 
-function circuitValide(){
-    var valide = true;
-    circuit.forEach(composante.valide())
-    return valide;
+function retirerComposante(position){
+    circuit.
 }
 
-function verifierConnecter2cote(composante){
-    if (!composante.valide()){
-        valide = false;
-    }
+function start(){ //Une fois au début
+
+}
+
+function update(){//Chaque changement dans le circuit
+
 }
