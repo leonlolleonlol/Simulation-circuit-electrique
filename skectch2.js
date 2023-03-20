@@ -17,38 +17,9 @@ function setup() {
     translateX: 0,
     translateY: 0,
   };
-  resisteur = {
-    x: 58,
-    y: 60+205,
-    taille: 25,
-    drag: false,
-    isDragged: dragResistor,
-    xOffsetDrag: 0.0,
-    yOffsetDrag: 0.0,
-    type: "resisteur",
-  };
-  batterie = {
-    x: 58,
-    y: 315,
-    width: 100,
-    height: 30,
-    drag: false,
-    isDragged: dragBatterie,
-    xOffsetDrag: 0.0,
-    yOffsetDrag: 0.0,
-    type: "batterie",
-  };
-
-  ampoule = {
-    x: 58,
-    y: 160+205,
-    taille: 40,
-    drag: false,
-    isDragged: dragAmpoule,
-    xOffsetDrag: 0.0,
-    yOffsetDrag: 0.0,
-    type: "ampoule",
-  };
+  resisteur = new Resisteur(58, 60+205, 25);
+  batterie = new Batterie(58, 315, 100, 30);
+  ampoule = new Ampoule(58, 160 + 205, 40);
   components = [];
   fils = [];
 }
@@ -156,15 +127,16 @@ function drawFils() {
       line(element.xi + grid.translateX, element.yi + grid.translateY, element.xf + grid.translateX, element.yf + grid.translateY);
 }
 function createComponent(element) {
-  if (element.type == "batterie")
+  if (element.getType() == "batterie")
     createBatterie(element, grid.translateX, grid.translateY);
-  else if (element.type == "resisteur")
+  else if (element.getType() == "resisteur")
     createResistor(element, grid.translateX, grid.translateY);
-  else if (element.type == "ampoule")
+  else if (element.getType() == "ampoule")
     createAmpoule(element, grid.translateX, grid.translateY);
 }
 
 function createResistor(resisteur, offX, offY) {
+  //print("draw");
   noStroke();
   fill("#299bf6");
   if (resisteur.drag) circle(resisteur.x + offX, resisteur.y + offY, resisteur.taille + 4);
@@ -228,7 +200,7 @@ function createBatterie(batterie, offX, offY) {
       batterie.y - batterie.height / 2 - 2 + offY,
       batterie.width + 4,
       batterie.height + 4,
-      500
+      10
     );
   else
     rect(
@@ -283,52 +255,66 @@ function findGridLockY(offset) {
 
 function mousePressed() {
   var nelement;
-  if (batterie.isDragged(batterie,0,0)) {
+  if(batterie.isDragged(mouseX,mouseY,0, 0)){
+  //if (batterie.isDragged(batterie,0,0)) {
     origin = batterie;
-    nelement = {
-      x: batterie.x - grid.translateX,
-      y: batterie.y - grid.translateY,
-      width: batterie.width,
-      height: batterie.height,
-      drag: true,
-      isDragged: dragBatterie,
-      xOffsetDrag: mouseX - batterie.x,
-      yOffsetDrag: mouseY - batterie.y,
-      type: "batterie",
-    };
+    nelement = new Batterie(batterie.x - grid.translateX,batterie.y - grid.translateY, batterie.width, batterie.height);
+    nelement.drag = true;
+
+    nelement.xOffsetDrag = mouseX - batterie.x;
+    nelement.yOffsetDrag = mouseY - batterie.y;
+    //nelement = {
+    //  x: batterie.x - grid.translateX,
+    //  y: batterie.y - grid.translateY,
+    //  width: batterie.width,
+    //  height: batterie.height,
+    //  drag: true,
+    //  isDragged: dragBatterie,
+    //  xOffsetDrag: mouseX - batterie.x,
+    //  yOffsetDrag: mouseY - batterie.y,
+    //  type: "batterie",
+    //};
     components[components.length] = nelement;
     draggedElement = nelement;
-  } else if (resisteur.isDragged(resisteur,0,0)) {
+  } else if (resisteur.isDragged(mouseX,mouseY,0,0)) {
     origin = resisteur;
-    nelement = {
-      x: resisteur.x - grid.translateX,
-      y: resisteur.y - grid.translateY,
-      taille: resisteur.taille,
-      drag: true,
-      isDragged: dragResistor,
-      xOffsetDrag: mouseX - resisteur.x,
-      yOffsetDrag: mouseY - resisteur.y,
-      type: "resisteur",
-    };
+    nelement = new Resisteur(resisteur.x - grid.translateX,resisteur.y - grid.translateY, resisteur.taille);
+    nelement.drag = true;
+    nelement.xOffsetDrag = mouseX - resisteur.x;
+    nelement.yOffsetDrag = mouseY - resisteur.y;
+    //nelement = {
+    //  x: resisteur.x - grid.translateX,
+    //  y: resisteur.y - grid.translateY,
+    //  taille: resisteur.taille,
+    //  drag: true,
+    //  isDragged: dragResistor,
+    //  xOffsetDrag: mouseX - resisteur.x,
+    //  yOffsetDrag: mouseY - resisteur.y,
+    //  type: "resisteur",
+    //};
     components[components.length] = nelement;
     draggedElement = nelement;
-  } else if (ampoule.isDragged(ampoule,0,0)) {
+  } else if (ampoule.isDragged(mouseX,mouseY,0,0)) {
     origin = ampoule;
-    nelement = {
-      x: ampoule.x - grid.translateX,
-      y: ampoule.y - grid.translateY,
-      taille: ampoule.taille,
-      drag: true,
-      isDragged: dragAmpoule,
-      xOffsetDrag: mouseX - ampoule.x,
-      yOffsetDrag: mouseY - ampoule.y,
-      type: "ampoule",
-    };
+    nelement = new Ampoule(ampoule.x - grid.translateX,ampoule.y - grid.translateY,ampoule.taille);
+    nelement.drag = true;
+    nelement.xOffsetDrag = mouseX - ampoule.x;
+    nelement.yOffsetDrag = mouseY - ampoule.y;
+    //nelement = {
+    //  x: ampoule.x - grid.translateX,
+    //  y: ampoule.y - grid.translateY,
+    //  taille: ampoule.taille,
+    //  drag: true,
+    //  isDragged: dragAmpoule,
+    //  xOffsetDrag: mouseX - ampoule.x,
+    //  yOffsetDrag: mouseY - ampoule.y,
+    //  type: "ampoule",
+    //};
     components[components.length] = nelement;
     draggedElement = nelement;
   } else {
     for (let element of components) {
-      if (element.isDragged(element,grid.translateX,grid.translateY)) {
+      if (element.isDragged(mouseX,mouseY,grid.translateX,grid.translateY)) {
         draggedElement = element;
         draggedElement.drag = true;
         draggedElement.xOffsetDrag = mouseX - draggedElement.x;
