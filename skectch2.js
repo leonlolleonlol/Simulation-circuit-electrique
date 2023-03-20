@@ -6,13 +6,18 @@ let fils;
 let grid;
 let actions;
 function setup() {
-  actions=[];
-  fils=[];
-  components=[];
-  draggedElement=null;
-  draggedFil=null;
-  origin=null;
-  createCanvas(windowWidth-50, windowHeight-30);
+  createCanvas(windowWidth - 50, windowHeight - 30);
+}
+let batterie;
+let resisteur;
+let ampoule;
+function initComponents(){
+  actions = [];
+  fils = [];
+  components = [];
+  draggedElement = null;
+  draggedFil = null;
+  origin = null;
   grid = {
     offsetX: 300,
     offsetY: 20,
@@ -26,14 +31,11 @@ function setup() {
   components = [];
   fils = [];
 }
-let batterie;
-let resisteur;
-let ampoule;
+
 
 function draw() {
   background(220);
   drawPointGrid();
-  point(900,220);
   for (let element of components) {
     element.draw(grid.translateX, grid.translateY);
   }
@@ -157,8 +159,8 @@ function mousePressed() {
     nelement.yOffsetDrag = mouseY - batterie.y;
     components[components.length] = nelement;
     draggedElement = nelement;
-    actions[actions.length]='composante';
-  } else if (resisteur.inBounds(mouseX,mouseY,0,0)) {
+    actions[actions.length] = 'composante';
+  } else if (resisteur.inBounds(mouseX, mouseY, 0, 0)) {
     origin = resisteur;
     nelement = new Resisteur(resisteur.x - grid.translateX, resisteur.y - grid.translateY, resisteur.taille);
     nelement.drag = true;
@@ -166,8 +168,8 @@ function mousePressed() {
     nelement.yOffsetDrag = mouseY - resisteur.y;
     components[components.length] = nelement;
     draggedElement = nelement;
-    actions[actions.length]='composante';
-  } else if (ampoule.inBounds(mouseX,mouseY,0,0)) {
+    actions[actions.length] = 'composante';
+  } else if (ampoule.inBounds(mouseX, mouseY, 0, 0)) {
     origin = ampoule;
     nelement = new Ampoule(ampoule.x - grid.translateX, ampoule.y - grid.translateY, ampoule.taille);
     nelement.drag = true;
@@ -175,7 +177,7 @@ function mousePressed() {
     nelement.yOffsetDrag = mouseY - ampoule.y;
     components[components.length] = nelement;
     draggedElement = nelement;
-    actions[actions.length]='composante';
+    actions[actions.length] = 'composante';
   } else {
     for (let element of components) {
       if (element.inBounds(mouseX, mouseY, grid.translateX, grid.translateY)) {
@@ -186,18 +188,15 @@ function mousePressed() {
         break;
       }
     }//mouseX - offsetX > element.x - 10
-    if(mouseX>300)
-    {
-      if (draggedElement == null)
-      {
+    if (mouseX > 300) {
+      if (draggedElement == null) {
         if
-        (
+          (
           (((mouseX - grid.offsetX - grid.translateX) % grid.tailleCell < 20 ||
-            (mouseX - grid.offsetX - grid.translateX+20) % grid.tailleCell < 20)) &&
-          (((mouseY - grid.offsetY-grid.translateY) % grid.tailleCell < 20 ||
-            (mouseY - grid.offsetY-grid.translateY+20) % grid.tailleCell < 20))
-        )
-        {
+            (mouseX - grid.offsetX - grid.translateX + 20) % grid.tailleCell < 20)) &&
+          (((mouseY - grid.offsetY - grid.translateY) % grid.tailleCell < 20 ||
+            (mouseY - grid.offsetY - grid.translateY + 20) % grid.tailleCell < 20))
+        ) {
           fil = {
             xi: findGridLockX(grid.translateX),
             yi: findGridLockY(grid.translateY),
@@ -207,7 +206,7 @@ function mousePressed() {
           };
           draggedFil = fil;
           fils[fils.length] = fil;
-          actions[actions.length]='fil';
+          actions[actions.length] = 'fil';
         }
       }
     }
@@ -252,7 +251,7 @@ function mouseReleased() {
 function keyPressed() {
   if (keyIsDown(CONTROL) && keyCode === 90) {
     undo();
-  }else if(keyIsDown(CONTROL) && keyIsDown(SHIFT) && keyCode === 80){
+  } else if (keyIsDown(CONTROL) && keyIsDown(SHIFT) && keyCode === 80) {
     print('parameters')
   }
 }
@@ -262,9 +261,9 @@ function refresh() {
   setup();
 }
 function undo() {
-    if(actions[actions.length-1]=='fil')
-      fils.pop();
-    else if(actions[actions.length-1]=='composante')
-      components.pop();
-    actions.pop();
+  if (actions[actions.length - 1] == 'fil')
+    fils.pop();
+  else if (actions[actions.length - 1] == 'composante')
+    components.pop();
+  actions.pop();
 }
