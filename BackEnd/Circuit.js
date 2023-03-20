@@ -5,7 +5,7 @@ function ajouterComposante(composante){
 }
 
 function retirerComposante(position){
-    circuit.
+    
 }
 
 function start(){ //Une fois au début
