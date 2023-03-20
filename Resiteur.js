@@ -9,7 +9,7 @@ class Resisteur {
     }
 
 
-    isDragged(mouseX, mouseY, offsetX, offsetY) {
+    inBounds(mouseX, mouseY, offsetX, offsetY) {
         return (mouseX - offsetX > this.x - this.taille / 2 &&
             mouseX - offsetX < this.x + this.taille / 2 &&
             mouseY - offsetY > this.y - this.taille / 2 &&

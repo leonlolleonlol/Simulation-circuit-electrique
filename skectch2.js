@@ -148,7 +148,7 @@ function findGridLockY(offset) {
 
 function mousePressed() {
   var nelement;
-  if (batterie.isDragged(mouseX, mouseY, 0, 0)) {
+  if (batterie.inBounds(mouseX, mouseY, 0, 0)) {
     origin = batterie;
     nelement = new Batterie(batterie.x - grid.translateX, batterie.y - grid.translateY, batterie.width, batterie.height);
     nelement.drag = true;
@@ -158,7 +158,7 @@ function mousePressed() {
     components[components.length] = nelement;
     draggedElement = nelement;
     actions[actions.length]='composante';
-  } else if (resisteur.isDragged(mouseX,mouseY,0,0)) {
+  } else if (resisteur.inBounds(mouseX,mouseY,0,0)) {
     origin = resisteur;
     nelement = new Resisteur(resisteur.x - grid.translateX, resisteur.y - grid.translateY, resisteur.taille);
     nelement.drag = true;
@@ -167,7 +167,7 @@ function mousePressed() {
     components[components.length] = nelement;
     draggedElement = nelement;
     actions[actions.length]='composante';
-  } else if (ampoule.isDragged(mouseX,mouseY,0,0)) {
+  } else if (ampoule.inBounds(mouseX,mouseY,0,0)) {
     origin = ampoule;
     nelement = new Ampoule(ampoule.x - grid.translateX, ampoule.y - grid.translateY, ampoule.taille);
     nelement.drag = true;
@@ -178,7 +178,7 @@ function mousePressed() {
     actions[actions.length]='composante';
   } else {
     for (let element of components) {
-      if (element.isDragged(mouseX, mouseY, grid.translateX, grid.translateY)) {
+      if (element.inBounds(mouseX, mouseY, grid.translateX, grid.translateY)) {
         draggedElement = element;
         draggedElement.drag = true;
         draggedElement.xOffsetDrag = mouseX - draggedElement.x;
@@ -248,6 +248,15 @@ function mouseReleased() {
     draggedFil = null;
   }
 }
+
+function keyPressed() {
+  if (keyIsDown(CONTROL) && keyCode === 90) {
+    undo();
+  }else if(keyIsDown(CONTROL) && keyIsDown(SHIFT) && keyCode === 80){
+    print('parameters')
+  }
+}
+
 
 function refresh() {
   setup();
