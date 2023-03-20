@@ -37,10 +37,7 @@ function initComponents(){
   resisteur = new Resisteur(58, 60 + 205, 25);
   batterie = new Batterie(58, 315, 100, 30);
   ampoule = new Ampoule(58, 160 + 205, 40);
-  
 }
-
-
 function draw() {
   background(220);
   drawPointGrid();
@@ -154,17 +151,17 @@ function mousePressed() {
     origin = batterie;
     nelement = new Batterie(batterie.x - grid.translateX, batterie.y - grid.translateY, batterie.width, batterie.height);
     setInDrag(nelement,batterie.x, batterie.y)
-    actions[actions.length] = 'composante';
+    actions[actions.length] = 'batterie';
   } else if (resisteur.inBounds(mouseX, mouseY, 0, 0)) {
     origin = resisteur;
     nelement = new Resisteur(resisteur.x - grid.translateX, resisteur.y - grid.translateY, resisteur.taille);
     setInDrag(nelement,resisteur.x, resisteur.y)
-    actions[actions.length] = 'composante';
+    actions[actions.length] = 'resisteur';
   } else if (ampoule.inBounds(mouseX, mouseY, 0, 0)) {
     origin = ampoule;
     nelement = new Ampoule(ampoule.x - grid.translateX, ampoule.y - grid.translateY, ampoule.taille);
     setInDrag(nelement,ampoule.x, ampoule.y)
-    actions[actions.length] = 'composante';
+    actions[actions.length] = 'ampoule';
   } else {
     for (let element of components) {
       if (element.inBounds(mouseX, mouseY, grid.translateX, grid.translateY)) {
@@ -236,6 +233,18 @@ function mouseDragged() {
 function mouseReleased() {
   if (draggedElement != null) {
     draggedElement.drag = false;
+    if(draggedElement.getType()=="batterie")
+    {
+      print(draggedElement.x);
+    }
+    if(draggedElement.getType()=="ampoule")
+    {
+      print(0);
+    }
+    if(draggedElement.getType()=="resisteur")
+    {
+      print(0);
+    }
     draggedElement = null;
     origin = null;
   } else if (draggedFil != null) {
@@ -252,14 +261,14 @@ function keyPressed() {
   }
 }
 
-
 function refresh() {
   initComponents();
 }
+
 function undo() {
   if (actions[actions.length - 1] == 'fil')
     fils.pop();
-  else if (actions[actions.length - 1] == 'composante')
+  else
     components.pop();
   actions.pop();
 }

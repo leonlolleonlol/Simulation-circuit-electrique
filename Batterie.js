@@ -7,6 +7,8 @@ class Batterie {
         this.drag = false;
         this.xOffsetDrag = 0.0;
         this.yOffsetDrag = 0.0;
+        this.xPositions=[];
+        this.yPositions=[];
     }
     inBounds(mouseX, mouseY, offsetX, offsetY) {
         return (mouseX - offsetX > this.x - this.width / 2 &&

@@ -6,6 +6,8 @@ class Resisteur {
         this.drag = false;
         this.xOffsetDrag = 0.0;
         this.yOffsetDrag = 0.0;
+        this.xPositions=[];
+        this.yPositions=[];
     }
 
 
