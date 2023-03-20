@@ -4,8 +4,12 @@ let origin;
 let components;
 let fils;
 let grid;
+let firstButton;
+let secondButton;
+let actions=[];
+let undoActions=0;
 function setup() {
-  createCanvas(windowWidth-75, windowHeight-40);
+  createCanvas(windowWidth-50, windowHeight-30);
   grid = {
     offsetX: 300,
     offsetY: 20,
@@ -15,7 +19,7 @@ function setup() {
   };
   resisteur = {
     x: 58,
-    y: 55,
+    y: 60+205,
     taille: 25,
     drag: false,
     isDragged: dragResistor,
@@ -25,7 +29,7 @@ function setup() {
   };
   batterie = {
     x: 58,
-    y: 110,
+    y: 315,
     width: 100,
     height: 30,
     drag: false,
@@ -37,7 +41,7 @@ function setup() {
 
   ampoule = {
     x: 58,
-    y: 160,
+    y: 160+205,
     taille: 40,
     drag: false,
     isDragged: dragAmpoule,
@@ -63,6 +67,14 @@ function draw() {
   if (origin != null) {
     createComponent(draggedElement);
   }
+  firstButton = createButton('Recommencer');
+  firstButton.position(40, 750);
+  firstButton.size(120,50)
+  firstButton.mousePressed(refresh);
+  secondButton = createButton('Undo');
+  secondButton.position(40, 195);
+  secondButton.size(120,50)
+  secondButton.mousePressed(undo);
 }
 
 function drawComponentsChooser() {
@@ -72,8 +84,8 @@ function drawComponentsChooser() {
   fill("rgba(128,128,128,0.59)");
   strokeWeight(4);
   stroke("rgba(52,52,52,0.78)");
-  for (let i = 0; i < 3; i++) {
-    rect(0, 35 + 50 * i, 120, 50);
+  for (let i = 0; i < 10; i++) {
+    rect(0, 240 + 50 * i, 120, 50);
   }
   if(batterie!=origin)
   createBatterie(batterie,0,0);
@@ -85,6 +97,10 @@ function drawComponentsChooser() {
 
 function drawPointGrid() {
   stroke("black");
+  setGrid();
+}
+function setGrid()
+{
   strokeWeight(6);
   for (let i = 0; i * grid.tailleCell < windowWidth - grid.offsetX; i++) {
     for (let j = 0; j * grid.tailleCell < windowHeight - grid.offsetY; j++) {
@@ -102,19 +118,7 @@ function drawPointGrid() {
 function drawPointLineGrid() {
   drawLineGrid();
   stroke("gray");
-  strokeWeight(6);
-  for (let i = 0; i * grid.tailleCell < windowWidth - grid.offsetX; i++) {
-    for (let j = 0; j * grid.tailleCell < windowHeight - grid.offsetY; j++) {
-      if (
-        !(grid.translateX % grid.tailleCell < 0 && i == 0) &&
-        !(grid.translateY % grid.tailleCell < 0 && j == 0)
-      )
-        point(
-          grid.offsetX + i * grid.tailleCell + (grid.translateX % grid.tailleCell),
-          grid.offsetY + j * grid.tailleCell + (grid.translateY % grid.tailleCell)
-        );
-    }
-  }
+  setGrid();
 }
 
 function drawLineGrid() {
@@ -147,9 +151,9 @@ function drawLineGrid() {
 function drawFils() {
   stroke("orange");
   strokeWeight(4);
-  for (let element of fils) {
-    line(element.xi + grid.translateX, element.yi + grid.translateY, element.xf + grid.translateX, element.yf + grid.translateY);
-  }
+  for (let element of fils)
+    if(element!=null)
+      line(element.xi + grid.translateX, element.yi + grid.translateY, element.xf + grid.translateX, element.yf + grid.translateY);
 }
 function createComponent(element) {
   if (element.type == "batterie")
@@ -245,40 +249,21 @@ function createAmpoule(ampoule, offX, offY) {
 }
 
 function dragBatterie(element, offsetX, offsetY) {
-  return (
-    mouseX - offsetX > element.x - element.width / 2 &&
-    mouseX - offsetX < element.x + element.width / 2 &&
-    mouseY - offsetY > element.y - element.height / 2 &&
-    mouseY - offsetY < element.y + element.height / 2
-  );
+  return dragGeneral(element, offsetX, offsetY,element.width,element.height);
 }
 function dragAmpoule(element, offsetX, offsetY) {
-  if (
-    mouseX - offsetX > element.x - element.taille / 2 &&
-    mouseX - offsetX< element.x + element.taille / 2 &&
-    mouseY - offsetY > element.y - element.taille / 2 &&
-    mouseY - offsetY < element.y + element.taille / 2
-  )
-    return true;
-  else return false;
+  return dragGeneral(element, offsetX, offsetY,element.taille,element.taille);
 }
 function dragResistor(element, offsetX, offsetY) {
-  if (
-    (mouseX - offsetX > element.x - 40 &&
-      mouseX - offsetX < element.x - 15 &&
-      mouseY - offsetY > element.y - 10 &&
-      mouseY - offsetY < element.y + 10) ||
-    (mouseX - offsetX > element.x - element.taille / 2 &&
-      mouseX - offsetX < element.x + element.taille / 2 &&
-      mouseY - offsetY > element.y - element.taille / 2 &&
-      mouseY - offsetY < element.y + element.taille / 2) ||
-    (mouseX - offsetX > element.x + 15 &&
-      mouseX - offsetX < element.x + 40 &&
-      mouseY - offsetY > element.y - 10 &&
-      mouseY - offsetY < element.y + 10)
-  )
-    return true;
-  else return false;
+  return dragGeneral(element, offsetX, offsetY,batterie.width,batterie.height);
+}
+function dragGeneral(element, offsetX, offsetY,elementWidth,elementHeight){
+  return (
+    mouseX - offsetX > element.x - elementWidth / 2 &&
+    mouseX - offsetX < element.x + elementWidth / 2 &&
+    mouseY - offsetY > element.y - elementHeight / 2 &&
+    mouseY - offsetY < element.y + elementHeight / 2
+  );
 }
 function findGridLockX(offset) {
   return (
@@ -350,13 +335,14 @@ function mousePressed() {
         draggedElement.yOffsetDrag = mouseY - draggedElement.y;
         break;
       }
+      actions[actions.length]=false;
     }//mouseX - offsetX > element.x - 10
     if (draggedElement == null) {
       if (
-        (((mouseX - grid.offsetX - grid.translateX) % grid.tailleCell < 15 ||
-          (mouseX - grid.offsetX - grid.translateX+20) % grid.tailleCell < 15)) &&
-        (((mouseY - grid.offsetY-grid.translateY) % grid.tailleCell < 15 ||
-          (mouseY - grid.offsetY-grid.translateY+20) % grid.tailleCell < 15))
+        (((mouseX - grid.offsetX - grid.translateX) % grid.tailleCell < 20 ||
+          (mouseX - grid.offsetX - grid.translateX+20) % grid.tailleCell < 20)) &&
+        (((mouseY - grid.offsetY-grid.translateY) % grid.tailleCell < 20 ||
+          (mouseY - grid.offsetY-grid.translateY+20) % grid.tailleCell < 20))
       ) {
         fil = {
           xi: findGridLockX(grid.translateX),
@@ -367,6 +353,7 @@ function mousePressed() {
         };
         draggedFil = fil;
         fils[fils.length] = fil;
+        actions[actions.length]=true;
       }
     }
   }
@@ -391,7 +378,7 @@ function mouseDragged() {
   } else if (draggedFil != null) {
     draggedFil.xf = findGridLockX(grid.translateX);
     draggedFil.yf = findGridLockY(grid.translateY);
-  } else {
+  } else if (mouseX>300){
     grid.translateX += mouseX - pmouseX;
     grid.translateY += mouseY - pmouseY;
   }
@@ -407,3 +394,21 @@ function mouseReleased() {
   }
 }
 
+function refresh() {
+  setup();
+  actions=null;
+}
+function undo() {
+  undoActions++;
+  console.log(actions.length);
+    if(actions[actions.length])
+      for (let index = 0; index < undoActions; index++)
+      {
+        fils.pop();
+      }
+    else
+      for (let index = 0; index < undoActions; index++)
+      {
+        components.pop();
+      };
+}
