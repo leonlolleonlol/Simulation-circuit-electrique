@@ -1,13 +1,18 @@
-let draggedElement = null;
-let draggedFil = null;
+let draggedElement;
+let draggedFil;
 let origin;
 let components;
 let fils;
 let grid;
-let actions = [];
-let undoActions = 0;
+let actions;
 function setup() {
-  createCanvas(windowWidth - 50, windowHeight - 30);
+  actions=[];
+  fils=[];
+  components=[];
+  draggedElement=null;
+  draggedFil=null;
+  origin=null;
+  createCanvas(windowWidth-50, windowHeight-30);
   grid = {
     offsetX: 300,
     offsetY: 20,
@@ -152,7 +157,8 @@ function mousePressed() {
     nelement.yOffsetDrag = mouseY - batterie.y;
     components[components.length] = nelement;
     draggedElement = nelement;
-  } else if (resisteur.isDragged(mouseX, mouseY, 0, 0)) {
+    actions[actions.length]='composante';
+  } else if (resisteur.isDragged(mouseX,mouseY,0,0)) {
     origin = resisteur;
     nelement = new Resisteur(resisteur.x - grid.translateX, resisteur.y - grid.translateY, resisteur.taille);
     nelement.drag = true;
@@ -160,7 +166,8 @@ function mousePressed() {
     nelement.yOffsetDrag = mouseY - resisteur.y;
     components[components.length] = nelement;
     draggedElement = nelement;
-  } else if (ampoule.isDragged(mouseX, mouseY, 0, 0)) {
+    actions[actions.length]='composante';
+  } else if (ampoule.isDragged(mouseX,mouseY,0,0)) {
     origin = ampoule;
     nelement = new Ampoule(ampoule.x - grid.translateX, ampoule.y - grid.translateY, ampoule.taille);
     nelement.drag = true;
@@ -168,6 +175,7 @@ function mousePressed() {
     nelement.yOffsetDrag = mouseY - ampoule.y;
     components[components.length] = nelement;
     draggedElement = nelement;
+    actions[actions.length]='composante';
   } else {
     for (let element of components) {
       if (element.isDragged(mouseX, mouseY, grid.translateX, grid.translateY)) {
@@ -177,25 +185,30 @@ function mousePressed() {
         draggedElement.yOffsetDrag = mouseY - draggedElement.y;
         break;
       }
-      actions[actions.length] = false;
-    }
-    if (draggedElement == null) {
-      if (
-        (((mouseX - grid.offsetX - grid.translateX) % grid.tailleCell < 20 ||
-          (mouseX - grid.offsetX - grid.translateX + 20) % grid.tailleCell < 20)) &&
-        (((mouseY - grid.offsetY - grid.translateY) % grid.tailleCell < 20 ||
-          (mouseY - grid.offsetY - grid.translateY + 20) % grid.tailleCell < 20))
-      ) {
-        fil = {
-          xi: findGridLockX(grid.translateX),
-          yi: findGridLockY(grid.translateY),
-          xf: findGridLockX(grid.translateX),
-          yf: findGridLockY(grid.translateY),
-          type: "fil",
-        };
-        draggedFil = fil;
-        fils[fils.length] = fil;
-        actions[actions.length] = true;
+    }//mouseX - offsetX > element.x - 10
+    if(mouseX>300)
+    {
+      if (draggedElement == null)
+      {
+        if
+        (
+          (((mouseX - grid.offsetX - grid.translateX) % grid.tailleCell < 20 ||
+            (mouseX - grid.offsetX - grid.translateX+20) % grid.tailleCell < 20)) &&
+          (((mouseY - grid.offsetY-grid.translateY) % grid.tailleCell < 20 ||
+            (mouseY - grid.offsetY-grid.translateY+20) % grid.tailleCell < 20))
+        )
+        {
+          fil = {
+            xi: findGridLockX(grid.translateX),
+            yi: findGridLockY(grid.translateY),
+            xf: findGridLockX(grid.translateX),
+            yf: findGridLockY(grid.translateY),
+            type: "fil",
+          };
+          draggedFil = fil;
+          fils[fils.length] = fil;
+          actions[actions.length]='fil';
+        }
       }
     }
   }
@@ -238,17 +251,11 @@ function mouseReleased() {
 
 function refresh() {
   setup();
-  actions = null;
 }
 function undo() {
-  undoActions++;
-  print(actions.length);
-  if (actions[actions.length])
-    for (let index = 0; index < undoActions; index++) {
+    if(actions[actions.length-1]=='fil')
       fils.pop();
-    }
-  else
-    for (let index = 0; index < undoActions; index++) {
+    else if(actions[actions.length-1]=='composante')
       components.pop();
-    };
+    actions.pop();
 }
