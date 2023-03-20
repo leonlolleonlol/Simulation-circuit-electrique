@@ -2,10 +2,16 @@ class Composants {
 
     constructor(courant){
         // on crée automatiquement une classe de tension
-        
         this.courant = courant
-        this.tension = Tension()
-        this.composantesCircuits = {}
+        this.composantesCircuits = []
+    }
+
+    ajouterComposante(composante) {
+        this.composantesCircuits.push(composante)
+    }
+
+    enleverComposante(composante) {
+        this.composantesCircuits.push(composante)
     }
     
 } 
