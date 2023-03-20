@@ -7,6 +7,15 @@ let grid;
 let actions;
 function setup() {
   createCanvas(windowWidth - 50, windowHeight - 30);
+  let undo_button = createButton('Recommencer');
+  undo_button.position(40, 750);
+  undo_button.size(120, 50);
+  undo_button.mousePressed(refresh);
+  let reset_button = createButton('Undo');
+  reset_button.position(40, 195);
+  reset_button.size(120, 50);
+  reset_button.mousePressed(undo);
+  initComponents();
 }
 let batterie;
 let resisteur;
@@ -28,8 +37,7 @@ function initComponents(){
   resisteur = new Resisteur(58, 60 + 205, 25);
   batterie = new Batterie(58, 315, 100, 30);
   ampoule = new Ampoule(58, 160 + 205, 40);
-  components = [];
-  fils = [];
+  
 }
 
 
@@ -44,14 +52,6 @@ function draw() {
   if (origin != null) {
     draggedElement.draw(grid.translateX, grid.translateY);
   }
-  let undo_button = createButton('Recommencer');
-  undo_button.position(40, 750);
-  undo_button.size(120, 50)
-  undo_button.mousePressed(refresh);
-  let reset_button = createButton('Undo');
-  reset_button.position(40, 195);
-  reset_button.size(120, 50)
-  reset_button.mousePressed(undo);
 }
 
 function drawComponentsChooser() {
@@ -153,30 +153,17 @@ function mousePressed() {
   if (batterie.inBounds(mouseX, mouseY, 0, 0)) {
     origin = batterie;
     nelement = new Batterie(batterie.x - grid.translateX, batterie.y - grid.translateY, batterie.width, batterie.height);
-    nelement.drag = true;
-
-    nelement.xOffsetDrag = mouseX - batterie.x;
-    nelement.yOffsetDrag = mouseY - batterie.y;
-    components[components.length] = nelement;
-    draggedElement = nelement;
+    setInDrag(nelement,batterie.x, batterie.y)
     actions[actions.length] = 'composante';
   } else if (resisteur.inBounds(mouseX, mouseY, 0, 0)) {
     origin = resisteur;
     nelement = new Resisteur(resisteur.x - grid.translateX, resisteur.y - grid.translateY, resisteur.taille);
-    nelement.drag = true;
-    nelement.xOffsetDrag = mouseX - resisteur.x;
-    nelement.yOffsetDrag = mouseY - resisteur.y;
-    components[components.length] = nelement;
-    draggedElement = nelement;
+    setInDrag(nelement,resisteur.x, resisteur.y)
     actions[actions.length] = 'composante';
   } else if (ampoule.inBounds(mouseX, mouseY, 0, 0)) {
     origin = ampoule;
     nelement = new Ampoule(ampoule.x - grid.translateX, ampoule.y - grid.translateY, ampoule.taille);
-    nelement.drag = true;
-    nelement.xOffsetDrag = mouseX - ampoule.x;
-    nelement.yOffsetDrag = mouseY - ampoule.y;
-    components[components.length] = nelement;
-    draggedElement = nelement;
+    setInDrag(nelement,ampoule.x, ampoule.y)
     actions[actions.length] = 'composante';
   } else {
     for (let element of components) {
@@ -211,6 +198,14 @@ function mousePressed() {
       }
     }
   }
+}
+
+function setInDrag(element,x,y){  
+  element.drag = true;
+  element.xOffsetDrag = mouseX - x;
+  element.yOffsetDrag = mouseY - y;
+  components[components.length] = element;
+  draggedElement = element;
 }
 
 function mouseDragged() {
@@ -249,6 +244,7 @@ function mouseReleased() {
 }
 
 function keyPressed() {
+  //https://www.toptal.com/developers/keycode
   if (keyIsDown(CONTROL) && keyCode === 90) {
     undo();
   } else if (keyIsDown(CONTROL) && keyIsDown(SHIFT) && keyCode === 80) {
@@ -258,7 +254,7 @@ function keyPressed() {
 
 
 function refresh() {
-  setup();
+  initComponents();
 }
 function undo() {
   if (actions[actions.length - 1] == 'fil')
