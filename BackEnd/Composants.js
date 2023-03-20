@@ -12,7 +12,5 @@ name(params) {
 }
 }
 class Condensateur extends Composants{
-Hello(params) {
-    
-}
+
 }
