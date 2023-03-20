@@ -3,7 +3,7 @@
   <style>
     b {
   text-shadow: 4px 4px red;
-  font-size: 26px;
+  font-size: 38px;
 
 }
     button:hover {
@@ -45,11 +45,11 @@ text-align: left;
 }
 
 @keyframes example {
-  0%   {left:15px; top:0px;}
-  25%  {left:1516px; top:0px;}
-  50%  {left:1516px; top:500px;}
-  75%  {left:15px; top:500px;}
-  100% {left:15px; top:0px;}
+  0%   {left:16px; top:0px;}
+  25%  {left:952px; top:0px;}
+  50%  {left:952px; top:455px;}
+  75%  {left:16px; top:455px;}
+  100% {left:16px; top:0px;}
 }
  
 #animated_div {
@@ -73,9 +73,9 @@ border-radius:5px;
 {
 0% {transform: rotate(0deg);left:0px;}
 25% {transform: rotate(20deg);left:0px;}
-50% {transform: rotate(0deg);left:1000px;}
-55% {transform: rotate(0deg);left:1000px;}
-70% {transform: rotate(0deg);left:1000px;background:#1ec7e6;}
+50% {transform: rotate(0deg);left:800px;}
+55% {transform: rotate(0deg);left:800px;}
+70% {transform: rotate(0deg);left:800px;background:#1ec7e6;}
 100% {transform: rotate(-360deg);left:0px;}
 }
 
@@ -113,12 +113,12 @@ body {
   background-repeat: repeat-y,repeat-y;
   background-position: right top,left top;
 }
-img {
-  display: block;
+.w3-image {
+  margin-top: 40px;
   margin-left: auto;
   margin-right: auto;
 }
-footer,header{
+footer{
   background-image: url("images/cd.png");
   background-repeat: repeat-x;
   background-position: right top;
@@ -147,7 +147,7 @@ footer,header{
 <!-- Header -->
 <br></br>
 <header class="w3-display-container w3-content w3-wide" style="max-width:1000px;" id="home">
-  <img class="w3-image" src="https://thumbs.gfycat.com/LiveSeveralBinturong-max-1mb.gif" alt="Architecture" width="800" height="667" class="center">
+  <img class="w3-image" src="https://thumbs.gfycat.com/LiveSeveralBinturong-max-1mb.gif" alt="Architecture" height="667" width="1000">
   <div class="w3-display-middle w3-margin-center w3-center">
     <h1 class="w3-xxlarge w3-text-white"><span class="w3-padding w3-black w3-opacity-min"><b>Simulation de circuits électriques</b></span> <span class="w3-hide-small w3-text-light-grey"></span></h1>
     <h1> <button> <a href = thirdproto.html> Ouvrir l'éditeur</a></button></h1> 
@@ -206,14 +206,14 @@ footer,header{
   <!-- Contact Section -->
   <div class="w3-container w3-padding-32" id="contact">
     <h3 class="w3-border-bottom w3-border-light-grey w3-padding-16">Contact</h3>
-    <p>Let's get in touch and talk about your next project.</p>
+    <p>Restons en contact et donnez vos suggestions.</p>
     <form action="/action_page.php" target="_blank">
-      <input class="w3-input w3-border" type="text" placeholder="Name" required name="Name">
+      <input class="w3-input w3-border" type="text" placeholder="Nom" required name="Name">
       <input class="w3-input w3-section w3-border" type="text" placeholder="Email" required name="Email">
-      <input class="w3-input w3-section w3-border" type="text" placeholder="Subject" required name="Subject">
-      <input class="w3-input w3-section w3-border" type="text" placeholder="Comment" required name="Comment">
+      <input class="w3-input w3-section w3-border" type="text" placeholder="Sujet" required name="Subject">
+      <input class="w3-input w3-section w3-border" type="text" placeholder="Commentaire" required name="Comment">
       <button class="w3-button w3-black w3-section" type="submit">
-        <i class="fa fa-paper-plane"></i> SEND MESSAGE
+        <i class="fa fa-paper-plane"></i> ENVOYER CE MESSAGE
       </button>
     </form>
   </div>

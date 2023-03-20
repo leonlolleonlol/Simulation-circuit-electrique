@@ -4,7 +4,10 @@ let origin;
 let components;
 let fils;
 let grid;
-let button;
+let firstButton;
+let secondButton;
+let actions=[];
+let undoActions=0;
 function setup() {
   createCanvas(windowWidth-50, windowHeight-30);
   grid = {
@@ -16,7 +19,7 @@ function setup() {
   };
   resisteur = {
     x: 58,
-    y: 60+215,
+    y: 60+205,
     taille: 25,
     drag: false,
     isDragged: dragResistor,
@@ -26,7 +29,7 @@ function setup() {
   };
   batterie = {
     x: 58,
-    y: 325,
+    y: 315,
     width: 100,
     height: 30,
     drag: false,
@@ -38,7 +41,7 @@ function setup() {
 
   ampoule = {
     x: 58,
-    y: 160+215,
+    y: 160+205,
     taille: 40,
     drag: false,
     isDragged: dragAmpoule,
@@ -64,10 +67,14 @@ function draw() {
   if (origin != null) {
     createComponent(draggedElement);
   }
-  button = createButton('Recommencer de nouveau');
-  button.position(40, 760);
-  button.size(120,50)
-  button.mousePressed(refresh);
+  firstButton = createButton('Recommencer');
+  firstButton.position(40, 750);
+  firstButton.size(120,50)
+  firstButton.mousePressed(refresh);
+  secondButton = createButton('Undo');
+  secondButton.position(40, 195);
+  secondButton.size(120,50)
+  secondButton.mousePressed(undo);
 }
 
 function drawComponentsChooser() {
@@ -78,7 +85,7 @@ function drawComponentsChooser() {
   strokeWeight(4);
   stroke("rgba(52,52,52,0.78)");
   for (let i = 0; i < 10; i++) {
-    rect(0, 250 + 50 * i, 120, 50);
+    rect(0, 240 + 50 * i, 120, 50);
   }
   if(batterie!=origin)
   createBatterie(batterie,0,0);
@@ -144,9 +151,9 @@ function drawLineGrid() {
 function drawFils() {
   stroke("orange");
   strokeWeight(4);
-  for (let element of fils) {
-    line(element.xi + grid.translateX, element.yi + grid.translateY, element.xf + grid.translateX, element.yf + grid.translateY);
-  }
+  for (let element of fils)
+    if(element!=null)
+      line(element.xi + grid.translateX, element.yi + grid.translateY, element.xf + grid.translateX, element.yf + grid.translateY);
 }
 function createComponent(element) {
   if (element.type == "batterie")
@@ -328,13 +335,14 @@ function mousePressed() {
         draggedElement.yOffsetDrag = mouseY - draggedElement.y;
         break;
       }
+      actions[actions.length]=false;
     }//mouseX - offsetX > element.x - 10
     if (draggedElement == null) {
       if (
-        (((mouseX - grid.offsetX - grid.translateX) % grid.tailleCell < 15 ||
-          (mouseX - grid.offsetX - grid.translateX+20) % grid.tailleCell < 15)) &&
-        (((mouseY - grid.offsetY-grid.translateY) % grid.tailleCell < 15 ||
-          (mouseY - grid.offsetY-grid.translateY+20) % grid.tailleCell < 15))
+        (((mouseX - grid.offsetX - grid.translateX) % grid.tailleCell < 20 ||
+          (mouseX - grid.offsetX - grid.translateX+20) % grid.tailleCell < 20)) &&
+        (((mouseY - grid.offsetY-grid.translateY) % grid.tailleCell < 20 ||
+          (mouseY - grid.offsetY-grid.translateY+20) % grid.tailleCell < 20))
       ) {
         fil = {
           xi: findGridLockX(grid.translateX),
@@ -345,6 +353,7 @@ function mousePressed() {
         };
         draggedFil = fil;
         fils[fils.length] = fil;
+        actions[actions.length]=true;
       }
     }
   }
@@ -387,4 +396,19 @@ function mouseReleased() {
 
 function refresh() {
   setup();
+  actions=null;
+}
+function undo() {
+  undoActions++;
+  console.log(actions.length);
+    if(actions[actions.length])
+      for (let index = 0; index < undoActions; index++)
+      {
+        fils.pop();
+      }
+    else
+      for (let index = 0; index < undoActions; index++)
+      {
+        components.pop();
+      };
 }
