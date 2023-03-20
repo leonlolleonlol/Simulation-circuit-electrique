@@ -19,7 +19,6 @@ class Diode extends Composants{
 class Ampoule extends Composants{
 }
 class Batterie extends Composants{
-
 }
 class Switch extends Composants{
 }
