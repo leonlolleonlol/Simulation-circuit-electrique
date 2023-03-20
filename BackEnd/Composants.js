@@ -9,7 +9,5 @@ class Composants {
 class Resisteur extends Composants{
 }
 class Condensateur extends Composants{
-Hello(params) {
-    
-}
+
 }
