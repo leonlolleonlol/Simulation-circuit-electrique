@@ -1,16 +1,14 @@
 class Composants {
    
-    constructor(courant, tension){
-        this.courant = courant;
-        this.tension = tension
-    }
-
-    bluedabedi(ababa) {
-        return ++ababa;
+    constructor(x, y){
+        this.x = x;
+        this.y = y
     }
 } 
-const res = new Composants(10,23.2);
-console.log(res.bluedabedi(10))
-console.log('Hello Word')
 
+class Resisteur extends Composants{
 
+}
+class Condensateur extends Composants{
+
+}
