@@ -51,6 +51,7 @@ function setup() {
   };
   components = [];
   fils = [];
+  test();
 }
 let batterie;
 let resisteur;
@@ -75,6 +76,56 @@ function draw() {
   secondButton.position(40, 195);
   secondButton.size(120,50)
   secondButton.mousePressed(undo);
+}
+function test1(){
+  //#51 p.250
+  let circuit = new Circuit(120);
+  let r1 = new Resisteur(730);
+  let r2 = new Resisteur(730);
+  let r3 = new Resisteur(730);
+  let c1 = new Condensateur(6.5*10e-6);
+  let group1 = new GroupeBranche();
+  let group2 = new Branche();
+  let group3 = new Branche();
+  group1.children.push(group2);
+  group1.children.push(group3);
+  circuit.composants.push(group1);
+  circuit.composants.push(r1);
+  group2.children.push(r2);
+  group3.children.push(r3);
+  group3.children.push(c1);
+  circuit.start();
+  circuit.update(Infinity);
+  print(circuit);
+  //print(circuit.charge);
+  print(circuit.charge);
+  print(r1.courant);
+  print(c1.charge);
+  print(r3.courant);
+  print(r2.courant);
+  
+}
+
+function test(){
+  let circuit = new Circuit(12);
+  let r1 =new Resisteur(500);
+  let r2 =new Resisteur(800);
+  let r3 =new Resisteur(1100);
+  let r4 =new Resisteur(400);
+  let group1 = new GroupeBranche();
+  let group2 = new Branche();
+  let group3 = new Branche();
+  group2.children.push(r2);
+  group3.children.push(r3);
+  group3.children.push(r4);
+  group1.children.push(group2);
+  group1.children.push(group3);
+  circuit.composants.push(r1);
+  circuit.composants.push(group1);
+  circuit.start();
+  circuit.update(0);
+  print(r1.courant);
+  print(r2.courant);  
 }
 
 function drawComponentsChooser() {
