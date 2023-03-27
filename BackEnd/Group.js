@@ -34,7 +34,7 @@ class Branche {
       }
     }
     for (let i = 0; i < this.children.length; i++) {
-      this.children[i].calcul(this);
+      this.children[i].calcul(false,this);
     }
   }
   getType() {
@@ -42,6 +42,7 @@ class Branche {
   }
 
   calculer_equivalence(tension_circuit) {
+    this.tension = tension_circuit;
     let resistancePart = [];
     let condensateurPart = [];
     for (let i = 0; i < this.children.length; i++) {
@@ -52,7 +53,7 @@ class Branche {
       } else if (this.children[i].getType() == "Group") {
         this.children[i].calculer_equivalence();
         resistancePart.push(this.children[i].resistance);
-        resistancePart.push(this.children[i].capacite);
+        condensateurPart.push(this.children[i].capacite);
       }
     }
     for (let i = 0; i < resistancePart.length; i++)
@@ -120,8 +121,7 @@ class GroupeBranche {
   }
   // fonction appelé pour savoir 
   // composant: Composant parent qui permet d'obtenir les valeurs importantes
-  calcul(composant) {
-
+  calcul(paralele,composant) {
     // Pour appliquer les formules, il doit bien entendu avoir une résistance ou 
     // une charge de condensateur. 
     // Vérification de bug de circuit nécéssaire

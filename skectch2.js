@@ -108,6 +108,7 @@ function test1(){
 
 function test(){
   let circuit = new Circuit(12);
+  let b1 = new Branche();
   let r1 =new Resisteur(500);
   let r2 =new Resisteur(800);
   let r3 =new Resisteur(1100);
@@ -120,9 +121,12 @@ function test(){
   group3.children.push(r4);
   group1.children.push(group2);
   group1.children.push(group3);
-  circuit.composants.push(r1);
-  circuit.composants.push(group1);
+  b1.children.push(r1);
+  b1.children.push(group1);
+  circuit.composants.push(b1);
+  
   circuit.start();
+  print(circuit);
   circuit.update(0);
   print(r1.courant);
   print(r2.courant);  

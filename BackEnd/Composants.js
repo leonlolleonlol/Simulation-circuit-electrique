@@ -18,13 +18,14 @@ class Composant {
     }
 } 
 
-class Resisteur extends Composant{
+class Resisteur{
   constructor(resistance) {
     this.resistance = resistance;
     this.courant = 0;
     this.tension = 0;
   }
   calcul(paralele, composant) {
+    print(this);
     if (paralele) {
       this.tension = composant.tension;
       this.calculCourant();
@@ -85,7 +86,7 @@ function calcul_tension_C(composant) {
   composant.tension = composant.charge / composant.capacite;
 }*/
 
-class Condensateur extends Composant{
+class Condensateur{
   constructor(capacite) {
     this.capacite = capacite;
     this.charge = 0;
