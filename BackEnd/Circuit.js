@@ -39,9 +39,20 @@ function update(){//Chaque fois qu'il y a un changement dans le circuit
     if(validerCircuit()){
         trouverEq();
 
-        //Modifer seulement le circuit Eq
+        let SansCond = true;
+        let iEq = 0;
+        for (let i = 0; i < circuit.length; i++){ //Commence à 1 parce qu'on sait qu'il y a la pile à 0
+            if(circuitEq[i].getType == "condensateur"){
+                SansCond = false;
+            }
+        }
+        if(SansCond){
+            iEq = courantSansCondensateur();
+            
+        }
 
-        revenirCircuitDeBase();
+        //Trouver comment backtrack
+         
     }
     
 }
@@ -75,6 +86,10 @@ function trouverEq(){
         }else{ //Il y a au moins un noeud dans le circuit (En parallèle)
 
         }
+}
+function courantSansCondensateur() {
+    // Trouver Courant avec delta V de la pile et Req
+    return circuitEq[0].tension * circuitEq.R;
 }
 
 /**
