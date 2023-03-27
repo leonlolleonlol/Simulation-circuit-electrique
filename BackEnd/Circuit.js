@@ -48,7 +48,8 @@ function update(){//Chaque fois qu'il y a un changement dans le circuit
         }
         if(SansCond){
             iEq = courantSansCondensateur();
-            
+            //for ... de circuit 
+            // circuit[].i = ieq 
         }
 
         //Trouver comment backtrack
