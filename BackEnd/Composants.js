@@ -6,8 +6,15 @@ class Composant {
         this.courant = courant;
         this.tension = tension;
     }
+    // Cette méthode est appelé à chaque fois que l'on
+    // veut calculer la tension et la différence de pottentiel d'un 
+    // composant. Les information disponible sont la branche (composant) et 
+    //si notre composant est en paralèle ou en série
     calcul(paralele, composant){
-        throw console.error();
+        throw console.error();//todo préciser l'erreur
+    }
+    getType() {
+      throw console.error();//todo préciser l'erreur
     }
 } 
 

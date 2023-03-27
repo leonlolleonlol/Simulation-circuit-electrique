@@ -1,12 +1,19 @@
 class Branche {
   constructor() {
+    // Tout les composants
     this.children = [];
+    // Résultat simplifcation circuit équivalent
     this.resistance = 0;
     this.capacite = 0;
-    this.courant = 0;
+    // Résulat des calculs pendant la simulation
+    this.charge = 0;
     this.courant = 0;
     this.tension = 0;
   }
+  // boolean paralele: Information si la branche précédente est en
+  // paralèle
+  // Composant composant: composant parent à cette branche.Souvent un groupe 
+  // de branche
   calcul(paralele, composant) {
     if (this.resistance != 0) {
       if (paralele) {
@@ -27,7 +34,7 @@ class Branche {
       }
     }
     for (let i = 0; i < this.children.length; i++) {
-      this.children[i].calcul(false, this);
+      this.children[i].calcul(this);
     }
   }
   getType() {
@@ -58,20 +65,29 @@ class Branche {
     }
   }
 }
-
+// Le groupe de branche représente tout branche en parralèle dans notre 
+// circuit
 class GroupeBranche {
   constructor() {
+    // Tout les composants
     this.children = [];
+    // Résumer des valeurs du circuit équivalent
     this.resistance = 0;
     this.capacite = 0;
+    // Valeurs calculer pendant l'animation
     this.charge = 0;
     this.courant = 0;
     this.tension = 0;
   }
 
+  // Fonction appeler pour simplifier le circuit au maximum
   calculer_equivalence() {
+    // Il y a des résistances et condensateur en parralèle jusqu'à 
+    // preuve du contraire
     let isParalleleResistance = true;
     let isParalleleCondensateur = true;
+
+    //itération sur notre branche
     for (let i = 0; i < this.children.length; i++) {
       let element = this.children[i];
       element.calculer_equivalence();
@@ -102,9 +118,16 @@ class GroupeBranche {
         this.capacite += this.children[i].capacite;
     }
   }
-  calcul(paralele, composant) {
+  // fonction appelé pour savoir 
+  // composant: Composant parent qui permet d'obtenir les valeurs importantes
+  calcul(composant) {
+
+    // Pour appliquer les formules, il doit bien entendu avoir une résistance ou 
+    // une charge de condensateur. 
+    // Vérification de bug de circuit nécéssaire
     if (this.resistance != 0) {
       if (paralele) {
+        // formule résistance en paralèlle
         this.tension = composant.tension;
         this.courant = this.tension / this.resistance;
       } else {
@@ -114,9 +137,11 @@ class GroupeBranche {
     }
     if (this.capacite != 0) {
       if (paralele) {
+        // formule pour condensateur en parralèle
         this.tension = composant.tension;
         this.charge = this.capacite * this.tension;
       } else {
+        // formule condensateur en série
         this.charge = composant.charge;
         this.tension = this.charge / this.capacite;
       }
