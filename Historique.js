@@ -6,18 +6,29 @@ const DELETE = 'delete';
 // Si type d'action est modification ----> typeAction, objet, changements:[attribut, ancienne_valeur, nouvelle_valeur]
 // le tablean dans modification est pour avoir plusieurs modification dans un objet
 
+
 class Historique{
   constructor(){
     this.actions = [];
-    this.index = 0;
+    this.index = -1;
   }
+
+  addActions(action){
+    this.actions.push(action);
+    this.index++;
+    }
   undo(){
-  let action = this.action[index];
-  index--;
+  if(this.index>-1)
+  {
+  let action = this.actions[this.index];
+  this.index--;
   if(action.type===CREATE){
-    circuit.remove(action.objet);
+    if(action.objet.type!='fil')
+      components.pop(action.objet);
+    else
+      fils.pop(action.objet);
   }else if(action.type===DELETE){
-    circuit.add(action.objet);
+    components.push(action.objet);
   }else if(action.type===MODIFIER){
     let composant = action.objet;
     for(let i = 0; i<action.changements.length;i++){
@@ -25,14 +36,15 @@ class Historique{
     }
   }
 }
+}
   redo(){
-  let action = this.action[index + 1];
+  let action = this.action[this.index + 1];
   // Enlever toute les actions qui suivent
-  index++;
+  this.index++;
   if(action.type===CREATE){
-    circuit.add(action.objet);
+    components.add(action.objet);
   }else if(action.type===DELETE){
-    circuit.remove(action.objet);
+    components.remove(action.objet);
   }else if(action.type===MODIFIER){
     let composant = action.objet;
     for(let i = 0; i<action.changements.length;i++){
@@ -41,4 +53,4 @@ class Historique{
   }
 }
   }
-}
+

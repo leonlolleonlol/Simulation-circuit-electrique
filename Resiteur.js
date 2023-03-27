@@ -43,3 +43,11 @@ class Resisteur {
         return "resisteur";
     }
 }
+function blendBG(cblend) {
+    let c = color(220);
+    let c1 = color(cblend);
+    let outputRed = red(c1) * alpha(c1) + red(c) * (1.0 - alpha(c1));
+    let outputGreen = green(c1) * alpha(c1) + green(c) * (1.0 - alpha(c1));
+    let outputBlue = blue(c1) * alpha(c1) + blue(c) * (1.0 - alpha(c1));
+    return color(outputRed, outputGreen, outputBlue);
+}

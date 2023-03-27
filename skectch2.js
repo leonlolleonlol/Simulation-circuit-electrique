@@ -4,7 +4,7 @@ let origin;
 let components;
 let fils;
 let grid;
-let actions;
+let historique;
 function setup() {
   createCanvas(windowWidth - 50, windowHeight - 30);
   let undo_button = createButton('Recommencer');
@@ -20,23 +20,28 @@ function setup() {
 let batterie;
 let resisteur;
 let ampoule;
+let diode;
+let condensateur;
 function initComponents(){
-  actions = [];
   fils = [];
   components = [];
   draggedElement = null;
   draggedFil = null;
   origin = null;
+  historique= new Historique();
   grid = {
     offsetX: 300,
     offsetY: 20,
-    tailleCell: 50,
+    tailleCell: 30,
     translateX: 0,
     translateY: 0,
   };
-  resisteur = new Resisteur(58, 60 + 205, 25);
-  batterie = new Batterie(58, 315, 100, 30);
-  ampoule = new Ampoule(58, 160 + 205, 40);
+  resisteur = new Resisteur(58, 265, 25);
+  batterie = new Batterie(58, 315, 60, 30);
+  ampoule = new Ampoule(58, 365, 40);
+  diode = new Diode(50, 415, 'right');
+  condensateur= new Condensateur(60, 465, 'right');
+  objects=[resisteur,batterie,ampoule,diode,condensateur];
 }
 function draw() {
   background(220);
@@ -61,12 +66,9 @@ function drawComponentsChooser() {
   for (let i = 0; i < 10; i++) {
     rect(0, 240 + 50 * i, 120, 50);
   }
-  if (batterie != origin)
-    batterie.draw(0, 0);
-  if (resisteur != origin)
-    resisteur.draw(0, 0);
-  if (ampoule != origin)
-    ampoule.draw(0, 0);
+  for (let element of objects)
+    if (element != origin)
+      element.draw(0, 0);
 }
 
 function drawPointGrid() {
@@ -151,18 +153,30 @@ function mousePressed() {
     origin = batterie;
     nelement = new Batterie(batterie.x - grid.translateX, batterie.y - grid.translateY, batterie.width, batterie.height);
     setInDrag(nelement,batterie.x, batterie.y)
-    actions[actions.length] = 'batterie';
+    historique.addActions({type:CREATE,objet:nelement});
   } else if (resisteur.inBounds(mouseX, mouseY, 0, 0)) {
     origin = resisteur;
     nelement = new Resisteur(resisteur.x - grid.translateX, resisteur.y - grid.translateY, resisteur.taille);
-    setInDrag(nelement,resisteur.x, resisteur.y)
-    actions[actions.length] = 'resisteur';
+    setInDrag(nelement,resisteur.x, resisteur.y);
+    historique.addActions({type:CREATE,objet:nelement},0);
   } else if (ampoule.inBounds(mouseX, mouseY, 0, 0)) {
     origin = ampoule;
-    nelement = new Ampoule(ampoule.x - grid.translateX, ampoule.y - grid.translateY, ampoule.taille);
+    nelement = new Ampoule(ampoule.x - grid.translateX, ampoule.y - grid.translateY, ampoule.taille*1.50);
     setInDrag(nelement,ampoule.x, ampoule.y)
-    actions[actions.length] = 'ampoule';
-  } else {
+    historique.addActions({type:CREATE,objet:nelement});
+  } else if (diode.inBounds(mouseX, mouseY, 0, 0)) {
+    origin = diode;
+    nelement = new Diode(diode.x - grid.translateX, diode.y - grid.translateY, 'right');
+    setInDrag(nelement,diode.x, diode.y)
+    historique.addActions({type:CREATE,objet:nelement});
+  }
+  else if (condensateur.inBounds(mouseX, mouseY, 0, 0)) {
+    origin = condensateur;
+    nelement = new Condensateur(condensateur.x - grid.translateX, condensateur.y - grid.translateY, 'right');
+    setInDrag(nelement,condensateur.x, condensateur.y)
+    historique.addActions({type:CREATE,objet:nelement});
+  } 
+  else {
     for (let element of components) {
       if (element.inBounds(mouseX, mouseY, grid.translateX, grid.translateY)) {
         draggedElement = element;
@@ -172,7 +186,7 @@ function mousePressed() {
         break;
       }
     }//mouseX - offsetX > element.x - 10
-    if (mouseX > 300) {
+    if (mouseX > 329) {
       if (draggedElement == null) {
         if
           (
@@ -190,7 +204,7 @@ function mousePressed() {
           };
           draggedFil = fil;
           fils[fils.length] = fil;
-          actions[actions.length] = 'fil';
+          historique.addActions({type:CREATE,objet:fil});
         }
       }
     }
@@ -233,18 +247,6 @@ function mouseDragged() {
 function mouseReleased() {
   if (draggedElement != null) {
     draggedElement.drag = false;
-    if(draggedElement.getType()=="batterie")
-    {
-      print(draggedElement.x);
-    }
-    if(draggedElement.getType()=="ampoule")
-    {
-      print(0);
-    }
-    if(draggedElement.getType()=="resisteur")
-    {
-      print(0);
-    }
     draggedElement = null;
     origin = null;
   } else if (draggedFil != null) {
@@ -266,9 +268,5 @@ function refresh() {
 }
 
 function undo() {
-  if (actions[actions.length - 1] == 'fil')
-    fils.pop();
-  else
-    components.pop();
-  actions.pop();
+  historique.undo();
 }

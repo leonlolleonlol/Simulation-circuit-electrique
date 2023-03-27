@@ -6,6 +6,12 @@ class Diode {
     this.radius = 15;
     this.calculatePoints();
   }
+  inBounds(mouseX, mouseY, offsetX, offsetY) {
+    return (mouseX - offsetX > this.x - this.radius / 2 &&
+        mouseX - offsetX < this.x + this.radius / 2 &&
+        mouseY - offsetY > this.y - this.radius / 2 &&
+        mouseY - offsetY < this.y + this.radius / 2);
+}
   
   calculatePoints(){
     this.coordonneTriangle = [];
