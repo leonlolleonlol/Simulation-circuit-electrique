@@ -1,4 +1,4 @@
-b {
+b,h1 {
     text-shadow: 4px 4px red;
     font-size: 38px;
   
@@ -41,11 +41,11 @@ button:hover {
   }
   
   @keyframes example {
-    0%   {left:16px; top:0px;}
-    25%  {left:952px; top:0px;}
-    50%  {left:952px; top:455px;}
-    75%  {left:16px; top:455px;}
-    100% {left:16px; top:0px;}
+    0%   {left:-505px; top:0px;}
+    25%  {left:505px; top:0px;}
+    50%  {left:505px; top:455px;}
+    75%  {left:-505px; top:455px;}
+    100% {left:-505px; top:0px;}
   }
    
   #animated_div {
@@ -77,4 +77,6 @@ button:hover {
     background-image: url("images/cd.png");
     background-repeat: repeat-x;
     background-position: right top;
+    color: #ffffff;
+    background-color: rgb(0, 0, 0);
   }
