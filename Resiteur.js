@@ -19,47 +19,24 @@ class Resisteur {
     }
 
     draw(offX, offY) {
-        noStroke();
-        fill("#299bf6");
-        if (this.drag) circle(this.x + offX, this.y + offY, this.taille + 4);
-        else circle(this.x + offX, this.y + offY, this.taille);
-        fill("#a358a8");
-        if (resisteur.drag)
-            triangle(
-                this.x - 50 + offX,
-                this.y + offY,
-                this.x - 16 + offX,
-                this.y - 11 + offY,
-                this.x - 16 + offX,
-                this.y + 11 + offY
-            );
-        else
-            triangle(
-                this.x - 50 + offX,
-                this.y + offY,
-                this.x - 15 + offX,
-                this.y - 10 + offY,
-                this.x - 15 + offX,
-                this.y + 10 + offY
-            );
-        if (this.drag)
-            triangle(
-                this.x + 50 + offX,
-                this.y + offY,
-                this.x + 16 + offX,
-                this.y + 11 + offY,
-                this.x + 16 + offX,
-                this.y - 11 + offY
-            );
-        else
-            triangle(
-                this.x + 50 + offX,
-                this.y + offY,
-                this.x + 15 + offX,
-                this.y + 10 + offY,
-                this.x + 15 + offX,
-                this.y - 10 + offY
-            );
+       push();
+  translate(this.x + offX, this.y + offY);
+  colorMode(RGB, 255, 255, 255, 1);
+  rectMode(CENTER);
+  strokeWeight(2);
+  let grad = drawingContext.createLinearGradient(-25, -10, 25, 10);
+
+  grad.addColorStop(0, blendBG("rgba(241,41,19,0.6)"));
+  grad.addColorStop(1, blendBG("rgba(245,175,25,0.6)"));
+  drawingContext.fillStyle = grad;
+  let grad1 = drawingContext.createLinearGradient(-25, -10, 25, 10);
+  grad1.addColorStop(0, "rgb(241,41,19)");
+  grad1.addColorStop(1, "rgb(245,175,25)");
+  drawingContext.strokeStyle = grad1;
+  quad(-20, -10, -30, -4, -30, 4, -20, 10);
+  quad(20, -10, 30, -4, 30, 4, 20, 10);
+  rect(0, 0, 50, 25, 10);
+  pop();
     }
 
     getType() {
