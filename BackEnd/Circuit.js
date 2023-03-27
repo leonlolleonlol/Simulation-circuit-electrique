@@ -48,8 +48,8 @@ function update(){//Chaque fois qu'il y a un changement dans le circuit
         }
         if(SansCond){
             iEq = courantSansCondensateur();
-            //for ... de circuit 
-            // circuit[].i = ieq 
+            //for ... de circuit
+            // circuit[].i = ieq  problème avec circuit parallèle
         }
 
         //Trouver comment backtrack
