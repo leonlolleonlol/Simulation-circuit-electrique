@@ -80,6 +80,7 @@ function draw() {
 function test1(){
   //#51 p.250
   let circuit = new Circuit(120);
+  let b1 = new Branche();
   let r1 = new Resisteur(730);
   let r2 = new Resisteur(730);
   let r3 = new Resisteur(730);
@@ -89,11 +90,12 @@ function test1(){
   let group3 = new Branche();
   group1.children.push(group2);
   group1.children.push(group3);
-  circuit.composants.push(group1);
-  circuit.composants.push(r1);
+  b1.children.push(group1);
+  b1.children.push(r1);
   group2.children.push(r2);
   group3.children.push(r3);
   group3.children.push(c1);
+  circuit.composants.push(b1);
   circuit.start();
   circuit.update(Infinity);
   print(circuit);
@@ -108,6 +110,7 @@ function test1(){
 
 function test(){
   let circuit = new Circuit(12);
+  let b1 = new Branche();
   let r1 =new Resisteur(500);
   let r2 =new Resisteur(800);
   let r3 =new Resisteur(1100);
@@ -120,8 +123,9 @@ function test(){
   group3.children.push(r4);
   group1.children.push(group2);
   group1.children.push(group3);
-  circuit.composants.push(r1);
-  circuit.composants.push(group1);
+  b1.children.push(r1);
+  b1.children.push(group1);
+  circuit.composants.push(b1);
   circuit.start();
   circuit.update(0);
   print(r1.courant);

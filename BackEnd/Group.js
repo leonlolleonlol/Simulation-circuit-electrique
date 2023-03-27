@@ -34,7 +34,7 @@ class Branche {
       }
     }
     for (let i = 0; i < this.children.length; i++) {
-      this.children[i].calcul(this);
+      this.children[i].calcul(false,this);
     }
   }
   getType() {
@@ -120,7 +120,7 @@ class GroupeBranche {
   }
   // fonction appelé pour savoir 
   // composant: Composant parent qui permet d'obtenir les valeurs importantes
-  calcul(composant) {
+  calcul(paralele,composant) {
 
     // Pour appliquer les formules, il doit bien entendu avoir une résistance ou 
     // une charge de condensateur. 
