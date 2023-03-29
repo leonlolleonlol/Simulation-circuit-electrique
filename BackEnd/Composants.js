@@ -168,6 +168,7 @@ class Noeuds extends Composant {
     }else{
         this.type = "seulementR"
     }
+    return this.type;
   }
 
   getType() {
