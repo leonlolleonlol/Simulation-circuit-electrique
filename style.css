@@ -6,6 +6,28 @@ b,h1 {
 button:hover {
     background-color: #ff0000;
 }
+.buttona {
+  display: inline-block;
+  padding: 15px 25px;
+  font-size: 24px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  color: #fff;
+  background-color: #ff0000;
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 9px #999;
+}
+
+.buttona:hover {background-color: #ff5e00}
+
+.buttona:active {
+  background-color: #ffc400;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}
 .button {
     text-align: left;
     display: inline-block;
@@ -15,6 +37,9 @@ button:hover {
     width: 75px;
     height: 75px;
   }
+  img {
+      filter: saturate(300%);
+ }
   
   .button1 {
     background-color: white; 
@@ -43,8 +68,8 @@ button:hover {
   @keyframes example {
     0%   {left:-505px; top:0px;}
     25%  {left:505px; top:0px;}
-    50%  {left:505px; top:455px;}
-    75%  {left:-505px; top:455px;}
+    50%  {left:505px; top:600px;}
+    75%  {left:-505px; top:600px;}
     100% {left:-505px; top:0px;}
   }
    
