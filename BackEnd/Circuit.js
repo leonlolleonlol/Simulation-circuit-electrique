@@ -10,7 +10,7 @@ class Circuit{
      */
     constructor(premierCircuit){
         this.premierCircuit = premierCircuit;
-        this.circuit = []; //Array de composantes
+        this.circuit = []; //Array de composantes qui sont en série
         this.valide = true;
 
         //C'est variable sont utile dans le cas où l'instance de cette class est une branche
@@ -22,27 +22,27 @@ class Circuit{
     }
 
     ajouterComposanteALaFin(composant){
-        circuit.push(composant);
+        this.circuit.push(composant);
     }
     
     //position est l'emplacement de la valeur a modifier, le 0 est le nombre de valeur a modifier et composant est ce qu'on ajoute à la position
     ajouterComposante(composant, position){ 
-        circuit.splice(position, 0, composant);
+        this.circuit.splice(position, 0, composant);
     }
     
     retirerComposante(position){
-        circuit.splice(position, 1);
+        this.circuit.splice(position, 1);
     }
     
     echangerComposantes(position1, position2){
         let temp1 = circuit[position1];
         let temp2 = circuit[position2];
         if(position1 < position2){
-            circuit.splice(position1, 1, temp2);
-            circuit.splice(position2, 1, temp1);
+            this.circuit.splice(position1, 1, temp2);
+            this.circuit.splice(position2, 1, temp1);
         } else if(position2 < position1){
-            circuit.splice(position2, 1, temp1);
-            circuit.splice(position1, 1, temp2);
+            this.circuit.splice(position2, 1, temp1);
+            this.circuit.splice(position1, 1, temp2);
         }
     }
   
@@ -53,12 +53,12 @@ class Circuit{
      */
     update(){//Chaque fois qu'il y a un changement dans le circuit
         if(this.premierCircuit){
-            rearrangerArrayCircuit();
+            this.rearrangerArrayCircuit();
         }
-        validerCircuit()
+        this.validerCircuit()
 
         if(this.valide){
-            trouverEq();
+            this.trouverEq();
         }
     
     }
@@ -81,26 +81,26 @@ class Circuit{
      * Sert à trouver le circuit équivalent en série
      */
     trouverEq(){
-        trouverTypeDeCircuit();
+        this.trouverTypeDeCircuit();
 
         switch (this.type){
-            case "seulementR":
+            case circuitType.seulementR:
                 for (let i = 0; i < circuit.length; i++){
-                    if(this.circuit[i].getType == "Noeud"){
+                    if(this.circuit[i].getType == composantType.noeudType){
                         this.resistanceEQ += this.circuit[i].resistanceEQ;
                     }else{
                         this.resistanceEQ += this.circuit[i].resistance;
                     }
                 }
                 break;
-            case "seulementC":
+            case circuitType.seulementC:
                 let capaciteTemp = 0;
                 for (let i = 0; i < circuit.length; i++){ 
                     capaciteTemp += 1 / this.circuit[i];
                 }
                 this.capaciteEQ = 1/capaciteTemp;
                 break;
-            case "RC":
+            case circuitType.RC:
                 //C'est là que c'est difficile
                 break;
         }
@@ -109,31 +109,46 @@ class Circuit{
     trouverTypeDeCircuit(){
         let circuitR = false;
         let circuitC = false;
-        for (let i = 0; i < circuit.length; i++){ 
-            switch(circuit[i].getType()){
-                case "Ampoule": //Une ampoule agie comme une résistance
-                case "Résisteur":
+        for (let i = 0; i < this.circuit.length; i++){ 
+            switch(this.circuit[i].getType()){
+                case composantType.resisteurType:
                     circuitR = true;
                     break;
-                case "Condensateur":
+                case composantType.condensateurType:
                     circuitC = true;
                     break;
-                case "Noeud":
-                    circuit[i].trouverEq;
+                case composantType.noeudType:
+                    this.circuit[i].trouverEq;
                     break;
             }
         }
 
         if(circuitR && circuitC){
-            this.type = "RC"
+            this.type = circuitType.RC;
         }else if (circuitC){
-            this.type = "seulementC"
+            this.type = circuitType.seulementC;
         }else{
-            this.type = "seulementR"
+            this.type = circuitType.seulementR;
         }
     }
 
     getType(){
         return this.type;
     }
+}
+
+
+/**
+ * C'est objet là ont le même rôle que des enum en java.
+ */
+let composantType = {
+    resisteurType: 75839,
+    condensateurType: 98435,
+    noeudType: 48134
+}
+//ces nombres sont choisi au hasard, il faut juste que quand on compare, si le nombre est pareil, on détecte que c'est du même type
+let circuitType = {
+    seulementR: 29852,
+    seulementC: 10854,
+    RC: 09842
 }
