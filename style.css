@@ -57,7 +57,7 @@ button:hover {
     background-color: red;
     position: relative;
     animation-name: example;
-    animation-duration: 10s;
+    animation-duration: 25s;
     animation-iteration-count: infinite;
     animation-direction: alternate;
   }
