@@ -197,57 +197,32 @@ function findGridLockY(offset) {
 }
 
 function mousePressed() {
-  var nelement;
+  
   for (let i = 0; i < composants_panneau.length; i++) {
-    const element = composants_panneau[index];
+    const element = composants_panneau[i];
+    var new_element;
     if (element.inBounds(mouseX, mouseY, 0, 0)){
       origin = element;
       if(element === batterie){
-        nelement = new Batterie(batterie.x - grid.translateX, batterie.y - grid.translateY, batterie.width, batterie.height);
+        new_element = new Batterie(batterie.x - grid.translateX, batterie.y - grid.translateY, batterie.width, batterie.height);
       }else if(element === resisteur){
-        nelement = new Resisteur(resisteur.x - grid.translateX, resisteur.y - grid.translateY, resisteur.taille);
+        new_element = new Resisteur(resisteur.x - grid.translateX, resisteur.y - grid.translateY, resisteur.taille);
       }
       else if(element === ampoule){
-        nelement = new Ampoule(ampoule.x - grid.translateX, ampoule.y - grid.translateY, ampoule.taille * 1.50);
+        new_element = new Ampoule(ampoule.x - grid.translateX, ampoule.y - grid.translateY, ampoule.taille * 1.50);
       }
       else if(element === condensateur){
-        nelement = new Condensateur(condensateur.x - grid.translateX, condensateur.y - grid.translateY, 'right');
+        new_element = new Condensateur(condensateur.x - grid.translateX, condensateur.y - grid.translateY, 'right');
       }else if(element === diode){
-        nelement = new Diode(diode.x - grid.translateX, diode.y - grid.translateY, 'right');
+        new_element = new Diode(diode.x - grid.translateX, diode.y - grid.translateY, 'right');
       }
-      setInDrag(nelement, resisteur.x, resisteur.y);
-      historique.addActions({ type: CREATE, objet: nelement }, 0);
+      setInDrag(new_element, element.x, element.y);
+      historique.addActions(
+        { type: CREATE, objet: new_element }, 0);
     }
     
   }
-  if (batterie.inBounds(mouseX, mouseY, 0, 0)) {
-    origin = batterie;
-    nelement = new Batterie(batterie.x - grid.translateX, batterie.y - grid.translateY, batterie.width, batterie.height);
-    setInDrag(nelement, batterie.x, batterie.y)
-    historique.addActions({ type: CREATE, objet: nelement });
-  } else if (resisteur.inBounds(mouseX, mouseY, 0, 0)) {
-    origin = resisteur;
-    nelement = new Resisteur(resisteur.x - grid.translateX, resisteur.y - grid.translateY, resisteur.taille);
-    setInDrag(nelement, resisteur.x, resisteur.y);
-    historique.addActions({ type: CREATE, objet: nelement }, 0);
-  } else if (ampoule.inBounds(mouseX, mouseY, 0, 0)) {
-    origin = ampoule;
-    nelement = new Ampoule(ampoule.x - grid.translateX, ampoule.y - grid.translateY, ampoule.taille * 1.50);
-    setInDrag(nelement, ampoule.x, ampoule.y)
-    historique.addActions({ type: CREATE, objet: nelement });
-  } else if (diode.inBounds(mouseX, mouseY, 0, 0)) {
-    origin = diode;
-    nelement = new Diode(diode.x - grid.translateX, diode.y - grid.translateY, 'right');
-    setInDrag(nelement, diode.x, diode.y)
-    historique.addActions({ type: CREATE, objet: nelement });
-  }
-  else if (condensateur.inBounds(mouseX, mouseY, 0, 0)) {
-    origin = condensateur;
-    nelement = new Condensateur(condensateur.x - grid.translateX, condensateur.y - grid.translateY, 'right');
-    setInDrag(nelement, condensateur.x, condensateur.y)
-    historique.addActions({ type: CREATE, objet: nelement });
-  }
-  else {
+  if (draggedElement == null) {
     for (let element of components) {
       if (element.inBounds(mouseX, mouseY, grid.translateX, grid.translateY)) {
         draggedElement = element;
