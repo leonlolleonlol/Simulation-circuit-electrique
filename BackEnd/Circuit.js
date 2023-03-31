@@ -109,6 +109,7 @@ class Circuit{
     trouverTypeDeCircuit(){
         let circuitR = false;
         let circuitC = false;
+        let circuitRC = false;
         for (let i = 0; i < this.circuit.length; i++){ 
             switch(this.circuit[i].getType()){
                 case composantType.resisteurType:
@@ -118,12 +119,23 @@ class Circuit{
                     circuitC = true;
                     break;
                 case composantType.noeudType:
+                    switch(this.circuit[i].trouverTypeDeCircuit){
+                        case circuitType.seulementR:
+                            circuitR = true;
+                            break;
+                        case circuitType.seulementC:
+                            circuitC = true;
+                            break;
+                        case circuitType.RC:
+                            circuitRC = true;
+                            break;
+                    }
                     this.circuit[i].trouverEq;
                     break;
             }
         }
 
-        if(circuitR && circuitC){
+        if((circuitR && circuitC) || circuitRC){
             this.type = circuitType.RC;
         }else if (circuitC){
             this.type = circuitType.seulementC;
