@@ -19,10 +19,10 @@ class Resisteur {
     }
 
     draw(offX, offY) {
-       push();
-  translate(this.x + offX, this.y + offY);
-  colorMode(RGB, 255, 255, 255, 1);
-  rectMode(CENTER);
+        push();
+        translate(this.x + offX, this.y + offY);
+        colorMode(RGB, 255, 255, 255, 1);
+        rectMode(CENTER);
   strokeWeight(2);
   let grad = drawingContext.createLinearGradient(-25, -10, 25, 10);
 

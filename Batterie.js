@@ -18,8 +18,8 @@ class Batterie {
     }
 
     draw(offX, offY) {
-        noStroke();
         push();
+        noStroke();
         let grad = drawingContext.createLinearGradient(
             this.x - this.width / 2 + offX,
             this.y + offY,

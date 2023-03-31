@@ -15,10 +15,12 @@ class Ampoule {
     }
 
     draw(offX, offY) {
+        push();
         noStroke();
         fill("yellow");
         if (this.drag) circle(this.x + offX, this.y + offY, this.taille + 4);
         else circle(this.x + offX, this.y + offY, this.taille);
+        pop();
     }
 
     getType() {
