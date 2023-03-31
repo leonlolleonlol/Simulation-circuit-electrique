@@ -66,10 +66,14 @@ function initComponents() {
   composants_panneau = [resisteur, batterie, ampoule, diode, condensateur];
 }
 
-// 1. Changer le background
-// 2. Dessiner la grille
-// 3. Dessiner les fils et composants
-// 4. Dessiner le panneau de choix des composants
+
+/**
+ * Effectue les éléments suivant:
+ * 1. Changer le background
+ * 2. Dessiner la grille
+ * 3. Dessiner les fils et composants
+ * 4. Dessiner le panneau de choix des composants
+ */
 function draw() {
   background(220);// Mettre le choix de couleur pour le background
 
@@ -84,8 +88,10 @@ function draw() {
   }
   drawFils();
   drawComponentsChooser();
-  // Solution temporaire pour que le composant s'affiche par dessus 
-  // le reste déplacer du panneau de choix
+  /*
+  * Solution temporaire pour que le composant s'affiche par dessus 
+  * le reste déplacer du panneau de choix
+  */
   if (origin != null) {
     draggedElement.draw(grid.translateX, grid.translateY);
   }
@@ -180,6 +186,12 @@ function drawFils() {
     pop();
   }
 
+  /**
+   * Permet de trouver la position idéal en x à partir de la 
+   * position de la souris
+   * @param {*} offset 
+   * @returns Le point en x le plus proche sur la grille
+   */
 function findGridLockX(offset) {
   return (
     round(
@@ -189,6 +201,12 @@ function findGridLockX(offset) {
     grid.offsetX
   );
 }
+/**
+ * Permet de trouver la position idéale en y à partir de la 
+ * positinon de la souris
+ * @param {*} offset 
+ * @returns Le point en y le plus proche sur la grille
+ */
 function findGridLockY(offset) {
   return (
     round((mouseY - grid.offsetY - offset) / grid.tailleCell) * grid.tailleCell +
@@ -198,11 +216,13 @@ function findGridLockY(offset) {
 
 function mousePressed() {
   
+  // Vérification drag panneau de choix
   for (let i = 0; i < composants_panneau.length; i++) {
     const element = composants_panneau[i];
     var new_element;
     if (element.inBounds(mouseX, mouseY, 0, 0)){
       origin = element;
+      // Création d'un nouveau composants selon le composant sélectionner
       if(element === batterie){
         new_element = new Batterie(batterie.x - grid.translateX, batterie.y - grid.translateY, batterie.width, batterie.height);
       }else if(element === resisteur){
@@ -216,12 +236,19 @@ function mousePressed() {
       }else if(element === diode){
         new_element = new Diode(diode.x - grid.translateX, diode.y - grid.translateY, 'right');
       }
-      setInDrag(new_element, element.x, element.y);
+      // Mettre à jour information pas incluse dans constructeur
+      new_element.drag = true;
+      new_element.xOffsetDrag = mouseX - element.x;
+      new_element.yOffsetDrag = mouseY - element.y;
+      // Autres ajout dans les modules
+      components[components.length] = new_element;
+      draggedElement = new_element;
       historique.addActions(
         { type: CREATE, objet: new_element }, 0);
     }
     
   }
+  // Vérification drag parmis les composants de la grille
   if (draggedElement == null) {
     for (let element of components) {
       if (element.inBounds(mouseX, mouseY, grid.translateX, grid.translateY)) {
@@ -232,6 +259,8 @@ function mousePressed() {
         break;
       }
     }//mouseX - offsetX > element.x - 10
+
+    // TODO -> Cette partie du code est  un peu 
     if (mouseX > 329) {
       if (draggedElement == null) {
         if
@@ -257,13 +286,7 @@ function mousePressed() {
   }
 }
 
-function setInDrag(element, x, y) {
-  element.drag = true;
-  element.xOffsetDrag = mouseX - x;
-  element.yOffsetDrag = mouseY - y;
-  components[components.length] = element;
-  draggedElement = element;
-}
+
 
 function mouseDragged() {
   if (draggedElement != null && origin != null) {
@@ -291,6 +314,7 @@ function mouseDragged() {
 }
 
 function mouseReleased() {
+  // Arrète le drag si il y en avait un en cours
   if (draggedElement != null) {
     draggedElement.drag = false;
     draggedElement = null;
@@ -301,13 +325,21 @@ function mouseReleased() {
 }
 
 function keyPressed() {
-  // Pour trouver les codes, aller voir https://www.toptal.com/developers/keycode
+  /*
+  * Gestion des raccourcis clavier.
+  * Pour trouver les codes des combinaisons,
+  * aller voir https://www.toptal.com/developers/keycode
+  */
   if (keyIsDown(CONTROL) && keyCode === 90) {
     historique.undo;
   } else if (keyIsDown(CONTROL) && keyIsDown(SHIFT) && keyCode === 80) {
     print('parameters')
   }
 }
+/**
+ * Efface tout les composants sur la grille et remet tout les 
+ * système à zéro.
+ */
 function refresh() {
   initComponents();
 }
