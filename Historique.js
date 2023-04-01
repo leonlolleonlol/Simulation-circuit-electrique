@@ -1,7 +1,8 @@
-
 const MODIFIER = 'modifier';
 const CREATE = 'créer';
 const DELETE = 'delete';
+let nb;
+let actions;
 // Commencer toujours sur une model de ----> typeAction, objet
 // Si type d'action est modification ----> typeAction, objet, changements:[attribut, ancienne_valeur, nouvelle_valeur]
 // le tablean dans modification est pour avoir plusieurs modification dans un objet
@@ -9,19 +10,21 @@ const DELETE = 'delete';
 
 class Historique{
   constructor(){
-    this.actions = [];
-    this.index = -1;
+    actions = [];
+    nb=0;
   }
+  
 
   addActions(action){
-    this.actions.push(action);
-    this.index++;
+    actions.push(action);
+    nb++;
     }
   undo(){
-  if(this.index>-1)
+  if(nb>0)
   {
-  let action = this.actions[this.index];
-  this.index--;
+  let action = actions[nb-1];
+  nb--;
+  print(action)
   if(action.type===CREATE){
     if(action.objet.type!='fil')
       components.pop(action.objet);
@@ -38,9 +41,9 @@ class Historique{
 }
 }
   redo(){
-  let action = this.action[this.index + 1];
+  let action = actions[nb + 1];
   // Enlever toute les actions qui suivent
-  this.index++;
+  nb++;
   if(action.type===CREATE){
     components.add(action.objet);
   }else if(action.type===DELETE){

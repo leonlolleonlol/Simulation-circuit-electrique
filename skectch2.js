@@ -245,8 +245,7 @@ function mousePressed() {
       draggedElement = new_element;
       historique.addActions(
         { type: CREATE, objet: new_element }, 0);
-    }
-    
+    } 
   }
   // Vérification drag parmis les composants de la grille
   if (draggedElement == null) {
