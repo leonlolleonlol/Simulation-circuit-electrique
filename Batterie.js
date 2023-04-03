@@ -18,36 +18,7 @@ class Batterie {
     }
 
     draw(offX, offY) {
-        push();
-        noStroke();
-        let grad = drawingContext.createLinearGradient(
-            this.x - this.width / 2 + offX,
-            this.y + offY,
-            this.x + this.width / 2 + offX,
-            this.y + offY
-        );
-        grad.addColorStop(0, "#e0636c");
-        grad.addColorStop(0.35, "#e0636c");
-        grad.addColorStop(0.85, "#5771c1");
-        grad.addColorStop(1, "#5771c1");
-        drawingContext.fillStyle = grad;
-        if (this.drag)
-            rect(
-                this.x - this.width / 2 - 2 + offX,
-                this.y - this.height / 2 - 2 + offY,
-                this.width + 4,
-                this.height + 4,
-                10
-            );
-        else
-            rect(
-                this.x - this.width / 2 + offX,
-                this.y - this.height / 2 + offY,
-                this.width,
-                this.height,
-                10
-            );
-        pop();
+        batterie(this.x + offX,this.y + offY,this.orientation, this.drag);
     }
 
     getType() {
