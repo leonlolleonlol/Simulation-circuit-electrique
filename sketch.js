@@ -1,62 +1,98 @@
-let draggedElement;
-let draggedFil;
-let origin;
-let components;
+let draggedElement; // L'élement qui est déplacer
+let draggedFil;// à supprimer
+let origin; // variable qui permet de savoir lorsque l'on crée un nouveau élément.
+//Lorsque l'on ajoute un composant, le composant sélectionner disparaît dans le sélectionneur
+// et pour cela, on doit savoir quel composant panneau de choix est l'orignie
+let components;// Liste de composants du circuit
+// Très important que cette liste soit lorsque merge avec modèle
+
+//À supprimer dans de futur release
 let fils;
+
+// Variable nécessaire pour placer la grille
 let grid;
-let historique;
+
+
+
+// Initialisation du circuit
 function setup() {
   createCanvas(windowWidth - 50, windowHeight - 30);
-  let undo_button = createButton('Recommencer');
-  undo_button.position(40, 750);
-  undo_button.size(120, 50);
-  undo_button.mousePressed(refresh);
-  let reset_button = createButton('Undo');
-  reset_button.position(40, 195);
+  //----------------------------------------
+  let reset_button = createButton('Recommencer');
+  reset_button.position(40, 750);
   reset_button.size(120, 50);
-  reset_button.mousePressed(undo);
+  reset_button.mousePressed(refresh);
+  let undo_button = createButton('Undo');
+  undo_button.position(40, 195);
+  undo_button.size(120, 50);
+  undo_button.mousePressed(undo);
+  //-----------------------------------------
   initComponents();
 }
+
+//Panneau de choix-----------------
 let bat;
 let res;
 let amp;
 let dio;
 let condensateur_1;
+let composants_panneau;
+//----------------------------------
 function initComponents(){
   fils = [];
   components = [];
   draggedElement = null;
   draggedFil = null;
   origin = null;
-  historique= new Historique();
   grid = {
     offsetX: 300,
     offsetY: 20,
     tailleCell: 30,
     translateX: 0,
     translateY: 0,
+    quadrillage: 'point',
   };
+  // Composants dans le panneau de choix
   res = new Resisteur(58, 265, 25);
-  bat = new Batterie(58, 315, 60, 30);
+  bat = new Batterie(58, 315);
   amp = new Ampoule(58, 365, 40);
-  dio = new Diode(50, 415, 'right');
+  dio = new Diode(58, 415, 'right');
   condensateur_1= new Condensateur(60, 465, 'right');
-  objects=[res,bat,amp,dio,condensateur_1];
+  composants_panneau=[res,bat,amp,dio,condensateur_1];
 }
+
+/**
+ * Effectue les éléments suivant:
+ * 1. Changer le background
+ * 2. Dessiner la grille
+ * 3. Dessiner les fils et composants
+ * 4. Dessiner le panneau de choix des composants
+ */
 function draw() {
-  background(220);
-  drawPointGrid();
+  background(220);// Mettre le choix de couleur pour le background
+
+  //Dessiner la grille dépendant du du parametre
+  if (grid.quadrillage == 'point')
+    drawPointGrid();
+  else if (grid.quadrillage == 'line')
+  drawLineGrid();
+  else drawPointLineGrid();
   for (let element of components) {
     element.draw(grid.translateX, grid.translateY);
   }
   drawFils();
   drawComponentsChooser();
+  /*
+  * Solution temporaire pour que le composant s'affiche par dessus 
+  * le reste déplacer du panneau de choix
+  */
   if (origin != null) {
     draggedElement.draw(grid.translateX, grid.translateY);
   }
 }
 
 function drawComponentsChooser() {
+  push();
   noStroke();
   fill(220);
   rect(0, 0, grid.offsetX - 5, windowHeight);
@@ -66,16 +102,20 @@ function drawComponentsChooser() {
   for (let i = 0; i < 10; i++) {
     rect(0, 240 + 50 * i, 120, 50);
   }
-  for (let element of objects)
+  for (let element of composants_panneau){
     if (element != origin)
       element.draw(0, 0);
+  }
+  pop();
 }
 
+// GRILLE ------------------------------------------
 function drawPointGrid() {
   stroke("black");
   setGrid();
 }
 function setGrid() {
+  push();
   strokeWeight(6);
   for (let i = 0; i * grid.tailleCell < windowWidth - grid.offsetX; i++) {
     for (let j = 0; j * grid.tailleCell < windowHeight - grid.offsetY; j++) {
@@ -89,14 +129,18 @@ function setGrid() {
         );
     }
   }
+  pop();
 }
 function drawPointLineGrid() {
+  push();
   drawLineGrid();
   stroke("gray");
   setGrid();
+  pop();
 }
 
 function drawLineGrid() {
+  push();
   var borne = 0;
   stroke("black");
   strokeWeight(2);
@@ -121,16 +165,28 @@ function drawLineGrid() {
       );
     borne++;
   }
+  pop();
 }
+// ---------------------------------------------------------
 
+// Function temporaire en attendant d'avoir un objet fil
 function drawFils() {
+  push();
   stroke("orange");
   strokeWeight(4);
-  for (let element of fils)
+  for (let element of fils){
     if (element != null)
       line(element.xi + grid.translateX, element.yi + grid.translateY, element.xf + grid.translateX, element.yf + grid.translateY);
+  }
+  pop();
 }
 
+  /**
+   * Permet de trouver la position idéal en x à partir de la 
+   * position de la souris
+   * @param {*} offset 
+   * @returns Le point en x le plus proche sur la grille
+   */
 function findGridLockX(offset) {
   return (
     round(
@@ -140,6 +196,12 @@ function findGridLockX(offset) {
     grid.offsetX
   );
 }
+/**
+ * Permet de trouver la position idéale en y à partir de la 
+ * positinon de la souris
+ * @param {*} offset 
+ * @returns Le point en y le plus proche sur la grille
+ */
 function findGridLockY(offset) {
   return (
     round((mouseY - grid.offsetY - offset) / grid.tailleCell) * grid.tailleCell +
@@ -148,35 +210,38 @@ function findGridLockY(offset) {
 }
 
 function mousePressed() {
-  var nelement;
-  if (bat.inBounds(mouseX, mouseY, 0, 0)) {
-    origin = bat;
-    nelement = new Batterie(bat.x - grid.translateX, bat.y - grid.translateY, bat.width, bat.height);
-    setInDrag(nelement,bat.x, bat.y)
-    historique.addActions({type:CREATE,objet:nelement});
-  } else if (res.inBounds(mouseX, mouseY, 0, 0)) {
-    origin = res;
-    nelement = new Resisteur(res.x - grid.translateX, res.y - grid.translateY, res.taille);
-    setInDrag(nelement,res.x, res.y);
-    historique.addActions({type:CREATE,objet:nelement},0);
-  } else if (amp.inBounds(mouseX, mouseY, 0, 0)) {
-    origin = amp;
-    nelement = new Ampoule(amp.x - grid.translateX, amp.y - grid.translateY, amp.taille*1.50);
-    setInDrag(nelement,amp.x, amp.y)
-    historique.addActions({type:CREATE,objet:nelement});
-  } else if (dio.inBounds(mouseX, mouseY, 0, 0)) {
-    origin = dio;
-    nelement = new Diode(dio.x - grid.translateX, dio.y - grid.translateY, 'right');
-    setInDrag(nelement,dio.x, dio.y)
-    historique.addActions({type:CREATE,objet:nelement});
-  }
-  else if (condensateur_1.inBounds(mouseX, mouseY, 0, 0)) {
-    origin = condensateur_1;
-    nelement = new Condensateur(condensateur_1.x - grid.translateX, condensateur_1.y - grid.translateY, 'right');
-    setInDrag(nelement,condensateur_1.x, condensateur_1.y)
-    historique.addActions({type:CREATE,objet:nelement});
+  // Vérification drag panneau de choix
+  for (let i = 0; i < composants_panneau.length; i++) {
+    const element = composants_panneau[i];
+    var new_element;
+    if (element.inBounds(mouseX, mouseY, 0, 0)){
+      origin = element;
+      // Création d'un nouveau composants selon le composant sélectionner
+      if(element === bat){
+        new_element = new Batterie(bat.x - grid.translateX, bat.y - grid.translateY);
+      }else if(element === res){
+        new_element = new Resisteur(res.x - grid.translateX, res.y - grid.translateY);
+      }
+      else if(element === amp){
+        new_element = new Ampoule(amp.x - grid.translateX, amp.y - grid.translateY);
+      }
+      else if(element === condensateur_1){
+        new_element = new Condensateur(condensateur_1.x - grid.translateX, condensateur_1.y - grid.translateY, 'right');
+      }else if(element === dio){
+        new_element = new Diode(dio.x - grid.translateX, dio.y - grid.translateY, 'right');
+      }
+      new_element.drag = true;
+      new_element.xOffsetDrag = mouseX - element.x;
+      new_element.yOffsetDrag = mouseY - element.y;
+      // Autres ajout dans les modules
+      components[components.length] = new_element;
+      draggedElement = new_element;
+      addActions( { type: CREATE, objet: new_element }, 0);
+    }
+
   } 
-  else {
+  // Vérification drag parmis les composants de la grille
+  if(draggedElement == null) {
     for (let element of components) {
       if (element.inBounds(mouseX, mouseY, grid.translateX, grid.translateY)) {
         draggedElement = element;
@@ -204,19 +269,11 @@ function mousePressed() {
           };
           draggedFil = fil;
           fils[fils.length] = fil;
-          historique.addActions({type:CREATE,objet:fil});
+          addActions({type:CREATE,objet:fil});
         }
       }
     }
   }
-}
-
-function setInDrag(element,x,y){  
-  element.drag = true;
-  element.xOffsetDrag = mouseX - x;
-  element.yOffsetDrag = mouseY - y;
-  components[components.length] = element;
-  draggedElement = element;
 }
 
 function mouseDragged() {
@@ -245,6 +302,7 @@ function mouseDragged() {
 }
 
 function mouseReleased() {
+  // Arrète le drag si il y en avait un en cours
   if (draggedElement != null) {
     draggedElement.drag = false;
     draggedElement = null;
@@ -255,18 +313,24 @@ function mouseReleased() {
 }
 
 function keyPressed() {
-  //https://www.toptal.com/developers/keycode
-  if (keyIsDown(CONTROL) && keyCode === 90) {
+ /*
+  * Gestion des raccourcis clavier.
+  * Pour trouver les codes des combinaisons,
+  * aller voir https://www.toptal.com/developers/keycode
+  */
+  if (keyIsDown(CONTROL) && keyIsDown(SHIFT) && keyCode === 90) {
+    redo();
+  } else if (keyIsDown(CONTROL) && keyCode === 90) {
     undo();
-  } else if (keyIsDown(CONTROL) && keyIsDown(SHIFT) && keyCode === 80) {
-    print('parameters')
-  }
+  } //else if (keyIsDown(CONTROL) && keyIsDown(SHIFT) && keyCode === 80) {
+  //  print('parameters')
+  //}
 }
 
+/*
+ * Efface tout les composants sur la grille et remet tout les 
+ * système à zéro.
+ */
 function refresh() {
   initComponents();
-}
-
-function undo() {
-  historique.undo();
 }
