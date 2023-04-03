@@ -1,3 +1,11 @@
+
+/**
+ * Dessine un résisteur sur le canvas
+ * @param {number} x 
+ * @param {number} y 
+ * @param {*} orientation 
+ * @param {boolean} drag 
+ */
 function resisteur(x, y, orientation, drag) {
   push();
   rectMode(CENTER);
@@ -10,6 +18,8 @@ function resisteur(x, y, orientation, drag) {
   if(drag)
     scale(1.1);
 
+
+    // Gradients
   let fillGrad = drawingContext.createLinearGradient(-25, -10, 25, 10);
   fillGrad.addColorStop(0, blendBG("rgba(241,39,17,0.6)"));
   fillGrad.addColorStop(1, blendBG("rgba(245,175,25,0.6)"));
@@ -29,6 +39,13 @@ function resisteur(x, y, orientation, drag) {
   pop();
 }
 
+/**
+ * Dessine une batterie sur le canvas
+ * @param {number} x 
+ * @param {number} y 
+ * @param {*} orientation 
+ * @param {boolean} drag 
+ */
 function batterie(x, y, orientation, drag) {
   push();
   rectMode(CENTER);
@@ -36,28 +53,30 @@ function batterie(x, y, orientation, drag) {
 
   //transformation
   translate(x, y);
-  if (this.orientation == "top")
+  if (orientation == "top")
     rotate(-HALF_PI);
-  else if (this.orientation == "left")
+  else if (orientation == "left")
     rotate(-PI);
-  else if (this.orientation == "bottom")
+  else if (orientation == "bottom")
     rotate(HALF_PI);
 
   if(drag)
     scale(1.1);
 
-  let grad = drawingContext.createLinearGradient(-25, -10, 25, -10);
-  grad.addColorStop(0, blendBG("rgba(224,99,108,0.6)"));
-  grad.addColorStop(0.35, blendBG("rgba(224,99,108,0.6)"));
-  grad.addColorStop(0.85, blendBG("rgba(87,113,193,0.6)"));
-  grad.addColorStop(1, blendBG("rgba(87,113,193,0.6)"));
-  let grad1 = drawingContext.createLinearGradient(-25, -10, 25, -10);
-  grad1.addColorStop(0, "#e0636c");
-  grad1.addColorStop(0.35, "#e0636c");
-  grad1.addColorStop(0.85, "#5771c1");
-  grad1.addColorStop(1, "#5771c1");
-  drawingContext.strokeStyle = grad1;
-  drawingContext.fillStyle = grad;
+  // Gradients
+  let fillGrad = drawingContext.createLinearGradient(-25, -10, 25, -10);
+  fillGrad.addColorStop(0, blendBG("rgba(224,99,108,0.6)"));
+  fillGrad.addColorStop(0.35, blendBG("rgba(224,99,108,0.6)"));
+  fillGrad.addColorStop(0.85, blendBG("rgba(87,113,193,0.6)"));
+  fillGrad.addColorStop(1, blendBG("rgba(87,113,193,0.6)"));
+  let strokeGrad = drawingContext.createLinearGradient(-25, -10, 25, -10);
+  strokeGrad.addColorStop(0, "#e0636c");
+  strokeGrad.addColorStop(0.35, "#e0636c");
+  strokeGrad.addColorStop(0.85, "#5771c1");
+  strokeGrad.addColorStop(1, "#5771c1");
+  drawingContext.fillStyle = fillGrad;
+  drawingContext.strokeStyle = strokeGrad;
+  
   rect(0, 0, 60, 20, 7.5);
   pop();
 }
@@ -67,11 +86,12 @@ function condensateur(x, y, orientation, drag) {
   strokeWeight(2);
   //transformation
   translate(x, y);
-  if (this.orientation == "vertical")
+  if (orientation == "vertical")
     rotate(-HALF_PI);
   if(drag)
     scale(1.1);
 
+  // Gradients
   let fillGrad = drawingContext.createLinearGradient(-25, -10, 25, 10);
   fillGrad.addColorStop(0, blendBG("rgba(54,209,220,0.6)"));
   fillGrad.addColorStop(0.5, blendBG("rgba(91,134,229,0.6)"));
@@ -91,6 +111,13 @@ function condensateur(x, y, orientation, drag) {
   pop();
 }
 
+/**
+ * Dessine une diode sur le canvas
+ * @param {number} x 
+ * @param {number} y 
+ * @param {*} orientation 
+ * @param {boolean} drag 
+ */
 function diode(x, y, orientation, drag) {
   push();
   rectMode(CENTER);
@@ -99,11 +126,11 @@ function diode(x, y, orientation, drag) {
   //transformation
   translate(x, y);
 
-  if (this.orientation == "top")
+  if (orientation == "top")
     rotate(-HALF_PI);
-  else if (this.orientation == "left")
+  else if (orientation == "left")
     rotate(-PI);
-  else if (this.orientation == "bottom")
+  else if (orientation == "bottom")
     rotate(HALF_PI);
 
   if(drag)
@@ -141,6 +168,14 @@ function diode(x, y, orientation, drag) {
   rect(-4, 0, 20, 6, 10);
   pop();
 }
+
+/**
+ * Dessine une ampoule sur le canvas
+ * @param {number} x 
+ * @param {number} y 
+ * @param {*} orientation 
+ * @param {boolean} drag 
+ */
 function ampoule(x, y, orientation, drag) {
   push();
   strokeWeight(2);
@@ -148,7 +183,7 @@ function ampoule(x, y, orientation, drag) {
 
   //transformation
   translate(x, y);
-  if (this.orientation == "vertical")
+  if (orientation == "vertical")
     rotate(-HALF_PI);
   if(drag)
     scale(1.1);
@@ -185,9 +220,10 @@ function ampoule(x, y, orientation, drag) {
 }
 
 /**
- * 
+ * Cette fonction permet de mélanger la couleur du background avec la couleur transparente d'un composant
+ * sans que la couleur résultante soit transparente. En d'autre mot, enlève le alpha de la couleur
  * @param {String} cblend 
- * @returns Color
+ * @returns La couleur mélanger avec le background
  */
 function blendBG(cblend) {
   colorMode(RGB, 255, 255, 255, 1);

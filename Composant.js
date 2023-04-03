@@ -1,17 +1,16 @@
 class Ampoule {
-    constructor(x, y, taille) {
+    constructor(x, y) {
         this.x = x;
         this.y = y;
-        this.taille = taille;
         this.drag = false;
         this.xOffsetDrag = 0.0;
         this.yOffsetDrag = 0.0;
     }
     inBounds(mouseX, mouseY, offsetX, offsetY) {
-        return (mouseX - offsetX > this.x - this.taille / 2 &&
-            mouseX - offsetX < this.x + this.taille / 2 &&
-            mouseY - offsetY > this.y - this.taille / 2 &&
-            mouseY - offsetY < this.y + this.taille / 2);
+        return (mouseX - offsetX > this.x - 60 / 2 &&
+            mouseX - offsetX < this.x + 60 / 2 &&
+            mouseY - offsetY > this.y - 22 / 2 &&
+            mouseY - offsetY < this.y + 22 / 2);
     }
 
     draw(offX, offY) {
@@ -27,14 +26,14 @@ class Condensateur {
     constructor(x, y, orientation) {
       this.x = x;
       this.y = y;
-      this.taille=50;
+      this.taille = 50;
       this.orientation = orientation;
     }
     inBounds(mouseX, mouseY, offsetX, offsetY) {
-      return (mouseX - offsetX > this.x - this.taille / 2 &&
-          mouseX - offsetX < this.x + this.taille / 2 &&
-          mouseY - offsetY > this.y - this.taille / 2 &&
-          mouseY - offsetY < this.y + this.taille / 2);
+      return (mouseX - offsetX > this.x - 60 / 2 &&
+          mouseX - offsetX < this.x + 60 / 2 &&
+          mouseY - offsetY > this.y - 30 / 2 &&
+          mouseY - offsetY < this.y + 30 / 2);
   }
     
     // offsetX et offsetY à retirer
@@ -44,22 +43,19 @@ class Condensateur {
   }
 
   class Batterie {
-    constructor(x, y, width, height) {
+    constructor(x, y, orientation) {
         this.x = x;
         this.y = y;
-        this.width = width;
-        this.height = height;
         this.drag = false;
         this.xOffsetDrag = 0.0;
         this.yOffsetDrag = 0.0;
-        this.xPositions=[];
-        this.yPositions=[];
+        this.orientation = orientation;
     }
     inBounds(mouseX, mouseY, offsetX, offsetY) {
-        return (mouseX - offsetX > this.x - this.width / 2 &&
-            mouseX - offsetX < this.x + this.width / 2 &&
-            mouseY - offsetY > this.y - this.height / 2 &&
-            mouseY - offsetY < this.y + this.height / 2);
+        return (mouseX - offsetX > this.x - 60 / 2 &&
+            mouseX - offsetX < this.x + 60 / 2 &&
+            mouseY - offsetY > this.y - 30 / 2 &&
+            mouseY - offsetY < this.y + 30 / 2);
     }
 
     draw(offX, offY) {
@@ -75,14 +71,14 @@ class Diode {
     constructor(x, y, orientation) {
       this.x = x;
       this.y = y;
-      this.radius = 15;
+      this.radius = 19;
       this.orientation = orientation;
     }
     inBounds(mouseX, mouseY, offsetX, offsetY) {
-      return (mouseX - offsetX > this.x - this.radius / 2 &&
-          mouseX - offsetX < this.x + this.radius / 2 &&
-          mouseY - offsetY > this.y - this.radius / 2 &&
-          mouseY - offsetY < this.y + this.radius / 2);
+      return (mouseX - offsetX > this.x - this.radius &&
+          mouseX - offsetX < this.x + this.radius &&
+          mouseY - offsetY > this.y - this.radius &&
+          mouseY - offsetY < this.y + this.radius);
   }
     
   
@@ -94,23 +90,21 @@ class Diode {
   }
 
   class Resisteur {
-    constructor(x, y, taille) {
+    constructor(x, y, orientation) {
         this.x = x;
         this.y = y;
-        this.taille = taille;
         this.drag = false;
         this.xOffsetDrag = 0.0;
         this.yOffsetDrag = 0.0;
-        this.xPositions=[];
-        this.yPositions=[];
+        this.orientation = orientation;
     }
 
 
     inBounds(mouseX, mouseY, offsetX, offsetY) {
-        return (mouseX - offsetX > this.x - this.taille / 2 &&
-            mouseX - offsetX < this.x + this.taille / 2 &&
-            mouseY - offsetY > this.y - this.taille / 2 &&
-            mouseY - offsetY < this.y + this.taille / 2);
+        return (mouseX - offsetX > this.x - 60 / 2 &&
+            mouseX - offsetX < this.x + 60 / 2 &&
+            mouseY - offsetY > this.y - 25 / 2 &&
+            mouseY - offsetY < this.y + 25 / 2);
     }
 
     draw(offX, offY) {
