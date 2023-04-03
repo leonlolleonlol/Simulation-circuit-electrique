@@ -14,6 +14,7 @@ class Circuit{
         this.valide = true;
 
         this.courant = 0;
+        this.charge = 0;
 
         //C'est variable sont utile dans le cas où l'instance de cette class est une branche
         this.capaciteEQ = 0;
@@ -55,11 +56,10 @@ class Circuit{
      * branche principale.
      */
     update(){//Chaque fois qu'il y a un changement dans le circuit
-        alert("appelle update");
+        print("appelle update");
         if(this.premierCircuit){
             this.rearrangerArrayCircuit();
             this.tensionEQ = this.circuit[0].tension;
-            alert("tension: " + this.tensionEQ);
         }
         this.validerCircuit()
 
@@ -94,24 +94,31 @@ class Circuit{
         
         switch (this.type){
             case circuitType.seulementR:
+            
                 for (let i = 0; i < this.circuit.length; i++){
-                    if(this.circuit[i].getType == composantType.noeudType){
+                    if(this.circuit[i].getType() == composantType.noeudType){
                         this.resistanceEQ += this.circuit[i].resistanceEQ;
-                    }else{
+                    }else if (this.circuit[i].getType() == composantType.resisteurType){
                         this.resistanceEQ += this.circuit[i].resistance;
                     }
                 }
+                this.courant = this.tensionEQ / this.resistanceEQ;
+
+                //TODO remplir les valeurs dans chaque résistances
                 break;
             case circuitType.seulementC:
                 let capaciteTemp = 0;
                 for (let i = 0; i < this.circuit.length; i++){ 
-                    if(this.circuit[i].getType == composantType.noeudType){
+                    if(this.circuit[i].getType() == composantType.noeudType){
                         capaciteTemp += 1 / this.circuit[i].capaciteEQ;
-                    }else{
+                    }else if (this.circuit[i].getType() == composantType.condensateurType){
                         capaciteTemp += 1 / this.circuit[i].capacite;
                     }
                 }
                 this.capaciteEQ = 1/capaciteTemp;
+
+                this.charge = this.capaciteEQ * this.tensionEQ; 
+                //TODO remplir les valeurs dans chaque Condensateur
                 break;
             case circuitType.RC:
                 //C'est là que c'est difficile
@@ -119,8 +126,8 @@ class Circuit{
                 alert("Ceci est en dehors de nos connaissance"); //(rip)
                 break;
         }
-        //this.courant = this.tensionEQ / this.resistanceEQ;
-        //alert(this.resistanceEQ);
+        
+        print(this.charge);
     }
 
     /**

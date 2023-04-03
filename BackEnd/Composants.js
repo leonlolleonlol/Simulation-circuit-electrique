@@ -21,7 +21,6 @@ class Resisteur extends Composant{
   constructor(resistance) {
     super();
     this.resistance = resistance;
-
   }
   /*
   calcul(paralele, composant) {
@@ -73,7 +72,7 @@ class Condensateur extends Composant{
 
 class Diode extends Composant{
   constructor(circuit){
-      super(circuit, courant, tension);
+      super();
       this.R = R;
   }
   calcul(){
@@ -97,12 +96,8 @@ class Batterie{
   
     this.tension = tension;
   }
-  calcul(){
-
-  }
-
-  setTension(x){
-      this.tension = x;
+  getType() {
+    return null;
   }
 }
 
