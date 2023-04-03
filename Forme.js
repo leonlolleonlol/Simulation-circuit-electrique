@@ -184,6 +184,11 @@ function ampoule(x, y, orientation, drag) {
   pop();
 }
 
+/**
+ * 
+ * @param {String} cblend 
+ * @returns Color
+ */
 function blendBG(cblend) {
   colorMode(RGB, 255, 255, 255, 1);
   let c = color(220);
