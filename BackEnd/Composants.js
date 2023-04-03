@@ -1,9 +1,9 @@
 class Composant {
 
-  constructor(courant, tension){
+  constructor(){
       // on crée automatiquement une classe de tension
-      this.courant = courant;
-      this.tension = tension;
+      this.courant = 0;
+      this.tension = 0;
   }
   // Cette méthode est appelé à chaque fois que l'on
   // veut calculer la tension et la différence de pottentiel d'un 
@@ -17,12 +17,13 @@ class Composant {
   }
 } 
 
-class Resisteur{
+class Resisteur extends Composant{
   constructor(resistance) {
+    super();
     this.resistance = resistance;
-    this.courant = 0;
-    this.tension = 0;
+
   }
+  /*
   calcul(paralele, composant) {
     print(this);
     if (paralele) {
@@ -34,18 +35,19 @@ class Resisteur{
     }
     //calcul_Valeurs(paralele, this, courant, tension);
   }
+  */
   getType() {
     return composantType.resisteurType;
   }
 }
 
-class Condensateur{
+class Condensateur extends Composant{
   constructor(capacite) {
+    super();
     this.capacite = capacite;
     this.charge = 0;
-    this.tension = 0;
-    this.courant = 0;
   }
+  /*
   calcul(paralele, composant) {
     this.courant = composant.courant;
     if (paralele) {
@@ -63,6 +65,7 @@ class Condensateur{
   calculTension() {
     this.tension = this.charge / this.capacite;
   }
+  */
   getType() {
     return composantType.condensateurType;
   }
@@ -78,9 +81,8 @@ class Diode extends Composant{
   }
 }
 class Ampoule extends Composant{
-  constructor(circuit){
-      super(circuit, courant, tension);
-      this.R = R;
+  constructor(){
+      super();
   }
   calcul(){
 
@@ -90,9 +92,10 @@ class Ampoule extends Composant{
     return composantType.resisteurType;
   }
 }
-class Batterie extends Composant{
-  constructor(){
-      tension = 10;
+class Batterie{
+  constructor(tension){
+  
+    this.tension = tension;
   }
   calcul(){
 
@@ -119,6 +122,7 @@ class Noeuds extends Composant {
     //C'est variable sont utile pour calculer l'équivalence du noeud
     this.capaciteEQ = 0;
     this.resistanceEQ = 0;
+    this.tensionEQ = 0;
 
     //Sert stocker le type de circuit. AKA -> seulement des résistances, seulement des condensateurs ou RC.
     this.type;

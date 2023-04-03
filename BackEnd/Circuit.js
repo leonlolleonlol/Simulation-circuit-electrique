@@ -13,9 +13,12 @@ class Circuit{
         this.circuit = []; //Array de composantes qui sont en série
         this.valide = true;
 
+        this.courant = 0;
+
         //C'est variable sont utile dans le cas où l'instance de cette class est une branche
         this.capaciteEQ = 0;
         this.resistanceEQ = 0;
+        this.tensionEQ = 0;
         
         //Sert stocker le type de circuit. AKA -> seulement des résistances, seulement des condensateurs ou RC.
         this.type;
@@ -52,8 +55,11 @@ class Circuit{
      * branche principale.
      */
     update(){//Chaque fois qu'il y a un changement dans le circuit
+        alert("appelle update");
         if(this.premierCircuit){
             this.rearrangerArrayCircuit();
+            this.tensionEQ = this.circuit[0].tension;
+            alert("tension: " + this.tensionEQ);
         }
         this.validerCircuit()
 
@@ -64,16 +70,19 @@ class Circuit{
     }
     
     /**
-     * Change l'ordre des composantes pour que la pile soit à position 0 dans circuit.
+     * Change l'array pour que le circuit soit en série grâce à l'historique. Après cette méthode, le
+     * circuit devrait commencer de la pile, puis finir à la composante juste avant la pile.
      */
     rearrangerArrayCircuit(){
-        
     }
     
     /**
-     * Regarde s'il y a au moins un chemin possible pour le courant
+     * Regarde s'il y a au moins un chemin possible pour le courant. Devrait mettre la variable "valide"
+     * à false s'il n'y a pas de chemin pour le courant.
      */
     validerCircuit(){
+        //traverser à travers les circuits s'il y a une diode dans le sens inverse
+        // Exception si dans noeud il pile et diode sens inverse circuit au complet marche pas
         this.valide = true;
     }
 
@@ -82,10 +91,10 @@ class Circuit{
      */
     trouverEq(){
         this.trouverTypeDeCircuit();
-
+        
         switch (this.type){
             case circuitType.seulementR:
-                for (let i = 0; i < circuit.length; i++){
+                for (let i = 0; i < this.circuit.length; i++){
                     if(this.circuit[i].getType == composantType.noeudType){
                         this.resistanceEQ += this.circuit[i].resistanceEQ;
                     }else{
@@ -95,17 +104,29 @@ class Circuit{
                 break;
             case circuitType.seulementC:
                 let capaciteTemp = 0;
-                for (let i = 0; i < circuit.length; i++){ 
-                    capaciteTemp += 1 / this.circuit[i];
+                for (let i = 0; i < this.circuit.length; i++){ 
+                    if(this.circuit[i].getType == composantType.noeudType){
+                        capaciteTemp += 1 / this.circuit[i].capaciteEQ;
+                    }else{
+                        capaciteTemp += 1 / this.circuit[i].capacite;
+                    }
                 }
                 this.capaciteEQ = 1/capaciteTemp;
                 break;
             case circuitType.RC:
                 //C'est là que c'est difficile
+                //On peut aussi juste dire que le circuit est invalide.
+                alert("Ceci est en dehors de nos connaissance"); //(rip)
                 break;
         }
+        //this.courant = this.tensionEQ / this.resistanceEQ;
+        //alert(this.resistanceEQ);
     }
 
+    /**
+     * Sert à trouver si le circuit contient seulement des Résistances, seulement des Condensateurs ou contient les deux. Devrait
+     * changer la variable "type" en le type du circuit.
+     */
     trouverTypeDeCircuit(){
         let circuitR = false;
         let circuitC = false;
@@ -137,6 +158,7 @@ class Circuit{
 
         if((circuitR && circuitC) || circuitRC){
             this.type = circuitType.RC;
+            //Même chose que : this.type = 09842;
         }else if (circuitC){
             this.type = circuitType.seulementC;
         }else{
@@ -148,7 +170,6 @@ class Circuit{
         return this.type;
     }
 }
-
 
 /**
  * C'est objet là ont le même rôle que des enum en java.
@@ -162,5 +183,5 @@ let composantType = {
 let circuitType = {
     seulementR: 29852,
     seulementC: 10854,
-    RC: 09842
+    RC: 90842
 }
