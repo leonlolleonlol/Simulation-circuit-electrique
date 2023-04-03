@@ -8,10 +8,9 @@ const DELETE = 'delete';
 
 let undo_list = [];
 let redo_list = [];
-
-  
-
-function addActions(action){
+exports.CREATE = CREATE;
+exports.undo_list = undo_list;
+exports.addActions = function addActions(action){
   if(redo_list.length!=0)
     redo_list = [];
   undo_list.push(action);

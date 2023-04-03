@@ -1,3 +1,4 @@
+
 class Ampoule {
     constructor(x, y) {
         this.x = x;
@@ -89,7 +90,7 @@ class Diode {
     }
   }
 
-  class Resisteur {
+  module.exports = class Resisteur {
     constructor(x, y, orientation) {
         this.x = x;
         this.y = y;
@@ -114,6 +115,6 @@ class Diode {
     getType() {
         return "resisteur";
     }
+    
 }
-
   
