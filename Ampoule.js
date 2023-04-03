@@ -15,10 +15,7 @@ class Ampoule {
     }
 
     draw(offX, offY) {
-        noStroke();
-        fill("yellow");
-        if (this.drag) circle(this.x + offX, this.y + offY, this.taille + 4);
-        else circle(this.x + offX, this.y + offY, this.taille);
+        ampoule(this.x + offX,this.y + offY,this.orientation, this.drag);
     }
 
     getType() {
