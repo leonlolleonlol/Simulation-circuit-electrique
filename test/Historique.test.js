@@ -1,7 +1,7 @@
 const historique = require('../Historique');
 const Resisteur =  require('../Composant');
 
-test('adds 1 + 2 to equal 3', () => {
+test('ajouter une action à l\'historique', () => {
   let res1 = new Resisteur(58, 265, 25);
   let trest = { type: historique.CREATE, objet: res1 };
   historique.addActions(trest, 0);
