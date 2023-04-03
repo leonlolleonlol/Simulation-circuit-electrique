@@ -22,7 +22,9 @@ let res;
 let amp;
 let dio;
 let condensateur_1;
+let time;
 function initComponents(){
+  time=0;
   fils = [];
   components = [];
   draggedElement = null;
@@ -44,6 +46,7 @@ function initComponents(){
   objects=[res,bat,amp,dio,condensateur_1];
 }
 function draw() {
+  time+=0.01;
   background(220);
   drawPointGrid();
   for (let element of components) {
@@ -122,13 +125,25 @@ function drawLineGrid() {
     borne++;
   }
 }
-
 function drawFils() {
-  stroke("orange");
   strokeWeight(4);
   for (let element of fils)
     if (element != null)
+    {
+      stroke("orange");
       line(element.xi + grid.translateX, element.yi + grid.translateY, element.xf + grid.translateX, element.yf + grid.translateY);
+      stroke("white");
+      fill("white")
+        let distance=Math.sqrt(Math.pow(element.yf-element.yi,2)+Math.pow(element.xf-element.xi,2));
+        //for (let a = 0; a < distance; a+=0.25)
+        //if(time+a<1)
+        if(time/distance*100<1)
+      {
+          circle(element.xi + grid.translateX+(time/distance*100)*(element.xf-element.xi), element.yi + grid.translateY+(time/distance*100)*(element.yf-element.yi),5);
+      }
+      else
+        time=0;
+    }
 }
 
 function findGridLockX(offset) {
@@ -205,6 +220,7 @@ function mousePressed() {
           draggedFil = fil;
           fils[fils.length] = fil;
           historique.addActions({type:CREATE,objet:fil});
+          time=0;
         }
       }
     }
@@ -252,6 +268,7 @@ function mouseReleased() {
   } else if (draggedFil != null) {
     draggedFil = null;
   }
+  time=0;
 }
 
 function keyPressed() {
