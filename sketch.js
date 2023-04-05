@@ -11,7 +11,7 @@ let fils;
 
 // Variable nécessaire pour placer la grille
 let grid;
-
+let composants_panneau; // Le panneau de choix des composants
 
 
 // Initialisation du circuit
@@ -30,14 +30,8 @@ function setup() {
   initComponents();
 }
 
-//Panneau de choix-----------------
-let bat;
-let res;
-let amp;
-let dio;
-let condensateur_1;
-let composants_panneau;
-//----------------------------------
+
+
 function initComponents(){
   fils = [];
   components = [];
@@ -53,12 +47,11 @@ function initComponents(){
     quadrillage: 'point',
   };
   // Composants dans le panneau de choix
-  res = new Resisteur(58, 265, 25);
-  bat = new Batterie(58, 315);
-  amp = new Ampoule(58, 365, 40);
-  dio = new Diode(58, 415, 'right');
-  condensateur_1= new Condensateur(60, 465, 'right');
-  composants_panneau=[res,bat,amp,dio,condensateur_1];
+  composants_panneau=[new Resisteur(58, 265, 25),
+                      new Batterie(58, 315),
+                      new Ampoule(58, 365, 40),
+                      new Diode(58, 415, 'right'),
+                      new Condensateur(60, 465, 'right')];
 }
 
 /**
@@ -217,24 +210,22 @@ function mousePressed() {
     if (element.inBounds(mouseX, mouseY, 0, 0)){
       origin = element;
       // Création d'un nouveau composants selon le composant sélectionner
-      if(element === bat){
-        new_element = new Batterie(bat.x - grid.translateX, bat.y - grid.translateY);
-      }else if(element === res){
-        new_element = new Resisteur(res.x - grid.translateX, res.y - grid.translateY);
-      }
-      else if(element === amp){
-        new_element = new Ampoule(amp.x - grid.translateX, amp.y - grid.translateY);
-      }
-      else if(element === condensateur_1){
-        new_element = new Condensateur(condensateur_1.x - grid.translateX, condensateur_1.y - grid.translateY, 'right');
-      }else if(element === dio){
-        new_element = new Diode(dio.x - grid.translateX, dio.y - grid.translateY, 'right');
+      if(element.getType() == 'batterie'){
+        new_element = new Batterie(element.x - grid.translateX, element.y - grid.translateY);
+      }else if(element.getType() == 'resisteur'){
+        new_element = new Resisteur(element.x - grid.translateX, element.y - grid.translateY);
+      }else if(element.getType() == 'ampoule'){
+        new_element = new Ampoule(element.x - grid.translateX, element.y - grid.translateY);
+      }else if(element.getType() == 'condensateur'){
+        new_element = new Condensateur(element.x - grid.translateX, element.y - grid.translateY, 'right');
+      }else if(element.getType() == 'diode'){
+        new_element = new Diode(element.x - grid.translateX, element.y - grid.translateY, 'right');
       }
       new_element.drag = true;
       new_element.xOffsetDrag = mouseX - element.x;
       new_element.yOffsetDrag = mouseY - element.y;
       // Autres ajout dans les modules
-      components[components.length] = new_element;
+      components.push(new_element);
       draggedElement = new_element;
       addActions( { type: CREATE, objet: new_element }, 0);
     }
@@ -260,15 +251,17 @@ function mousePressed() {
           (((mouseY - grid.offsetY - grid.translateY) % grid.tailleCell < 20 ||
             (mouseY - grid.offsetY - grid.translateY + 20) % grid.tailleCell < 20))
         ) {
+            let x_point = findGridLockX(grid.translateX);
+            let y_point = findGridLockY(grid.translateY)
           fil = {
-            xi: findGridLockX(grid.translateX),
-            yi: findGridLockY(grid.translateY),
-            xf: findGridLockX(grid.translateX),
-            yf: findGridLockY(grid.translateY),
+            xi: x_point,
+            yi: y_point,
+            xf: x_point,
+            yf: y_point,
             type: "fil",
           };
           draggedFil = fil;
-          fils[fils.length] = fil;
+          fils.push(fil);
           addActions({type:CREATE,objet:fil});
         }
       }
@@ -278,6 +271,7 @@ function mousePressed() {
 
 function mouseDragged() {
   if (draggedElement != null && origin != null) {
+    //cursor('grabbing');
     draggedElement.x = findGridLockX(
       draggedElement.xOffsetDrag + grid.translateX
     );
@@ -286,6 +280,7 @@ function mouseDragged() {
     );
   }
   else if (draggedElement != null) {
+    //cursor('grabbing');
     draggedElement.x = findGridLockX(
       draggedElement.xOffsetDrag
     );
@@ -296,6 +291,7 @@ function mouseDragged() {
     draggedFil.xf = findGridLockX(grid.translateX);
     draggedFil.yf = findGridLockY(grid.translateY);
   } else if (mouseX > 300) {
+    //cursor(MOVE);
     grid.translateX += mouseX - pmouseX;
     grid.translateY += mouseY - pmouseY;
   }
@@ -303,6 +299,7 @@ function mouseDragged() {
 
 function mouseReleased() {
   // Arrète le drag si il y en avait un en cours
+  //cursor(ARROW);
   if (draggedElement != null) {
     draggedElement.drag = false;
     draggedElement = null;
