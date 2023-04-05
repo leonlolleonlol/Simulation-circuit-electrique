@@ -1,10 +1,8 @@
 class Ampoule {
-    constructor(x, y) {
+    constructor(x, y, orientation) {
         this.x = x;
         this.y = y;
-        this.drag = false;
-        this.xOffsetDrag = 0.0;
-        this.yOffsetDrag = 0.0;
+        this.orientation = orientation;
     }
     inBounds(mouseX, mouseY, offsetX, offsetY) {
         return (mouseX - offsetX > this.x - 60 / 2 &&
@@ -26,7 +24,6 @@ class Condensateur {
     constructor(x, y, orientation) {
       this.x = x;
       this.y = y;
-      this.taille = 50;
       this.orientation = orientation;
     }
     inBounds(mouseX, mouseY, offsetX, offsetY) {
@@ -40,15 +37,16 @@ class Condensateur {
     draw(offsetX,offsetY) {
       condensateur(this.x + offsetX, this.y + offsetY, this.orientation, this.drag);
     }
+    
+    getType() {
+        return "condensateur";
+    }
   }
 
   class Batterie {
     constructor(x, y, orientation) {
         this.x = x;
         this.y = y;
-        this.drag = false;
-        this.xOffsetDrag = 0.0;
-        this.yOffsetDrag = 0.0;
         this.orientation = orientation;
     }
     inBounds(mouseX, mouseY, offsetX, offsetY) {
@@ -81,11 +79,12 @@ class Diode {
           mouseY - offsetY < this.y + this.radius);
   }
     
-  
-    
-    
     draw(offX,offY) {
       diode(this.x + offX,this.y + offY,this.orientation, this.drag);
+    }
+    
+    getType() {
+        return "diode";
     }
   }
 
@@ -93,9 +92,6 @@ class Diode {
     constructor(x, y, orientation) {
         this.x = x;
         this.y = y;
-        this.drag = false;
-        this.xOffsetDrag = 0.0;
-        this.yOffsetDrag = 0.0;
         this.orientation = orientation;
     }
 
