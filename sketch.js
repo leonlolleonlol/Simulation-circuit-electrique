@@ -5,6 +5,9 @@ let components;
 let fils;
 let grid;
 let historique;
+let distances;
+let timers;
+let singleUnitCables;
 function setup() {
   createCanvas(windowWidth - 50, windowHeight - 30);
   let undo_button = createButton('Recommencer');
@@ -22,9 +25,10 @@ let res;
 let amp;
 let dio;
 let condensateur_1;
-let time;
 function initComponents(){
-  time=0;
+  singleUnitCables=[];
+  timers=Array(100).fill(0);
+  distances=[];
   fils = [];
   components = [];
   draggedElement = null;
@@ -46,7 +50,6 @@ function initComponents(){
   objects=[res,bat,amp,dio,condensateur_1];
 }
 function draw() {
-  time+=0.01;
   background(220);
   drawPointGrid();
   for (let element of components) {
@@ -126,25 +129,45 @@ function drawLineGrid() {
   }
 }
 function drawFils() {
+  distances=[];
   strokeWeight(4);
-  for (let element of fils)
+  for (let a = 0; a < fils.length; a++)
+  {
+    element=fils[a];
     if (element != null)
     {
       stroke("orange");
       line(element.xi + grid.translateX, element.yi + grid.translateY, element.xf + grid.translateX, element.yf + grid.translateY);
-      stroke("white");
-      fill("white")
-        let distance=Math.sqrt(Math.pow(element.yf-element.yi,2)+Math.pow(element.xf-element.xi,2));
-        //for (let a = 0; a < distance; a+=0.25)
-        //if(time+a<1)
-        if(time/distance*100<1)
-      {
-          circle(element.xi + grid.translateX+(time/distance*100)*(element.xf-element.xi), element.yi + grid.translateY+(time/distance*100)*(element.yf-element.yi),5);
+      distances[a]=Math.sqrt(Math.pow(element.yf-element.yi,2)+Math.pow(element.xf-element.xi,2));
+      singleUnitCables[a]=[];
+      for (let b = 0; b < distances[a]/30; b++) {
+      let singleCable = {
+        xi: element.xi+b/(element.xf-element.xi)*30,
+        yi: element.yi+b/(element.yf-element.yi)*30,
+        xf: 30+element.xi+(b+1)/(element.xf-element.xi)*30,
+        yf: -30+element.yi+(b+1)/(element.yf-element.yi)*30,
+        type: "singleCable",
+      };
+      print(singleCable);
+      print(element);
+      singleUnitCables[a][b]=singleCable;
       }
-      else
-        time=0;
     }
-}
+  }
+  for (let a = 0; a < distances.length; a++)
+  {
+    timers[a]+=0.01;
+    for (let b = 0; b < singleUnitCables[a].length; b++) {
+    element=singleUnitCables[a][b];
+    stroke("white");
+    fill("white");
+    if(timers[a]*100<1)
+      circle(element.xi + grid.translateX+(timers[a]*100)*(element.xf-element.xi), element.yi + grid.translateY+(timers[a]*100)*(element.yf-element.yi),5);
+    else
+      timers[a]=0;
+    }
+    }
+  }
 
 function findGridLockX(offset) {
   return (
@@ -220,7 +243,7 @@ function mousePressed() {
           draggedFil = fil;
           fils[fils.length] = fil;
           historique.addActions({type:CREATE,objet:fil});
-          time=0;
+          timers=Array(100).fill(0);
         }
       }
     }
@@ -268,7 +291,7 @@ function mouseReleased() {
   } else if (draggedFil != null) {
     draggedFil = null;
   }
-  time=0;
+  timers=Array(100).fill(0);
 }
 
 function keyPressed() {
