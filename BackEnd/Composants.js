@@ -110,8 +110,8 @@ class Switch extends Composant {
  * C'est dans cette class qu'on va faire les calculs pour les circuits en parallèle.
  */
 class Noeuds extends Composant {
-  constructor(courant, tension){
-    super(courant, tension)
+  constructor(){
+    super()
     this.circuitsEnParallele = []; //Array de Circuit qui sont en parallèle
 
     //C'est variable sont utile pour calculer l'équivalence du noeud
@@ -123,11 +123,19 @@ class Noeuds extends Composant {
     this.type;
   }
 
+  ajouterCircuitEnParallele(composant){
+    this.circuitsEnParallele.push(composant);
+  }
+
+  retirerCircuit(position){
+      this.circuitsEnParallele.splice(position, 1);
+  }
+
  /**
   * Sert à trouver le circuit équivalent en série
   */
  trouverEq(){
-    for (let i = 0; i < circuitsEnParallele.length; i++){ 
+    for (let i = 0; i < this.circuitsEnParallele.length; i++){ 
       this.circuitsEnParallele[i].trouverEq();
     }
 
@@ -135,28 +143,30 @@ class Noeuds extends Composant {
     
     switch (this.type){
         case circuitType.seulementR:
-          let resistancetemp = 0;
-            for (let i = 0; i < this.circuitsEnParallele.length; i++){ 
-                resistancetemp += 1 / this.circuit[i].resistanceEQ;
+            let resistanceTemp = 0;
+            for (let i = 0; i < this.circuitsEnParallele.length; i++){
+              resistanceTemp += 1 / this.circuitsEnParallele[i].resistanceEQ;
             }
             this.resistanceEQ = 1 / resistanceTemp;
+            
             break;
         case circuitType.seulementC:
             for (let i = 0; i < this.circuitsEnParallele.length; i++){ 
-              this.capaciteEQ += this.circuit[i];
+              this.capaciteEQ += this.circuitsEnParallele[i].capaciteEQ;
             }
             break;
         case circuitType.RC:
             //C'est là que c'est difficile
             break;
     }
+
   }
 
   trouverTypeDeCircuit(){
     let circuitR = false;
     let circuitC = false;
 
-    for (let i = 0; i < circuitsEnParallele.length; i++){ 
+    for (let i = 0; i < this.circuitsEnParallele.length; i++){ 
         switch(this.circuitsEnParallele[i].getType()){
             case circuitType.seulementR:
                 circuitR = true;
@@ -178,6 +188,18 @@ class Noeuds extends Composant {
 
   getType() {
     return composantType.noeudType;
+  }
+
+  remplirResisteursAvecDifTension(){
+    for (let i = 0; i < this.circuitsEnParallele.length; i++){
+      if(this.circuit[i].getType == circuitType.seulementR){
+        this.circuitsEnParallele[i].courant = this.tensionEQ / this.resistanceEQ;
+        this.circuitsEnParallele[i].remplirResisteursAvecCourant();
+      }else if(this.circuit[i].getType = composantType.noeudType){
+        this.circuitsEnParallele[i].tensionEQ = this.tensionEQ;
+        this.circuitsEnParallele[i].remplirResisteursAvecDifTension();
+      }
+    }
   }
 }
 

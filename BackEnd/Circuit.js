@@ -56,7 +56,6 @@ class Circuit{
      * branche principale.
      */
     update(){//Chaque fois qu'il y a un changement dans le circuit
-        print("appelle update");
         if(this.premierCircuit){
             this.rearrangerArrayCircuit();
             this.tensionEQ = this.circuit[0].tension;
@@ -94,7 +93,6 @@ class Circuit{
         
         switch (this.type){
             case circuitType.seulementR:
-            
                 for (let i = 0; i < this.circuit.length; i++){
                     if(this.circuit[i].getType() == composantType.noeudType){
                         this.resistanceEQ += this.circuit[i].resistanceEQ;
@@ -102,9 +100,12 @@ class Circuit{
                         this.resistanceEQ += this.circuit[i].resistance;
                     }
                 }
-                this.courant = this.tensionEQ / this.resistanceEQ;
-
+                if(this.premierCircuit){
+                    this.courant = this.tensionEQ / this.resistanceEQ;
+                }
+                
                 //TODO remplir les valeurs dans chaque résistances
+                this.remplirResisteursAvecCourant();
                 break;
             case circuitType.seulementC:
                 let capaciteTemp = 0;
@@ -117,7 +118,10 @@ class Circuit{
                 }
                 this.capaciteEQ = 1/capaciteTemp;
 
-                this.charge = this.capaciteEQ * this.tensionEQ; 
+                if(this.premierCircuit){
+                    this.charge = this.capaciteEQ * this.tensionEQ; 
+                }
+            
                 //TODO remplir les valeurs dans chaque Condensateur
                 break;
             case circuitType.RC:
@@ -126,8 +130,7 @@ class Circuit{
                 alert("Ceci est en dehors de nos connaissance"); //(rip)
                 break;
         }
-        
-        print(this.charge);
+
     }
 
     /**
@@ -158,7 +161,7 @@ class Circuit{
                             circuitRC = true;
                             break;
                     }
-                    this.circuit[i].trouverEq;
+                    this.circuit[i].trouverEq();
                     break;
             }
         }
@@ -175,6 +178,19 @@ class Circuit{
 
     getType(){
         return this.type;
+    }
+
+    remplirResisteursAvecCourant(){
+        for (let i = 0; i < this.circuit.length; i++){
+            if(this.circuit[i].getType == composantType.resisteurType){
+                this.circuit[i].courant = this.courant;
+                this.circuit[i].tension = this.courant * this.circuit[i].resistance;
+            }else if(this.circuit[i].getType = composantType.noeudType){
+                this.circuit[i].tensionEQ = this.courant * this.circuit[i].resistanceEQ;
+                print(this.circuit[i].getType);
+                this.circuit[i].remplirResisteursAvecDifTension();
+            }
+        }
     }
 }
 
