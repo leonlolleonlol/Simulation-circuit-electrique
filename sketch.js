@@ -129,7 +129,7 @@ function draw() {
 function drawComponentsChooser() {
   push();
   noStroke();
-  fill(220);
+  fill(backgroundColor);
   rect(0, 0, grid.offsetX - 5, windowHeight);
   fill("rgba(128,128,128,0.59)");
   strokeWeight(4);
