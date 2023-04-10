@@ -26,6 +26,8 @@ let line_grid_button;
 let point_line_grid_button;
 let canvas;
 
+let backgroundColor = 'rgb(51,51,51)';//220
+
 // Initialisation du circuit
 function setup() {
   canvas = createCanvas(windowWidth - 50, windowHeight - 30);
@@ -97,18 +99,23 @@ function initPosition(){
  * 4. Dessiner le panneau de choix des composants
  */
 function draw() {
-  background(220);// Mettre le choix de couleur pour le background
-
+  background(backgroundColor);// Mettre le choix de couleur pour le background
+  if(undo_list.length == 0)
+	undo_button.attribute('disabled', '');
+  else
+	undo_button.removeAttribute('disabled');
   //Dessiner la grille dépendant du du parametre
   if (grid.quadrillage == 'point')
     drawPointGrid();
   else if (grid.quadrillage == 'line')
   drawLineGrid();
   else drawPointLineGrid();
+  
+  drawFils();
   for (let element of components) {
     element.draw(grid.translateX, grid.translateY);
   }
-  drawFils();
+  
   drawComponentsChooser();
   /*
   * Solution temporaire pour que le composant s'affiche par dessus 
@@ -320,22 +327,21 @@ function mousePressed() {
         break;
       }
     }//mouseX - offsetX > element.x - 10
-    if (draggedElement == null && validFilBegin()) {
-      let x_point = findGridLockX(grid.translateX);
-      let y_point = findGridLockY(grid.translateY)
-      let fil = {
-          xi: x_point,
-          yi: y_point,
-          xf: x_point,
-          yf: y_point,
-          type: "fil",
-      };
-      draggedFil = fil;
-      selection = fil;
-      fils.push(fil);
-      addActions({type:CREATE,objet:fil});
-      }
-    }
+  }
+  if (draggedElement == null && validFilBegin()) {
+    let x_point = findGridLockX(grid.translateX);
+    let y_point = findGridLockY(grid.translateY)
+    let fil = {
+        xi: x_point,
+        yi: y_point,
+        xf: x_point,
+        yf: y_point,
+        type: "fil",
+    };
+    draggedFil = fil;
+    selection = fil;
+    fils.push(fil);
+    addActions({type:CREATE,objet:fil});
   }
   if(draggedElement == null && draggedFil == null) {
     if(mouseX>grid.offsetX && mouseY> grid.offsetY)
@@ -363,6 +369,7 @@ function mouseDragged() {
     draggedElement.x = findGridLockX(
       draggedElement.xOffsetDrag
     );
+    }
     draggedElement.y = findGridLockY(
       draggedElement.yOffsetDrag
     );
