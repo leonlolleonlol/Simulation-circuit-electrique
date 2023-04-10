@@ -18,7 +18,6 @@ let composants_panneau; // Le panneau de choix des composants
 let acceuil_button;
 let undo_button;
 let reset_button;
-let start_button;
 let pause_button;
 let stop_button;
 let point_grid_button;
@@ -38,7 +37,6 @@ function setup() {
   positionCanvas=canvas.position();
   //----------------------------------------
   acceuil_button.position(10,10);
-  start_button.position(100,500);
   reset_button = createButton('Recommencer');
   reset_button.position(positionCanvas.x, 450);
   reset_button.size(120, 50);
@@ -134,8 +132,8 @@ function drawComponentsChooser() {
   fill("rgba(128,128,128,0.59)");
   strokeWeight(4);
   stroke("rgba(52,52,52,0.78)");
-  for (let i = 0; i < 10; i++) {
-    rect(0, 240 + 50 * i, 120, 50);
+  for (let i = 0; i <composants_panneau.length ; i++) {
+    rect(0, 190 + 50 * i, 120, 50);
   }
   for (let element of composants_panneau){
     if (element != origin)

@@ -18,7 +18,7 @@ class Composant {
   draw(offX, offY) {
     throw console.error();//todo préciser l'erreur
   }
-  checkConnection(x, y, aproximation){
+  checkConnection(x, y, approximation){
     if(this.orientation == 'vertical'||this.orientation == 'top'|| this.orientation == 'bottom')
 	return dist(this.x, this.y + 60/2, x, y) < approximation ||
              dist(this.x, this.y - 60/2, x, y) < approximation;
