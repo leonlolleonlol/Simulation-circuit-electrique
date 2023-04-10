@@ -47,7 +47,7 @@ class Resisteur extends Composant {
     }
 
     draw(offX, offY) {
-        resisteur(this.x + offX,this.y + offY,this.orientation, this.drag);
+        resisteur(this.x + offX,this.y + offY,this.orientation, isElementDrag(this));
     }
 
     getType() {
@@ -71,7 +71,7 @@ class Ampoule extends Resisteur {
     }
 
     draw(offX, offY) {
-        ampoule(this.x + offX,this.y + offY,this.orientation, this.drag);
+        ampoule(this.x + offX,this.y + offY,this.orientation, isElementDrag(this));
     }
 
     getType() {
@@ -98,7 +98,7 @@ class Condensateur extends Composant {
     
     // offsetX et offsetY à retirer
     draw(offsetX,offsetY) {
-      condensateur(this.x + offsetX, this.y + offsetY, this.orientation, this.drag);
+      condensateur(this.x + offsetX, this.y + offsetY, this.orientation, isElementDrag(this));
     }
     
     getType() {
@@ -123,7 +123,7 @@ class Condensateur extends Composant {
     }
 
     draw(offX, offY) {
-        batterie(this.x + offX,this.y + offY,this.orientation, this.drag);
+        batterie(this.x + offX,this.y + offY,this.orientation, isElementDrag(this));
     }
 
     getType() {
@@ -148,7 +148,7 @@ class Diode extends Composant {
   }
     
     draw(offX,offY) {
-      diode(this.x + offX,this.y + offY,this.orientation, this.drag);
+      diode(this.x + offX,this.y + offY,this.orientation, isElementDrag(this));
     }
     
     getType() {
