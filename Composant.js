@@ -18,6 +18,14 @@ class Composant {
   draw(offX, offY) {
     throw console.error();//todo préciser l'erreur
   }
+  checkConnection(x, y, aproximation){
+    if(this.orientation == 'vertical'||this.orientation == 'top'|| this.orientation == 'bottom')
+	return dist(this.x, this.y + 60/2, x, y) < approximation ||
+             dist(this.x, this.y - 60/2, x, y) < approximation;
+    else
+      return dist(this.x + 60/2, this.y, x, y)<approximation ||
+             dist(this.x - 60/2, this.y, x, y) < approximation;
+  }
   getType() {
     throw console.error();//todo préciser l'erreur
   }
@@ -220,6 +228,9 @@ class Noeuds extends Composant {
     }else{
         this.type = circuitType.seulementR
     }
+  }
+  checkConnection(x, y, aproximation){
+    return false;
   }
 
     getType() {
