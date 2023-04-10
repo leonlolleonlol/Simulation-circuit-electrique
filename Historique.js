@@ -88,4 +88,4 @@ function applyLimitActions(){
   if(undo_list.length > limitActions)
     undo_list.shift();
 
-
+}
