@@ -244,6 +244,41 @@ function isElementSelectionner(element){
   return selection!=null && selection === element;
 }
 
+function validFilBegin(){
+let x = mouseX - grid.offsetX - grid.translateX;
+let y = mouseY - grid.offsetY - grid.translateY;
+  if (mouseX <= grid.offsetX || mouseY <= grid.offsetY)
+    return false;
+  else if (!((x % grid.tailleCell < 20 ||
+            (x + 20) % grid.tailleCell < 20) &&
+          (y % grid.tailleCell < 20 ||
+            (y + 20) % grid.tailleCell < 20)))
+    return false;
+  else {
+    let xd = mouseX - grid.translateX;
+    let yd = mouseY - grid.translateY;
+    for(let i=0;i<components.length;i++)
+      if(components[i].checkConnection(xd, yd, 10))
+        return true; 
+    for(let i=0;i<fils.length;i++){
+      if(fils[i].yi!=fils[i].yf && fils[i].xi!=fils[i].xf){
+        if(dist(min(fils[i].xi,fils[i].xf),min(fils[i].yi,fils[i].yf),xd,yd)<10 ||
+           dist(max(fils[i].xi,fils[i].xf),min(fils[i].yi,fils[i].yf),xd,yd)<10 ||
+           dist(min(fils[i].xi,fils[i].xf),max(fils[i].yi,fils[i].yf),xd,yd)<10 ||
+           dist(max(fils[i].xi,fils[i].xf),max(fils[i].yi,fils[i].yf),xd,yd)<10)
+          return true;
+      } else {
+        let x1 = min(fils[i].xi-10, fils[i].xf-10)
+        let x2 = max(fils[i].xi+10, fils[i].xf+ 10);
+        let y1 = min(fils[i].yi-10, fils[i].yf-10);
+        let y2 = max(fils[i].yi+10, fils[i].yf+10);
+        if(xd > x1 && xd < x2 && yd > y1 -10 && yd < y2 + 10)
+          return true;
+      }
+    }
+  } 
+}
+
 function mousePressed() {
   selection = null;
   // Vérification drag panneau de choix
@@ -285,28 +320,20 @@ function mousePressed() {
         break;
       }
     }//mouseX - offsetX > element.x - 10
-    if (mouseX > 329) {
-      if (draggedElement == null) {
-        if
-          (
-          (((mouseX - grid.offsetX - grid.translateX) % grid.tailleCell < 20 ||
-            (mouseX - grid.offsetX - grid.translateX + 20) % grid.tailleCell < 20)) &&
-          (((mouseY - grid.offsetY - grid.translateY) % grid.tailleCell < 20 ||
-            (mouseY - grid.offsetY - grid.translateY + 20) % grid.tailleCell < 20))
-        ) {
-            let x_point = findGridLockX(grid.translateX);
-            let y_point = findGridLockY(grid.translateY)
-          fil = {
-            xi: x_point,
-            yi: y_point,
-            xf: x_point,
-            yf: y_point,
-            type: "fil",
-          };
-          draggedFil = fil;
-          fils.push(fil);
-          addActions({type:CREATE,objet:fil});
-        }
+    if (draggedElement == null && validFilBegin()) {
+      let x_point = findGridLockX(grid.translateX);
+      let y_point = findGridLockY(grid.translateY)
+      let fil = {
+          xi: x_point,
+          yi: y_point,
+          xf: x_point,
+          yf: y_point,
+          type: "fil",
+      };
+      draggedFil = fil;
+      selection = fil;
+      fils.push(fil);
+      addActions({type:CREATE,objet:fil});
       }
     }
   }
@@ -361,6 +388,8 @@ function mouseReleased() {
     draggedElement = null;
     addActions(action);
   } else if (draggedFil != null) {
+      if(draggedFil.xi == draggedFil.xf && draggedFil.yi == draggedFil.yf)
+	fils.pop();
     draggedFil = null;
   }
 }
