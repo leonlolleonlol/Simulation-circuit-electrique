@@ -1,5 +1,6 @@
 let draggedElement; // L'élement qui est déplacer
 let draggedFil;// à supprimer
+let selection;
 let origin; // variable qui permet de savoir lorsque l'on crée un nouveau élément.
 //Lorsque l'on ajoute un composant, le composant sélectionner disparaît dans le sélectionneur
 // et pour cela, on doit savoir quel composant panneau de choix est l'orignie
@@ -201,8 +202,16 @@ function findGridLockY(offset) {
     grid.offsetY
   );
 }
+function isElementDrag(element){
+  return draggedElement!=null && draggedElement === element;
+}
+
+function isElementSelectionner(element){
+  return selection!=null && selection === element;
+}
 
 function mousePressed() {
+  selection = null;
   // Vérification drag panneau de choix
   for (let i = 0; i < composants_panneau.length; i++) {
     const element = composants_panneau[i];
@@ -221,12 +230,12 @@ function mousePressed() {
       }else if(element.getType() == 'diode'){
         new_element = new Diode(element.x - grid.translateX, element.y - grid.translateY, 'right');
       }
-      new_element.drag = true;
       new_element.xOffsetDrag = mouseX - element.x;
       new_element.yOffsetDrag = mouseY - element.y;
       // Autres ajout dans les modules
       components.push(new_element);
       draggedElement = new_element;
+      selection = new_element;
       addActions( { type: CREATE, objet: new_element }, 0);
     }
 
@@ -236,7 +245,7 @@ function mousePressed() {
     for (let element of components) {
       if (element.inBounds(mouseX, mouseY, grid.translateX, grid.translateY)) {
         draggedElement = element;
-        draggedElement.drag = true;
+        selection = element;
         draggedElement.xOffsetDrag = mouseX - draggedElement.x;
         draggedElement.yOffsetDrag = mouseY - draggedElement.y;
         break;
@@ -267,6 +276,10 @@ function mousePressed() {
       }
     }
   }
+  if(draggedElement == null && draggedFil == null) {
+    if(mouseX>grid.offsetX && mouseY> grid.offsetY)
+      draggedElement = grid;
+  }
 }
 
 function mouseDragged() {
@@ -280,6 +293,11 @@ function mouseDragged() {
     );
   }
   else if (draggedElement != null) {
+    if(draggedElement === grid){
+      //cursor(MOVE);
+      grid.translateX += mouseX - pmouseX;
+      grid.translateY += mouseY - pmouseY;
+    } else{
     //cursor('grabbing');
     draggedElement.x = findGridLockX(
       draggedElement.xOffsetDrag
@@ -290,20 +308,24 @@ function mouseDragged() {
   } else if (draggedFil != null) {
     draggedFil.xf = findGridLockX(grid.translateX);
     draggedFil.yf = findGridLockY(grid.translateY);
-  } else if (mouseX > 300) {
-    //cursor(MOVE);
-    grid.translateX += mouseX - pmouseX;
-    grid.translateY += mouseY - pmouseY;
   }
 }
 
 function mouseReleased() {
   // Arrète le drag si il y en avait un en cours
   //cursor(ARROW);
-  if (draggedElement != null) {
+  if (draggedElement != null && origin !=null) {
     draggedElement.drag = false;
     draggedElement = null;
     origin = null;
+  } else if(draggedElement != null){
+    let action = {type:MODIFIER, objet:draggedElement, changements:[
+			{attribut:'x', ancienne_valeur:draggedElement.pastX, nouvelle_valeur:draggedElement.x},
+      {attribut:'y', ancienne_valeur:draggedElement.pastY, nouvelle_valeur:draggedElement.y}]};
+    draggedElement.pastX = null;
+    draggedElement.pastY = null;
+    draggedElement = null;
+    addActions(action);
   } else if (draggedFil != null) {
     draggedFil = null;
   }
@@ -319,6 +341,12 @@ function keyPressed() {
     redo();
   } else if (keyIsDown(CONTROL) && keyCode === 90) {
     undo();
+  } else if (keyCode === 8) {
+    if(selection!=null){
+      let element = components.splice(components.indexOf(selection),1)[0];
+      addActions({type:DELETE,objet:element});
+      selection = null;
+    }
   } //else if (keyIsDown(CONTROL) && keyIsDown(SHIFT) && keyCode === 80) {
   //  print('parameters')
   //}
