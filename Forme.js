@@ -227,7 +227,7 @@ function ampoule(x, y, orientation, drag) {
  */
 function blendBG(cblend) {
   colorMode(RGB, 255, 255, 255, 1);
-  let c = color(220);
+  let c = color(backgroundColor);
   let c1 = color(cblend);
   let outputRed = red(c1) * alpha(c1) + red(c) * (1.0 - alpha(c1));
   let outputGreen = green(c1) * alpha(c1) + green(c) * (1.0 - alpha(c1));
