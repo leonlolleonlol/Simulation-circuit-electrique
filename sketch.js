@@ -7,7 +7,6 @@ let grid;
 let historique;
 let distances;
 let timers;
-let singleUnitCables;
 function setup() {
   createCanvas(windowWidth - 50, windowHeight - 30);
   let undo_button = createButton('Recommencer');
@@ -26,7 +25,6 @@ let amp;
 let dio;
 let condensateur_1;
 function initComponents(){
-  singleUnitCables=[];
   timers=Array(100).fill(0);
   distances=[];
   fils = [];
@@ -133,40 +131,59 @@ function drawFils() {
   strokeWeight(4);
   for (let a = 0; a < fils.length; a++)
   {
+    timers[a]+=0.5;
+  }
+  for (let a = 0; a < fils.length; a++)
+  {
     element=fils[a];
     if (element != null)
     {
       stroke("orange");
       line(element.xi + grid.translateX, element.yi + grid.translateY, element.xf + grid.translateX, element.yf + grid.translateY);
       distances[a]=Math.sqrt(Math.pow(element.yf-element.yi,2)+Math.pow(element.xf-element.xi,2));
-      singleUnitCables[a]=[];
-      for (let b = 0; b < distances[a]/30; b++) {
-      let singleCable = {
-        xi: element.xi+b/(element.xf-element.xi)*30,
-        yi: element.yi+b/(element.yf-element.yi)*30,
-        xf: 30+element.xi+(b+1)/(element.xf-element.xi)*30,
-        yf: -30+element.yi+(b+1)/(element.yf-element.yi)*30,
-        type: "singleCable",
-      };
-      print(singleCable);
-      print(element);
-      singleUnitCables[a][b]=singleCable;
-      }
     }
   }
-  for (let a = 0; a < distances.length; a++)
+  stroke("white");
+  for (let a = 0; a < fils.length; a++)
   {
-    timers[a]+=0.01;
-    for (let b = 0; b < singleUnitCables[a].length; b++) {
-    element=singleUnitCables[a][b];
-    stroke("white");
-    fill("white");
-    if(timers[a]*100<1)
-      circle(element.xi + grid.translateX+(timers[a]*100)*(element.xf-element.xi), element.yi + grid.translateY+(timers[a]*100)*(element.yf-element.yi),5);
+    element=fils[a];
+    if(fils[a].xf-fils[a].xi>0)
+    {
+    for (let b = 0; b < distances[a]/30; b++) {
+    if(timers[a]<30)
+      circle(element.xi + grid.translateX+Math.round(30*b+timers[a]), element.yi + grid.translateY,5);
     else
       timers[a]=0;
     }
+  }
+  if(fils[a].yf-fils[a].yi>0)
+    {
+    for (let b = 0; b < distances[a]/30; b++) {
+    if(timers[a]<30)
+      circle(element.xi + grid.translateX, element.yi + grid.translateY+Math.round(30*b+timers[a]),5);
+    else
+      timers[a]=0;
     }
+  }
+  if(fils[a].xi-fils[a].xf>0)
+    {
+    for (let b = 0; b < distances[a]/30; b++) {
+    if(timers[a]<30)
+      circle(element.xi + grid.translateX+Math.round(-30*b-timers[a]), element.yi + grid.translateY,5);
+    else
+      timers[a]=0;
+    }
+  }
+  if(fils[a].yi-fils[a].yf>0)
+    {
+    for (let b = 0; b < distances[a]/30; b++) {
+    if(timers[a]<30)
+      circle(element.xi + grid.translateX, element.yi + grid.translateY+Math.round(-30*b-timers[a]),5);
+    else
+      timers[a]=0;
+    }
+  }
+  }
   }
 
 function findGridLockX(offset) {
@@ -243,7 +260,6 @@ function mousePressed() {
           draggedFil = fil;
           fils[fils.length] = fil;
           historique.addActions({type:CREATE,objet:fil});
-          timers=Array(100).fill(0);
         }
       }
     }
