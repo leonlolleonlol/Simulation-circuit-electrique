@@ -14,19 +14,50 @@ let fils;
 let grid;
 let composants_panneau; // Le panneau de choix des composants
 
+// liens vers des éléments DOM utiles
+let acceuil_button;
+let undo_button;
+let reset_button;
+let start_button;
+let pause_button;
+let stop_button;
+let point_grid_button;
+let line_grid_button;
+let point_line_grid_button;
+let canvas;
 
 // Initialisation du circuit
 function setup() {
-  createCanvas(windowWidth - 50, windowHeight - 30);
+  canvas = createCanvas(windowWidth - 50, windowHeight - 30);
+  acceuil_button = select('#acceuil');
+  line_grid_button = select('#line-grid');
+  point_grid_button = select('#point-grid');
+  point_line_grid_button = select('#point-line-grid');
+  positionCanvas=canvas.position();
   //----------------------------------------
-  let reset_button = createButton('Recommencer');
-  reset_button.position(40, 750);
+  acceuil_button.position(10,10);
+  start_button.position(100,500);
+  reset_button = createButton('Recommencer');
+  reset_button.position(positionCanvas.x, 450);
   reset_button.size(120, 50);
   reset_button.mousePressed(refresh);
-  let undo_button = createButton('Undo');
-  undo_button.position(40, 195);
+  undo_button = createButton('Undo');
+  undo_button.position(positionCanvas.x, 95);
   undo_button.size(120, 50);
   undo_button.mousePressed(undo);
+  let img_line = select('#img-line-grid');
+  let img_point = select('#img-point-grid');
+  let img_dotLine = select('#img-point-line-grid');
+  img_line.size(24,24);
+  img_point.size(24,24);
+  img_dotLine.size(24,24);//code redondant
+  line_grid_button.position(positionCanvas.x,150);
+  point_grid_button.position(positionCanvas.x +40,150);
+  point_line_grid_button.position(positionCanvas.x + 80,150);
+  line_grid_button.mousePressed(function(){ grid.quadrillage='line';});
+  point_grid_button.mousePressed(function(){ grid.quadrillage='point';});
+  point_line_grid_button.mousePressed(function(){ grid.quadrillage='points&lines';});
+
   //-----------------------------------------
   initComponents();
 }
@@ -40,19 +71,22 @@ function initComponents(){
   draggedFil = null;
   origin = null;
   grid = {
-    offsetX: 300,
     offsetY: 20,
     tailleCell: 30,
     translateX: 0,
     translateY: 0,
     quadrillage: 'point',
   };
+  initPosition();
   // Composants dans le panneau de choix
   composants_panneau=[new Resisteur(58, 265, 25),
                       new Batterie(58, 315),
                       new Ampoule(58, 365, 40),
                       new Diode(58, 415, 'right'),
                       new Condensateur(60, 465, 'right')];
+}
+function initPosition(){
+  grid.offsetX = max(200 * width/1230,138) ;
 }
 
 /**
@@ -350,6 +384,10 @@ function keyPressed() {
   } //else if (keyIsDown(CONTROL) && keyIsDown(SHIFT) && keyCode === 80) {
   //  print('parameters')
   //}
+}
+function windowResized(){
+  resizeCanvas(windowWidth - 50, windowHeight - 30);
+  initPosition();
 }
 
 /*
