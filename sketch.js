@@ -25,7 +25,7 @@ let amp;
 let dio;
 let condensateur_1;
 function initComponents(){
-  timers=Array(100).fill(0);
+  timers=Array(1000).fill(0);
   distances=[];
   fils = [];
   components = [];
@@ -307,7 +307,7 @@ function mouseReleased() {
   } else if (draggedFil != null) {
     draggedFil = null;
   }
-  timers=Array(100).fill(0);
+  timers=Array(1000).fill(0);
 }
 
 function keyPressed() {
