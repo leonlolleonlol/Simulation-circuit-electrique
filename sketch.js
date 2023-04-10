@@ -410,6 +410,18 @@ function keyPressed() {
       addActions({type:DELETE,objet:element});
       selection = null;
     }
+  } else if (keyCode === 82) {
+    let newR = new Resisteur(findGridLockX(grid.translateX), findGridLockY(grid.translateY));
+    components.push(newR);
+    addActions({type:CREATE,objet:newR});
+  } else if (keyCode === 83) {
+    let newB = new Batterie(findGridLockX(grid.translateX), findGridLockY(grid.translateY));
+    components.push(newB);
+    addActions({type:CREATE,objet:newB});
+  } else if (keyCode === 67) {
+    let newC = new Condensateur(findGridLockX(grid.translateX), findGridLockY(grid.translateY));
+    components.push(newC);
+    addActions({type:CREATE,objet:newC});
   } //else if (keyIsDown(CONTROL) && keyIsDown(SHIFT) && keyCode === 80) {
   //  print('parameters')
   //}
