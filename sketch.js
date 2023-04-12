@@ -75,15 +75,18 @@ function initComponents(){
     tailleCell: 30,
     translateX: 0,
     translateY: 0,
+    transX:0,
+    transY:0,
+    scale:1,
     quadrillage: 'point',
   };
   initPosition();
   // Composants dans le panneau de choix
-  composants_panneau=[new Resisteur(58, 265, 25),
-                      new Batterie(58, 315),
-                      new Ampoule(58, 365, 40),
-                      new Diode(58, 415, 'right'),
-                      new Condensateur(60, 465, 'right')];
+  composants_panneau=[new Resisteur(58, 215, 25),
+                      new Batterie(58, 265),
+                      new Ampoule(58, 315, 40),
+                      new Diode(58, 365, 'right'),
+                      new Condensateur(60, 415, 'right')];
 }
 function initPosition(){
   grid.offsetX = max(200 * width/1230,138) ;
@@ -103,6 +106,8 @@ function draw() {
   else
 	undo_button.removeAttribute('disabled');
   //Dessiner la grille dépendant du du parametre
+  push();
+  applyScale();
   if (grid.quadrillage == 'point')
     drawPointGrid();
   else if (grid.quadrillage == 'line')
@@ -113,7 +118,7 @@ function draw() {
   for (let element of components) {
     element.draw(grid.translateX, grid.translateY);
   }
-  
+  pop();
   drawComponentsChooser();
   /*
   * Solution temporaire pour que le composant s'affiche par dessus 
@@ -164,6 +169,13 @@ function setGrid() {
   }
   pop();
 }
+function applyScale(){
+  translate(grid.transX, grid.transY);
+  scale(grid.scale);
+  
+  
+}
+
 function drawPointLineGrid() {
   push();
   drawLineGrid();
@@ -397,6 +409,23 @@ function mouseReleased() {
 	fils.pop();
     draggedFil = null;
   }
+}
+
+function mouseWheel(event){
+  push();
+  if(event.delta < 0){
+    grid.scale=Math.min(grid.scale * 1.1, 13.5);
+    grid.transX = grid.transX - (mouseX - grid.transX ) * 0.1;
+    grid.transY = grid.transY - (mouseY - grid.transY) * 0.1
+  }
+    
+  else{
+    grid.scale = Math.max(grid.scale * 0.9, 0.07);
+    grid.transX =grid.transX - (mouseX - grid.transX ) * -0.1;
+    grid.transY = grid.transY - (mouseY - grid.transY ) * -0.1
+  }
+  pop();
+  
 }
 
 function keyPressed() {
