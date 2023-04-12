@@ -472,3 +472,44 @@ function windowResized(){
 function refresh() {
   initComponents();
 }
+
+function saveCircuit(){
+  //Envoyer à la database
+  let error;
+  if(error != null){
+    //message
+  } else{
+    //savedCircuit = circuit;
+  }
+}
+
+function verifierSave(){
+  //return saveCircuit == circuit
+}
+
+function telecharger(){
+  let download = true;
+  if(!verifierSave()){
+    let response;// = Message de confirmation
+    if(response =='save'){
+      saveCircuit();
+    }else if(response =='annuler'){
+      download = false;
+    }
+  }
+  if(download){
+    //save(circuit,projet.name + '.json')
+  }
+}
+
+function cadrerGrille(){
+  let xMin = Math.min.apply(Math, components.map(composant => composant.x));
+  let xMax = Math.max.apply(Math, components.map(composant => composant.x));
+  let yMin = Math.min.apply(Math, components.map(composant => composant.y));
+  let yMax = Math.max.apply(Math, components.map(composant => composant.y));
+  //let deltaX = xMax - xMin;
+  //let deltaY = yMax - yMin;
+  grid.translateX = (width - (xMin + xMax) + grid.offsetX)/2;
+  grid.translateY = (height - (yMin + yMax) + grid.offsetY)/2;
+  // il reste la partie scale si on veut que tout rentre
+}
