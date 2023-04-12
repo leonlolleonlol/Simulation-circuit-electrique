@@ -86,8 +86,6 @@ function validerAction(action){
      action.type !== MODIFIER && action.type !== REPLACE &&
      action.type !== RESET)
     return false;
-
-  
   if(action.type === RESET || !(action.objet instanceof Composant || action.objet.getType()==='fil'))
     return false;
   if(action.type === MODIFIER){

@@ -393,9 +393,10 @@ function mouseReleased() {
   // Arrète le drag si il y en avait un en cours
   //cursor(ARROW);
   if (draggedElement != null && origin !=null) {
-    draggedElement.drag = false;
     draggedElement = null;
     origin = null;
+  } else if(draggedElement != null && draggedElement===grid){
+    draggedElement = null;
   } else if(draggedElement != null){
     let action = {type:MODIFIER, objet:draggedElement, changements:[
 			{attribut:'x', ancienne_valeur:draggedElement.pastX, nouvelle_valeur:draggedElement.x},
