@@ -25,12 +25,11 @@ function undo(){
   if(undo_list.length > 0){
     let actions = undo_list.pop();
     redo_list.push(actions);
-    if(!actions instanceof Array)
+    if(!(actions instanceof Array))
       actions = [actions];
-
     for(const action of actions){
       if(action.type===CREATE){
-        if(action.objet.type!='fil')
+        if(action.objet.getType()!='fil')
           components.splice(components.indexOf(action.objet),1);
         else
           fils.pop();
@@ -55,11 +54,11 @@ function redo(){
   if(redo_list.length > 0){
     let actions = redo_list.pop();
     undo_list.push(actions);
-    if(!actions instanceof Array)
+    if(!(actions instanceof Array))
       actions = [actions];
     for (const action of actions) {
       if(action.type===CREATE){
-        if(action.objet.type!='fil')
+        if(action.objet.getType()!='fil')
           components.push(action.objet);
         else
           fils.push(action.objet);

@@ -319,10 +319,10 @@ function mousePressed() {
       new_element.xOffsetDrag = mouseX - element.x;
       new_element.yOffsetDrag = mouseY - element.y;
       // Autres ajout dans les modules
-      components.push(new_element);
+      
       draggedElement = new_element;
       selection = new_element;
-      addActions( { type: CREATE, objet: new_element }, 0);
+      break;
     }
 
   } 
@@ -334,6 +334,8 @@ function mousePressed() {
         selection = element;
         draggedElement.xOffsetDrag = mouseX - draggedElement.x;
         draggedElement.yOffsetDrag = mouseY - draggedElement.y;
+        draggedElement.pastX = draggedElement.x;
+        draggedElement.pastY = draggedElement.y;
         break;
       }
     }//mouseX - offsetX > element.x - 10
@@ -346,12 +348,11 @@ function mousePressed() {
         yi: y_point,
         xf: x_point,
         yf: y_point,
-        type: "fil",
+        getType: function(){return "fil"},
     };
     draggedFil = fil;
     selection = fil;
     fils.push(fil);
-    addActions({type:CREATE,objet:fil});
   }
   if(draggedElement == null && draggedFil == null) {
     if(mouseX>grid.offsetX && mouseY> grid.offsetY)
@@ -393,6 +394,8 @@ function mouseReleased() {
   // Arrète le drag si il y en avait un en cours
   //cursor(ARROW);
   if (draggedElement != null && origin !=null) {
+    components.push(draggedElement);
+    addActions( { type: CREATE, objet: draggedElement });
     draggedElement = null;
     origin = null;
   } else if(draggedElement != null && draggedElement===grid){
@@ -406,8 +409,10 @@ function mouseReleased() {
     draggedElement = null;
     addActions(action);
   } else if (draggedFil != null) {
-      if(draggedFil.xi == draggedFil.xf && draggedFil.yi == draggedFil.yf)
-	fils.pop();
+      if(draggedFil.xi == draggedFil.xf &&
+         draggedFil.yi == draggedFil.yf)
+         fils.pop();
+      else addActions({type:CREATE,objet:draggedFil});
     draggedFil = null;
   }
 }
