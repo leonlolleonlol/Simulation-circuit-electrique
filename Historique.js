@@ -2,6 +2,7 @@ const MODIFIER = 'modifier';//typeAction, objet, changements:[attribut, ancienne
 const CREATE = 'créer';//typeAction, objet
 const DELETE = 'delete';//typeAction,objet
 const REPLACE = 'remplacer';//typeAction, objet, ancien_objet
+const RESET = 'recommencer';//typeAction,circuit
 
 
 
@@ -43,6 +44,8 @@ function undo(){
       } else if(action.type===REPLACE){
         components.splice(components.indexOf(action.nouvel_objet),1)
         components.push(action.ancien_objet);
+      } else if(action.type === RESET){
+        //circuit = action.circuit;
       }
     }
   }
@@ -70,6 +73,8 @@ function redo(){
       }else if(action.type === REPLACE){
         components.splice(components.indexOf(action.ancien_objet),1)
         components.push(action.nouvel_objet);
+      }else if(action.type === RESET){
+        initComponents();
       }
     }
   }
@@ -77,9 +82,13 @@ function redo(){
 
 function validerAction(action){
   
-  if(action.type !== CREATE && action.type !== DELETE && action.type !== MODIFIER && action.type !== REPLACE)
+  if(action.type !== CREATE && action.type !== DELETE && 
+     action.type !== MODIFIER && action.type !== REPLACE &&
+     action.type !== RESET)
     return false;
-  if(!(action.objet instanceof Composant || action.objet.getType()==='fil'))
+
+  
+  if(action.type === RESET || !(action.objet instanceof Composant || action.objet.getType()==='fil'))
     return false;
   if(action.type === MODIFIER){
     if(!action.changements instanceof Array)
@@ -93,6 +102,10 @@ function validerAction(action){
   }
   if(action.type === REPLACE){
     if(!action.ancien_objet instanceof Composant)
+      return false;
+  }
+  if(action.type === RESET){
+    if(!action.circuit instanceof Circuit)
       return false;
   }
   return true;
