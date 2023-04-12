@@ -12,57 +12,71 @@ const limitActions = 100;
 
 function addActions(action){
   redo_list.length = 0;
+  if(action instanceof Array){
+    for (const a of action) {
+      validerAction(a);
+    }
+  }else validerAction(action);
   undo_list.push(action);
   applyLimitActions();
 }
 function undo(){
   if(undo_list.length > 0){
-    let action = undo_list.pop();
-    redo_list.push(action);
-    if(action.type===CREATE){
-      if(action.objet.type!='fil')
-        components.splice(components.indexOf(action.objet),1);
-      else
-        fils.pop();
-    }else if(action.type===DELETE){
-      components.push(action.objet);
-    }else if(action.type===MODIFIER){
-      let composant = action.objet;
-      for(changement of action.changements){
-        composant[changement.attribut] = changement.ancienne_valeur;
+    let actions = undo_list.pop();
+    redo_list.push(actions);
+    if(!actions instanceof Array)
+      actions = [actions];
+
+    for(const action of actions){
+      if(action.type===CREATE){
+        if(action.objet.type!='fil')
+          components.splice(components.indexOf(action.objet),1);
+        else
+          fils.pop();
+      }else if(action.type===DELETE){
+        components.push(action.objet);
+      }else if(action.type===MODIFIER){
+        let composant = action.objet;
+        for(changement of action.changements){
+          composant[changement.attribut] = changement.ancienne_valeur;
+        }
+      } else if(action.type===REPLACE){
+        components.splice(components.indexOf(action.nouvel_objet),1)
+        components.push(action.ancien_objet);
       }
-    } else if(action.type===REPLACE){
-        composants.splice(composants.indexOf(action.nouvel_objet),1)
-        composants.push(action.ancien_objet);
     }
   }
 }
 function redo(){
   // Enlever toute les actions qui suivent
   if(redo_list.length > 0){
-    let action = redo_list.pop();
-    undo_list.push(action);
-    if(action.type===CREATE){
-      if(action.objet.type!='fil')
-        components.push(action.objet);
-      else
-        fils.push(action.objet);
-    }else if(action.type===DELETE){
-      components.pop();
-    }else if(action.type===MODIFIER){
-      let composant = action.objet;
-      for(changement of action.changements){
-        composant[changement.attribut] = changement.nouvelle_valeur;
+    let actions = redo_list.pop();
+    undo_list.push(actions);
+    if(!actions instanceof Array)
+      actions = [actions];
+    for (const action of actions) {
+      if(action.type===CREATE){
+        if(action.objet.type!='fil')
+          components.push(action.objet);
+        else
+          fils.push(action.objet);
+      }else if(action.type===DELETE){
+        components.pop();
+      }else if(action.type===MODIFIER){
+        let composant = action.objet;
+        for(changement of action.changements){
+          composant[changement.attribut] = changement.nouvelle_valeur;
+        }
+      }else if(action.type === REPLACE){
+        components.splice(components.indexOf(action.ancien_objet),1)
+        components.push(action.nouvel_objet);
       }
-    }else if(action.type === REPLACE){
-      composants.splice(composants.indexOf(action.ancien_objet),1)
-      composants.push(action.nouvel_objet);
     }
   }
 }
 
 function validerAction(action){
-
+  
   if(action.type !== CREATE && action.type !== DELETE && action.type !== MODIFIER && action.type !== REPLACE)
     return false;
   if(!(action.objet instanceof Composant || action.objet.getType()==='fil'))
