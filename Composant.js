@@ -132,7 +132,7 @@ class Condensateur extends Composant {
   class Batterie extends Composant {
     constructor(x, y, tension, orientation) {
         super(x, y);
-	    this.tension = tension;
+	      this.tension = tension;
         this.orientation = orientation;
     }
     inBounds(mouseX, mouseY, offsetX, offsetY) {
@@ -199,7 +199,11 @@ class Noeuds extends Composant {
 
   ajouterComposanteALaFin(composant){
     this.circuitsEnParallele.push(composant);
-}
+  }
+
+  retirerCircuit(position){
+    this.circuitsEnParallele.splice(position, 1);
+  }
  /**
   * Sert à trouver le circuit équivalent en série
   */
@@ -255,6 +259,18 @@ class Noeuds extends Composant {
   }
   checkConnection(x, y, aproximation){
     return false;
+  }
+
+  remplirResisteursAvecDifTension(){
+    for (let i = 0; i < this.circuitsEnParallele.length; i++){
+      if(this.circuit[i].getType == circuitType.seulementR){
+        this.circuitsEnParallele[i].courant = this.tensionEQ / this.resistanceEQ;
+        this.circuitsEnParallele[i].remplirResisteursAvecCourant();
+      }else if(this.circuit[i].getType = composantType.noeudType){
+        this.circuitsEnParallele[i].tensionEQ = this.tensionEQ;
+        this.circuitsEnParallele[i].remplirResisteursAvecDifTension();
+      }
+    }
   }
 
   getType() {

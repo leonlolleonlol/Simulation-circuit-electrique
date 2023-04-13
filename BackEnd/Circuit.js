@@ -99,7 +99,9 @@ class Circuit{
                         this.resistanceEQ += this.circuit[i].resistance;
                     }
                 }
-                this.courant = this.tensionEQ / this.resistanceEQ;
+                if(this.premierCircuit){
+                    this.courant = this.tensionEQ / this.resistanceEQ;
+                }
                 //TODO remplir les valeurs dans chaque résistances
                 break;
             case circuitType.seulementC:
@@ -112,7 +114,9 @@ class Circuit{
                     }
                 }
                 this.capaciteEQ = 1/capaciteTemp;
-                this.charge = this.capaciteEQ * this.tensionEQ; 
+                if(this.premierCircuit){
+                    this.charge = this.capaciteEQ * this.tensionEQ; 
+                }
                 //TODO remplir les valeurs dans chaque Condensateur
                 break;
             case circuitType.RC:
@@ -173,6 +177,19 @@ class Circuit{
 
     getTypeCalcul(){
         return this.type;
+    }
+
+    remplirResisteursAvecCourant(){
+        for (let i = 0; i < this.circuit.length; i++){
+            if(this.circuit[i].getType == composantType.resisteurType){
+                this.circuit[i].courant = this.courant;
+                this.circuit[i].tension = this.courant * this.circuit[i].resistance;
+            }else if(this.circuit[i].getType = composantType.noeudType){
+                this.circuit[i].tensionEQ = this.courant * this.circuit[i].resistanceEQ;
+                print(this.circuit[i].getType);
+                this.circuit[i].remplirResisteursAvecDifTension();
+            }
+        }
     }
 }
 
