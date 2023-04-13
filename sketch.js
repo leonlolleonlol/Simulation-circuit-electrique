@@ -70,13 +70,25 @@ function setup() {
 function test(){
   c1.ajouterComposanteALaFin(new Batterie(0, 0, 10));
   n1 = new Noeuds();
+
   c2 = new Circuit(false);
-  c3 = new Circuit(false);
-  c2.ajouterComposanteALaFin(new Resisteur(0, 0, 30));
-  c2.ajouterComposanteALaFin(new Resisteur(0, 0, 40));
-  c3.ajouterComposanteALaFin(new Resisteur(0, 0, 90));
+  c2.ajouterComposanteALaFin(new Condensateur(0, 0, 30));
+  c2.ajouterComposanteALaFin(new Condensateur(0, 0, 40));
   n1.ajouterComposanteALaFin(c2);
+
+
+  n2 = new Noeuds();
+  c4 = new Circuit(false);
+  c4.ajouterComposanteALaFin(new Condensateur(0, 0, 15));
+  c4.ajouterComposanteALaFin(new Condensateur(0, 0, 25));
+  c4.ajouterComposanteALaFin(new Condensateur(0, 0, 35));
+  n2.ajouterComposanteALaFin(c4);
+
+  c3 = new Circuit(false);
+  c3.ajouterComposanteALaFin(new Condensateur(0, 0, 90));
+  c3.ajouterComposanteALaFin(n2);
   n1.ajouterComposanteALaFin(c3);
+  
   c1.ajouterComposanteALaFin(n1);
   c1.update();
 }
