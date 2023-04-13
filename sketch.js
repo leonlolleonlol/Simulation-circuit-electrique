@@ -25,6 +25,8 @@ let line_grid_button;
 let point_line_grid_button;
 let canvas;
 
+let c1; //variable contenant l'instance du circuit. Sert pour les calculs
+
 let backgroundColor = 'rgb(51,51,51)';//220
 
 // Initialisation du circuit
@@ -57,11 +59,27 @@ function setup() {
   line_grid_button.mousePressed(function(){ grid.quadrillage='line';});
   point_grid_button.mousePressed(function(){ grid.quadrillage='point';});
   point_line_grid_button.mousePressed(function(){ grid.quadrillage='points&lines';});
+  c1 = new Circuit(true);
+
   //-----------------------------------------
   initComponents();
+
+  test();
 }
 
-
+function test(){
+  c1.ajouterComposanteALaFin(new Batterie(0, 0, 10));
+  n1 = new Noeuds();
+  c2 = new Circuit(false);
+  c3 = new Circuit(false);
+  c2.ajouterComposanteALaFin(new Resisteur(0, 0, 30));
+  c2.ajouterComposanteALaFin(new Resisteur(0, 0, 40));
+  c3.ajouterComposanteALaFin(new Resisteur(0, 0, 90));
+  n1.ajouterComposanteALaFin(c2);
+  n1.ajouterComposanteALaFin(c3);
+  c1.ajouterComposanteALaFin(n1);
+  c1.update();
+}
 
 function initComponents(){
   fils = [];
@@ -381,13 +399,13 @@ function mousePressed() {
       origin = element;
       // Création d'un nouveau composants selon le composant sélectionner
       if(element.getType() == 'batterie'){
-        new_element = new Batterie(element.x - grid.translateX, element.y - grid.translateY);
+        new_element = new Batterie(element.x - grid.translateX, element.y - grid.translateY, 0);
       }else if(element.getType() == 'resisteur'){
-        new_element = new Resisteur(element.x - grid.translateX, element.y - grid.translateY);
+        new_element = new Resisteur(element.x - grid.translateX, element.y - grid.translateY, 0);
       }else if(element.getType() == 'ampoule'){
-        new_element = new Ampoule(element.x - grid.translateX, element.y - grid.translateY);
+        new_element = new Ampoule(element.x - grid.translateX, element.y - grid.translateY, 0);
       }else if(element.getType() == 'condensateur'){
-        new_element = new Condensateur(element.x - grid.translateX, element.y - grid.translateY, 'right');
+        new_element = new Condensateur(element.x - grid.translateX, element.y - grid.translateY, 0, 'right');
       }else if(element.getType() == 'diode'){
         new_element = new Diode(element.x - grid.translateX, element.y - grid.translateY, 'right');
       }
