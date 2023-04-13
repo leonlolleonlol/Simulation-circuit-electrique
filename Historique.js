@@ -46,10 +46,20 @@ function undo(){
         components.splice(action.ancien_objet.index,0,action.ancien_objet.objet);
         }
         else{
-          fils.splice(components.indexOf(action.objet),1);
-          for (let index = action.ancien_objet.length - 1; index >=0 ; index--) {
-            const fil = action.ancien_objet[index];
-            fils.splice(fil.index,0,fil.objet);
+          if(objet instanceof Array){
+            for (let index = action.objet.length - 1; index >=0 ; index--) {
+              const fil = action.objet[index];
+              fils.splice(components.indexOf(fil.objet), 1);
+            }
+          }else
+            fils.splice(components.indexOf(action.objet), 1);
+          if(action.ancien_objet instanceof Array){
+            for (let index = action.ancien_objet.length - 1; index >=0 ; index--) {
+              const fil = action.ancien_objet[index];
+              fils.splice(fil.index,0,fil.objet);
+            }
+          }else{
+            fils.splice(action.ancien_objet.index, 0, action.ancien_objet.objet);
           }
         }
       } else if(action.type === RESET){
@@ -83,10 +93,21 @@ function redo(){
           components.splice(components.indexOf(action.ancien_objet),1)
           components.push(action.objet);
         }else{
-          for (const fil of action.ancien_objet){
-            fils.splice(fils.indexOf(fil.objet),1);
+          if(action.ancien_objet instanceof Array){
+            for (const fil of action.ancien_objet){
+              fils.splice(fils.indexOf(fil.objet),1);
+            }
+          } else{
+            fils.splice(fils.indexOf(action.ancien_objet),1);
           }
-          fils.push(action.objet);
+          if(action.objet instanceof Array){
+            for (const fil of action.objet){
+              fils.splice(fil.objet.index, 0, fil.objet.objet);
+            }
+          }else{
+            fils.push(action.objet);
+          }
+          
         }
         
       }else if(action.type === RESET){
