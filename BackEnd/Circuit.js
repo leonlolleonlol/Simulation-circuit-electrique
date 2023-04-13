@@ -56,7 +56,6 @@ class Circuit{
      * branche principale.
      */
     update(){//Chaque fois qu'il y a un changement dans le circuit
-        print("appelle update");
         if(this.premierCircuit){
             this.rearrangerArrayCircuit();
             this.tensionEQ = this.circuit[0].tension;
@@ -66,7 +65,6 @@ class Circuit{
         if(this.valide){
             this.trouverEq();
         }
-    
     }
     
     /**
@@ -94,7 +92,6 @@ class Circuit{
         
         switch (this.type){
             case circuitType.seulementR:
-            
                 for (let i = 0; i < this.circuit.length; i++){
                     if(this.circuit[i].getTypeCalcul() == composantType.noeudType){
                         this.resistanceEQ += this.circuit[i].resistanceEQ;
@@ -103,7 +100,6 @@ class Circuit{
                     }
                 }
                 this.courant = this.tensionEQ / this.resistanceEQ;
-
                 //TODO remplir les valeurs dans chaque résistances
                 break;
             case circuitType.seulementC:
@@ -116,18 +112,20 @@ class Circuit{
                     }
                 }
                 this.capaciteEQ = 1/capaciteTemp;
-
                 this.charge = this.capaciteEQ * this.tensionEQ; 
                 //TODO remplir les valeurs dans chaque Condensateur
                 break;
             case circuitType.RC:
                 //C'est là que c'est difficile
                 //On peut aussi juste dire que le circuit est invalide.
-                alert("Ceci est en dehors de nos connaissance"); //(rip)
+                alert("Circuit RC détecté"); //(rip)
                 break;
         }
-        
-        print(this.charge);
+
+        if(this.premierCircuit){
+            print("CapaciteEQ: " + this.capaciteEQ);
+            print("ResistanceEQ: " + this.resistanceEQ);
+        }
     }
 
     /**
@@ -147,7 +145,8 @@ class Circuit{
                     circuitC = true;
                     break;
                 case composantType.noeudType:
-                    switch(this.circuit[i].trouverTypeDeCircuit){
+                    this.circuit[i].trouverEq();
+                    switch(this.circuit[i].type){
                         case circuitType.seulementR:
                             circuitR = true;
                             break;
@@ -158,11 +157,10 @@ class Circuit{
                             circuitRC = true;
                             break;
                     }
-                    this.circuit[i].trouverEq;
+                    
                     break;
             }
         }
-
         if((circuitR && circuitC) || circuitRC){
             this.type = circuitType.RC;
             //Même chose que : this.type = 09842;

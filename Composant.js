@@ -57,15 +57,15 @@ class Resisteur extends Composant {
     }
 
     getType() {
-        return Resisteur.getType();
+      return Resisteur.getType();
     }
     static getType() {
-        return 'resisteur';
+      return 'resisteur';
     }
 
     //Ne pas changer cette methode, elle doit être comme ça pour les calculs
     getTypeCalcul() {
-      return composantType.Resisteur;
+      return composantType.resisteurType;
     }
 }
 
@@ -125,7 +125,7 @@ class Condensateur extends Composant {
     }
     //Ne pas changer cette methode, elle doit être comme ça pour les calculs
     getTypeCalcul() {
-      return composantType.Condensateur;
+      return composantType.condensateurType;
     }
   }
 
@@ -197,11 +197,14 @@ class Noeuds extends Composant {
 
   }
 
+  ajouterComposanteALaFin(composant){
+    this.circuitsEnParallele.push(composant);
+}
  /**
   * Sert à trouver le circuit équivalent en série
   */
  trouverEq(){
-    for (let i = 0; i < circuitsEnParallele.length; i++){ 
+    for (let i = 0; i < this.circuitsEnParallele.length; i++){ 
       this.circuitsEnParallele[i].trouverEq();
     }
 
@@ -209,29 +212,30 @@ class Noeuds extends Composant {
     
     switch (this.type){
         case circuitType.seulementR:
-          let resistancetemp = 0;
+          let resistanceTemp = 0;
             for (let i = 0; i < this.circuitsEnParallele.length; i++){ 
-                resistancetemp += 1 / this.circuit[i].resistanceEQ;
+              resistanceTemp += 1 / this.circuitsEnParallele[i].resistanceEQ;
             }
             this.resistanceEQ = 1 / resistanceTemp;
             break;
         case circuitType.seulementC:
             for (let i = 0; i < this.circuitsEnParallele.length; i++){ 
-              this.capaciteEQ += this.circuit[i];
+              this.capaciteEQ += this.circuitsEnParallele[i].capaciteEQ;
             }
             break;
         case circuitType.RC:
             //C'est là que c'est difficile
             break;
     }
+
   }
 
   trouverTypeDeCircuit(){
     let circuitR = false;
     let circuitC = false;
 
-    for (let i = 0; i < circuitsEnParallele.length; i++){ 
-        switch(this.circuitsEnParallele[i].getTypeCalcul()()){
+    for (let i = 0; i < this.circuitsEnParallele.length; i++){ 
+        switch(this.circuitsEnParallele[i].getTypeCalcul()){
             case circuitType.seulementR:
                 circuitR = true;
                 break;
