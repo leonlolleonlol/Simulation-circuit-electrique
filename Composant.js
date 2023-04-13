@@ -278,13 +278,8 @@ class Noeuds extends Composant {
 
   remplirResisteursAvecDifTension(){
     for (let i = 0; i < this.circuitsEnParallele.length; i++){
-      if(this.circuit[i].getType == circuitType.seulementR){
-        this.circuitsEnParallele[i].courant = this.tensionEQ / this.resistanceEQ;
-        this.circuitsEnParallele[i].remplirResisteursAvecCourant();
-      }else if(this.circuit[i].getType = composantType.noeudType){
-        this.circuitsEnParallele[i].tensionEQ = this.tensionEQ;
-        this.circuitsEnParallele[i].remplirResisteursAvecDifTension();
-      }
+      this.circuitsEnParallele[i].courant = this.tensionEQ / this.circuitsEnParallele[i].resistanceEQ;
+      this.circuitsEnParallele[i].remplirResisteursAvecCourant();
     }
   }
 
