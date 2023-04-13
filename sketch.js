@@ -59,6 +59,7 @@ function setup() {
   line_grid_button.mousePressed(function(){ grid.quadrillage='line';});
   point_grid_button.mousePressed(function(){ grid.quadrillage='point';});
   point_line_grid_button.mousePressed(function(){ grid.quadrillage='points&lines';});
+  c1 = new Circuit(true);
 
   //-----------------------------------------
   initComponents();
