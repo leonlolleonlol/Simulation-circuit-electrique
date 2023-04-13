@@ -102,6 +102,7 @@ function initComponents(){
   draggedFil = null;
   origin = null;
   grid = {
+    offsetX:300,
     offsetY: 20,
     tailleCell: 30,
     translateX: 0,
@@ -120,7 +121,7 @@ function initComponents(){
                       new Condensateur(60, 415, 'right')];
 }
 function initPosition(){
-  grid.offsetX = max(200 * width/1230,138) ;
+ // grid.offsetX = max(200 * width/1230,138) ;
 }
 
 /**
@@ -137,8 +138,11 @@ function draw() {
   else
 	undo_button.removeAttribute('disabled');
   //Dessiner la grille dépendant du du parametre
+  stroke('red')
+  strokeWeight(2);
   push();
-  applyScale();
+  applyZoom();
+  point((width+grid.offsetX)/2,(height+grid.offsetY)/2 )
   if (grid.quadrillage == 'point')
     drawPointGrid();
   else if (grid.quadrillage == 'line')
@@ -155,9 +159,17 @@ function draw() {
   * Solution temporaire pour que le composant s'affiche par dessus 
   * le reste déplacer du panneau de choix
   */
+ push();
+ applyZoom();
   if (origin != null) {
-    draggedElement.draw(grid.translateX, grid.translateY);
+    draggedElement.draw(grid.translateX, grid.translateY,grid.scale);
   }
+  pop()
+}
+
+function applyZoom(){
+  //translate(grid.transX,grid.transY);
+  scale(grid.scale);
 }
 
 function drawComponentsChooser() {
@@ -186,27 +198,20 @@ function drawPointGrid() {
 function setGrid() {
   push();
   strokeWeight(6);
-  for (let i = 0; i * grid.tailleCell < windowWidth - grid.offsetX; i++) {
-    for (let j = 0; j * grid.tailleCell < windowHeight - grid.offsetY; j++) {
+  for (let i = 0; i * grid.tailleCell < (width - grid.offsetX)/grid.scale; i++) {
+    for (let j = 0; j * grid.tailleCell < (height- grid.offsetY) /grid.scale; j++) {
       if (
-        !(grid.translateX % grid.tailleCell < 0 && i == 0) &&
-        !(grid.translateY % grid.tailleCell < 0 && j == 0)
+        !((grid.translateX) % (grid.tailleCell) < 0 && i == 0) &&
+        !((grid.translateY) % (grid.tailleCell) < 0 && j == 0)
       )
         point(
-          grid.offsetX + i * grid.tailleCell + (grid.translateX % grid.tailleCell),
+          grid.offsetX/grid.scale + i * grid.tailleCell + (grid.translateX % grid.tailleCell),
           grid.offsetY + j * grid.tailleCell + (grid.translateY % grid.tailleCell)
         );
     }
   }
   pop();
 }
-function applyScale(){
-  translate(grid.transX, grid.transY);
-  scale(grid.scale);
-  
-  
-}
-
 function drawPointLineGrid() {
   push();
   drawLineGrid();
@@ -266,10 +271,9 @@ function drawFils() {
 function findGridLockX(offset) {
   return (
     round(
-      (mouseX - grid.offsetX - offset) / grid.tailleCell
-    ) *
-    grid.tailleCell +
-    grid.offsetX
+      (mouseX/grid.scale - grid.offsetX - offset) / 
+      (grid.tailleCell)) *
+    (grid.tailleCell) + grid.offsetX
   );
 }
 /**
@@ -280,8 +284,10 @@ function findGridLockX(offset) {
  */
 function findGridLockY(offset) {
   return (
-    round((mouseY - grid.offsetY - offset) / grid.tailleCell) * grid.tailleCell +
-    grid.offsetY
+    round(
+    (mouseY/grid.scale - grid.offsetY - offset) / 
+    (grid.tailleCell)) * 
+    (grid.tailleCell) + grid.offsetY
   );
 }
 function isElementDrag(element){
@@ -293,18 +299,22 @@ function isElementSelectionner(element){
 }
 // Fonction fil -----------------------------
 function validFilBegin(){
-let x = mouseX - grid.offsetX - grid.translateX;
-let y = mouseY - grid.offsetY - grid.translateY;
-  if (mouseX <= grid.offsetX || mouseY <= grid.offsetY)
+let x = (mouseX - grid.offsetX)/grid.scale - grid.translateX;
+let y = (mouseY - grid.offsetY)/grid.scale - grid.translateY;
+  if (mouseX <= grid.offsetX || mouseY <= grid.offsetY){
     return false;
-  else if (!((x % grid.tailleCell < 20 ||
-            (x + 20) % grid.tailleCell < 20) &&
-          (y % grid.tailleCell < 20 ||
-            (y + 20) % grid.tailleCell < 20)))
-    return false;
+  }
+    
+  else if (!((x % (grid.tailleCell*grid.scale) < 20*grid.scale ||
+            (x + 20*grid.scale) % (grid.tailleCell*grid.scale) < 20*grid.scale) &&
+          (y % (grid.tailleCell*grid.scale) < 20*grid.scale ||
+            (y + 20*grid.scale) % (grid.tailleCell*grid.scale) < 20*grid.scale))){
+              return false;
+            }
+    
   else {
-    let xd = mouseX - grid.translateX;
-    let yd = mouseY - grid.translateY;
+    let xd = (mouseX)/grid.scale - grid.translateX;
+    let yd = (mouseY)/grid.scale - grid.translateY;
     for(let i=0;i<components.length;i++)
       if(components[i].checkConnection(xd, yd, 10))
         return true; 
@@ -355,6 +365,14 @@ function simplifyNewFil(testFil){
     }
   }
   for (let index = 0; index < fils_remplacer.length; index++) {
+    let x0 = Math.min(fils_remplacer[index].objet.xi,testFil.xi,fils_remplacer[index].objet.xf,testFil.xf);
+    let x1 = Math.max(fils_remplacer[index].objet.xi,testFil.xi,fils_remplacer[index].objet.xf,testFil.xf);
+    let y0 = Math.min(fils_remplacer[index].objet.yi,testFil.yi,fils_remplacer[index].objet.yf,testFil.yf);
+    let y1 = Math.max(fils_remplacer[index].objet.yi,testFil.yi,fils_remplacer[index].objet.yf,testFil.yf);
+    testFil.xi = x0
+    testFil.yi = y0;
+    testFil.xf = x1
+    testFil.yf = y1;
     let i = fils.indexOf(fils_remplacer[index].objet);
     fils_remplacer[index].index = i;
     fils.splice(i,1);
@@ -368,7 +386,7 @@ function simplifyNewFil(testFil){
 // --------------------------------------
 
 function validComposantPos(composant){
-  if (composant.x <= grid.offsetX || composant.y <= grid.offsetY)
+  if (composant.x <= grid.offsetX/grid.scale- grid.translateX || composant.y <= grid.offsetY/grid.scale- grid.translateY)
     return false;
   for (const composantTest of components) {
     if(composantTest.checkConnection(composant.x,composant.y,1))
@@ -413,18 +431,18 @@ function mousePressed() {
       origin = element;
       // Création d'un nouveau composants selon le composant sélectionner
       if(element.getType() == 'batterie'){
-        new_element = new Batterie(element.x - grid.translateX, element.y - grid.translateY, 0);
+        new_element = new Batterie(element.x/grid.scale - grid.translateX, element.y/grid.scale - grid.translateY, 0);
       }else if(element.getType() == 'resisteur'){
-        new_element = new Resisteur(element.x - grid.translateX, element.y - grid.translateY, 0);
+        new_element = new Resisteur(element.x/grid.scale - grid.translateX, element.y/grid.scale - grid.translateY, 0);
       }else if(element.getType() == 'ampoule'){
-        new_element = new Ampoule(element.x - grid.translateX, element.y - grid.translateY, 0);
+        new_element = new Ampoule(element.x/grid.scale - grid.translateX, element.y/grid.scale - grid.translateY, 0);
       }else if(element.getType() == 'condensateur'){
-        new_element = new Condensateur(element.x - grid.translateX, element.y - grid.translateY, 0, 'right');
+        new_element = new Condensateur(element.x/grid.scale - grid.translateX, element.y/grid.scale - grid.translateY, 0, 'right');
       }else if(element.getType() == 'diode'){
-        new_element = new Diode(element.x - grid.translateX, element.y - grid.translateY, 'right');
+        new_element = new Diode(element.x/grid.scale - grid.translateX, element.y/grid.scale - grid.translateY, 'right');
       }
-      new_element.xOffsetDrag = mouseX - element.x;
-      new_element.yOffsetDrag = mouseY - element.y;
+      new_element.xOffsetDrag = (mouseX - element.x)/grid.scale;
+      new_element.yOffsetDrag = (mouseY - element.y)/grid.scale;
       // Autres ajout dans les modules
       
       draggedElement = new_element;
@@ -436,11 +454,11 @@ function mousePressed() {
   // Vérification drag parmis les composants de la grille
   if(draggedElement == null) {
     for (let element of components) {
-      if (element.inBounds(mouseX, mouseY, grid.translateX, grid.translateY)) {
+      if (element.inBounds((mouseX/grid.scale), (mouseY/grid.scale), grid.translateX, grid.translateY)) {
         draggedElement = element;
         selection = element;
-        draggedElement.xOffsetDrag = mouseX - draggedElement.x;
-        draggedElement.yOffsetDrag = mouseY - draggedElement.y;
+        draggedElement.xOffsetDrag = mouseX/grid.scale - draggedElement.x;
+        draggedElement.yOffsetDrag = mouseY/grid.scale - draggedElement.y;
         draggedElement.pastX = draggedElement.x;
         draggedElement.pastY = draggedElement.y;
         break;
@@ -480,8 +498,8 @@ function mouseDragged() {
   else if (draggedElement != null) {
     if(draggedElement === grid){
       //cursor(MOVE);
-      grid.translateX += mouseX - pmouseX;
-      grid.translateY += mouseY - pmouseY;
+      grid.translateX += (mouseX - pmouseX)/grid.scale;
+      grid.translateY += (mouseY - pmouseY)/grid.scale;
     } else{
     //cursor('grabbing');
     draggedElement.x = findGridLockX(
@@ -529,14 +547,15 @@ function mouseWheel(event){
   push();
   if(event.delta < 0){
     grid.scale=Math.min(grid.scale * 1.1, 13.5);
-    grid.transX = grid.transX - (mouseX - grid.transX ) * 0.1;
+    grid.transX = grid.transX - (mouseX - grid.transX) * 0.1;
     grid.transY = grid.transY - (mouseY - grid.transY) * 0.1
   }
     
   else{
     grid.scale = Math.max(grid.scale * 0.9, 0.07);
-    grid.transX =grid.transX - (mouseX - grid.transX ) * -0.1;
-    grid.transY = grid.transY - (mouseY - grid.transY ) * -0.1
+    
+    grid.transX = grid.transX - (mouseX - grid.transX) * -0.1;
+    grid.transY = grid.transY - (mouseY - grid.transY) * -0.1;
   }
   pop();
   

@@ -18,7 +18,6 @@ function resisteur(x, y, orientation, drag) {
   if(drag)
     scale(1.1);
 
-
     // Gradients
   let fillGrad = drawingContext.createLinearGradient(-25, -10, 25, 10);
   fillGrad.addColorStop(0, blendBG("rgba(241,39,17,0.6)"));
