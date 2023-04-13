@@ -70,16 +70,6 @@ class Circuit{
      */
     rearrangerArrayCircuit(){
     }
-    
-    /**
-     * Regarde s'il y a au moins un chemin possible pour le courant. Devrait mettre la variable "valide"
-     * à false s'il n'y a pas de chemin pour le courant.
-     */
-    validerCircuit(){
-        //traverser à travers les circuits s'il y a une diode dans le sens inverse
-        // Exception si dans noeud il pile et diode sens inverse circuit au complet marche pas
-        this.valide = true;
-    }
 
     /**
      * Sert à trouver le circuit équivalent en série
@@ -99,6 +89,7 @@ class Circuit{
                     if(this.premierCircuit){
                         this.courant = this.tensionEQ / this.resistanceEQ;
                     }
+                    this.remplirResisteursAvecCourant();
                     //TODO remplir les valeurs dans chaque résistances
                     break;
                 case circuitType.seulementC:
@@ -186,13 +177,14 @@ class Circuit{
     }
 
     remplirResisteursAvecCourant(){
+
         for (let i = 0; i < this.circuit.length; i++){
-            if(this.circuit[i].getType == composantType.resisteurType){
+            if(this.circuit[i].getTypeCalcul() == composantType.resisteurType){
+                
                 this.circuit[i].courant = this.courant;
                 this.circuit[i].tension = this.courant * this.circuit[i].resistance;
-            }else if(this.circuit[i].getType = composantType.noeudType){
+            }else if(this.circuit[i].getTypeCalcul() == composantType.noeudType){
                 this.circuit[i].tensionEQ = this.courant * this.circuit[i].resistanceEQ;
-                print(this.circuit[i].getType);
                 this.circuit[i].remplirResisteursAvecDifTension();
             }
         }
