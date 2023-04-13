@@ -41,8 +41,17 @@ function undo(){
           composant[changement.attribut] = changement.ancienne_valeur;
         }
       } else if(action.type===REPLACE){
-        components.splice(components.indexOf(action.nouvel_objet),1)
-        components.push(action.ancien_objet);
+        if(action.objet.getType()!='fil'){
+        components.splice(components.indexOf(action.objet),1);
+        components.splice(action.ancien_objet.index,0,action.ancien_objet.objet);
+        }
+        else{
+          fils.splice(components.indexOf(action.objet),1);
+          for (let index = action.ancien_objet.length - 1; index >=0 ; index--) {
+            const fil = action.ancien_objet[index];
+            fils.splice(fil.index,0,fil.objet);
+          }
+        }
       } else if(action.type === RESET){
         //circuit = action.circuit;
       }
@@ -70,8 +79,16 @@ function redo(){
           composant[changement.attribut] = changement.nouvelle_valeur;
         }
       }else if(action.type === REPLACE){
-        components.splice(components.indexOf(action.ancien_objet),1)
-        components.push(action.nouvel_objet);
+        if(action.objet.getType()!='fil'){
+          components.splice(components.indexOf(action.ancien_objet),1)
+          components.push(action.objet);
+        }else{
+          for (const fil of action.ancien_objet){
+            fils.splice(fils.indexOf(fil.objet),1);
+          }
+          fils.push(action.objet);
+        }
+        
       }else if(action.type === RESET){
         initComponents();
       }

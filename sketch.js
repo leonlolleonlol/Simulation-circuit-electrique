@@ -57,7 +57,6 @@ function setup() {
   line_grid_button.mousePressed(function(){ grid.quadrillage='line';});
   point_grid_button.mousePressed(function(){ grid.quadrillage='point';});
   point_line_grid_button.mousePressed(function(){ grid.quadrillage='points&lines';});
-
   //-----------------------------------------
   initComponents();
 }
@@ -260,7 +259,7 @@ function isElementDrag(element){
 function isElementSelectionner(element){
   return selection!=null && selection === element;
 }
-
+// Fonction fil -----------------------------
 function validFilBegin(){
 let x = mouseX - grid.offsetX - grid.translateX;
 let y = mouseY - grid.offsetY - grid.translateY;
@@ -294,6 +293,82 @@ let y = mouseY - grid.offsetY - grid.translateY;
       }
     }
   } 
+}
+
+function pente(fil){
+  return (fil.yf-fil.yi)/(fil.xf-fil.xi);
+}
+
+function filOverlap(fil1,fil2){
+  let pente1 = pente(fil1);
+  let pente2= pente(fil2);
+  //ne marche pas  en diagonal
+  if(pente1 === pente2)
+    return ((fil1.xi - fil2.xi)*(fil1.yi - fil2.yf)) - (fil1.xi - fil2.xf)*(fil1.yi - fil2.yi) == 0 ||
+           ((fil1.xf - fil2.xi)*(fil1.yf - fil2.yf)) - (fil1.xf - fil2.xf)*(fil1.yf - fil2.yi) == 0;
+  else return false;
+}
+
+function simplifyNewFil(testFil){
+  if(testFil.xi == testFil.xf &&
+    testFil.yi == testFil.yf){
+      fils.pop();
+      return;
+    }
+    
+  let fils_remplacer =[];
+  for (const fil of fils) {
+    if(fil!==testFil && filOverlap(testFil,fil)){
+      fils_remplacer.push({objet:fil});
+    }
+  }
+  for (let index = 0; index < fils_remplacer.length; index++) {
+    let i = fils.indexOf(fils_remplacer[index].objet);
+    fils_remplacer[index].index = i;
+    fils.splice(i,1);
+  }
+  if(fils_remplacer.length!=0)
+    addActions({type:REPLACE,objet:testFil,ancien_objet:fils_remplacer})
+  else
+    addActions({type:CREATE,objet:testFil})
+}
+
+// --------------------------------------
+
+function validComposantPos(composant){
+  if (composant.x <= grid.offsetX || composant.y <= grid.offsetY)
+    return false;
+  for (const composantTest of components) {
+    if(composantTest.checkConnection(composant.x,composant.y,1))
+      return false;
+  }
+  return true;
+}
+function simplifyComposant(composant, modif){
+  let composant_remplacer;
+  for (const composantTest of components) {
+    if(composantTest!== composant && composantTest.x == composant.x &&
+       composantTest.y == composant.y){
+        composant_remplacer = {objet:composantTest};
+        break;
+    }  
+  }
+  if(composant_remplacer!=null && modif){
+    let action = {type:MODIFIER, objet:composant, changements:[
+			{attribut:'x', ancienne_valeur:composant.pastX, nouvelle_valeur:composant.x},
+      {attribut:'y', ancienne_valeur:composant.pastY, nouvelle_valeur:composant.y}]};
+    let i = components.indexOf(composant_remplacer.objet);
+    composant_remplacer.index = i;
+    components.splice(i,1);
+    addActions([action,{type:REPLACE,objet:composant,ancien_objet:composant_remplacer}])
+  }else if(composant_remplacer!=null){
+    let i = components.indexOf(composant_remplacer.objet);
+    composant_remplacer.index = i;
+    components.splice(i,1);
+    addActions({type:REPLACE,objet:composant,ancien_objet:composant_remplacer})
+  }else{
+    addActions( { type: CREATE, objet: composant });
+  }
 }
 
 function mousePressed() {
@@ -394,25 +469,26 @@ function mouseReleased() {
   // Arrète le drag si il y en avait un en cours
   //cursor(ARROW);
   if (draggedElement != null && origin !=null) {
-    components.push(draggedElement);
-    addActions( { type: CREATE, objet: draggedElement });
+    if(validComposantPos(draggedElement)){
+      components.push(draggedElement);
+      simplifyComposant(draggedElement);
+    }
     draggedElement = null;
     origin = null;
   } else if(draggedElement != null && draggedElement===grid){
     draggedElement = null;
   } else if(draggedElement != null){
-    let action = {type:MODIFIER, objet:draggedElement, changements:[
-			{attribut:'x', ancienne_valeur:draggedElement.pastX, nouvelle_valeur:draggedElement.x},
-      {attribut:'y', ancienne_valeur:draggedElement.pastY, nouvelle_valeur:draggedElement.y}]};
+    if(validComposantPos(draggedElement)){
+    simplifyComposant(draggedElement,true);
+    }else{
+      draggedElement.x = draggedElement.pastX;
+      draggedElement.y = draggedElement.pastY;
+    }
     draggedElement.pastX = null;
     draggedElement.pastY = null;
     draggedElement = null;
-    addActions(action);
   } else if (draggedFil != null) {
-      if(draggedFil.xi == draggedFil.xf &&
-         draggedFil.yi == draggedFil.yf)
-         fils.pop();
-      else addActions({type:CREATE,objet:draggedFil});
+    simplifyNewFil(draggedFil);
     draggedFil = null;
   }
 }
