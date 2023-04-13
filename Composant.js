@@ -2,19 +2,20 @@ class Composant {
 
   constructor(x, y){
       
-	this.x = x;
-	this.y = y;
-	// on crée automatiquement une classe de tension
-    this.courant = 0;
-    this.tension = 0;
+    this.x = x;
+    this.y = y;
+    // on crée automatiquement une classe de tension
+      this.courant = 0;
+      this.tension = 0;
   }
-  // Cette méthode est appelé à chaque fois que l'on
-  // veut calculer la tension et la différence de pottentiel d'un 
-  // composant. Les information disponible sont la branche (composant) et 
-  //si notre composant est en paralèle ou en série
-  //calcul(paralele, composant){
-  //    throw console.error();//todo préciser l'erreur
-  //}
+  /* ****INUTILE?****
+  Cette méthode est appelé à chaque fois que l'on
+  veut calculer la tension et la différence de potentiel d'un 
+  composant. Les information disponible sont la branche (composant) et 
+  si notre composant est en paralèle ou en série
+  calcul(paralele, composant){
+      throw console.error();//todo préciser l'erreur
+  }*/
   draw(offX, offY) {
     throw console.error();//todo préciser l'erreur
   }
@@ -29,12 +30,15 @@ class Composant {
   getType() {
     throw console.error();//todo préciser l'erreur
   }
+  getTypeCalcul() {
+    this.getType();
+  }
 } 
 
 class Resisteur extends Composant {
     constructor(x, y, resistance, orientation) {
         super(x, y);
-	    this.resistance = resistance;
+	      this.resistance = resistance;
         this.orientation = orientation;
     }
 
@@ -55,6 +59,11 @@ class Resisteur extends Composant {
     }
     static getType() {
         return 'resisteur';
+    }
+
+    //Ne pas changer cette methode, elle doit être comme ça pour les calculs
+    getTypeCalcul() {
+      return composantType.Resisteur;
     }
 }
 
@@ -79,6 +88,11 @@ class Ampoule extends Resisteur {
     }
     static getType() {
         return 'ampoule';
+    }
+
+    //Ne pas changer cette methode, elle doit être comme ça pour les calculs
+    getTypeCalcul() {
+      return composantType.Resisteur;
     }
 }
 
@@ -106,6 +120,10 @@ class Condensateur extends Composant {
     }
     static getType() {
         return 'condensateur';
+    }
+    //Ne pas changer cette methode, elle doit être comme ça pour les calculs
+    getTypeCalcul() {
+      return composantType.Condensateur;
     }
   }
 
@@ -211,7 +229,7 @@ class Noeuds extends Composant {
     let circuitC = false;
 
     for (let i = 0; i < circuitsEnParallele.length; i++){ 
-        switch(this.circuitsEnParallele[i].getType()){
+        switch(this.circuitsEnParallele[i].getTypeCalcul()()){
             case circuitType.seulementR:
                 circuitR = true;
                 break;
@@ -226,18 +244,23 @@ class Noeuds extends Composant {
     }else if (circuitC){
         this.type = circuitType.seulementC;
     }else{
-        this.type = circuitType.seulementR
+        this.type = circuitType.seulementR;
     }
   }
   checkConnection(x, y, aproximation){
     return false;
   }
 
-    getType() {
-      return Noeud.getType();
-    }
-    static getType() {
-        return 'noeud';
-    }
+  getType() {
+    return Noeud.getType();
+  }
+  static getType() {
+      return 'noeud';
+  }
+
+  //Ne pas changer cette methode, elle doit être comme ça pour les calculs
+  getTypeCalcul() {
+    return composantType.noeudType;
+  }
 }
   

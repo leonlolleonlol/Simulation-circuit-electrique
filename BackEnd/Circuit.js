@@ -96,9 +96,9 @@ class Circuit{
             case circuitType.seulementR:
             
                 for (let i = 0; i < this.circuit.length; i++){
-                    if(this.circuit[i].getType() == composantType.noeudType){
+                    if(this.circuit[i].getTypeCalcul() == composantType.noeudType){
                         this.resistanceEQ += this.circuit[i].resistanceEQ;
-                    }else if (this.circuit[i].getType() == composantType.resisteurType){
+                    }else if (this.circuit[i].getTypeCalcul() == composantType.resisteurType){
                         this.resistanceEQ += this.circuit[i].resistance;
                     }
                 }
@@ -109,9 +109,9 @@ class Circuit{
             case circuitType.seulementC:
                 let capaciteTemp = 0;
                 for (let i = 0; i < this.circuit.length; i++){ 
-                    if(this.circuit[i].getType() == composantType.noeudType){
+                    if(this.circuit[i].getTypeCalcul() == composantType.noeudType){
                         capaciteTemp += 1 / this.circuit[i].capaciteEQ;
-                    }else if (this.circuit[i].getType() == composantType.condensateurType){
+                    }else if (this.circuit[i].getTypeCalcul() == composantType.condensateurType){
                         capaciteTemp += 1 / this.circuit[i].capacite;
                     }
                 }
@@ -139,7 +139,7 @@ class Circuit{
         let circuitC = false;
         let circuitRC = false;
         for (let i = 0; i < this.circuit.length; i++){ 
-            switch(this.circuit[i].getType()){
+            switch(this.circuit[i].getTypeCalcul()){
                 case composantType.resisteurType:
                     circuitR = true;
                     break;
@@ -173,7 +173,7 @@ class Circuit{
         }
     }
 
-    getType(){
+    getTypeCalcul(){
         return this.type;
     }
 }

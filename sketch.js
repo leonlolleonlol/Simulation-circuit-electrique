@@ -25,6 +25,8 @@ let line_grid_button;
 let point_line_grid_button;
 let canvas;
 
+let c1; //variable contenant l'instance du circuit. Sert pour les calculs
+
 let backgroundColor = 'rgb(51,51,51)';//220
 
 // Initialisation du circuit
@@ -306,13 +308,13 @@ function mousePressed() {
       origin = element;
       // Création d'un nouveau composants selon le composant sélectionner
       if(element.getType() == 'batterie'){
-        new_element = new Batterie(element.x - grid.translateX, element.y - grid.translateY);
+        new_element = new Batterie(element.x - grid.translateX, element.y - grid.translateY, 0);
       }else if(element.getType() == 'resisteur'){
-        new_element = new Resisteur(element.x - grid.translateX, element.y - grid.translateY);
+        new_element = new Resisteur(element.x - grid.translateX, element.y - grid.translateY, 0);
       }else if(element.getType() == 'ampoule'){
-        new_element = new Ampoule(element.x - grid.translateX, element.y - grid.translateY);
+        new_element = new Ampoule(element.x - grid.translateX, element.y - grid.translateY, 0);
       }else if(element.getType() == 'condensateur'){
-        new_element = new Condensateur(element.x - grid.translateX, element.y - grid.translateY, 'right');
+        new_element = new Condensateur(element.x - grid.translateX, element.y - grid.translateY, 0, 'right');
       }else if(element.getType() == 'diode'){
         new_element = new Diode(element.x - grid.translateX, element.y - grid.translateY, 'right');
       }
