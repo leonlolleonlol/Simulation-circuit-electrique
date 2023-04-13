@@ -177,6 +177,10 @@ class Diode extends Composant {
     static getType() {
         return 'diode';
     }
+
+    getTypeCalcul(){
+      return composantType.diodeType;
+    }
   }
 
 class Noeuds extends Composant {
@@ -192,6 +196,9 @@ class Noeuds extends Composant {
 
     //Sert stocker le type de circuit. AKA -> seulement des résistances, seulement des condensateurs ou RC.
     this.type;
+
+    //Indique si le courant à un chemin pour passer dans au moins une des branches
+    this.valide = false; //On assume que c'est faux, mais si une des branches est valide, on le met vrai.
   }
   draw(offsetX,offsetY){
 
@@ -210,6 +217,9 @@ class Noeuds extends Composant {
  trouverEq(){
     for (let i = 0; i < this.circuitsEnParallele.length; i++){ 
       this.circuitsEnParallele[i].trouverEq();
+      if(this.circuitsEnParallele[i].valide){
+        this.valide = true;
+      }
     }
 
     this.trouverTypeDeCircuit();
@@ -237,19 +247,23 @@ class Noeuds extends Composant {
   trouverTypeDeCircuit(){
     let circuitR = false;
     let circuitC = false;
+    let circuitRC = false;
 
     for (let i = 0; i < this.circuitsEnParallele.length; i++){ 
         switch(this.circuitsEnParallele[i].getTypeCalcul()){
             case circuitType.seulementR:
-                circuitR = true;
-                break;
+              circuitR = true;
+              break;
             case circuitType.seulementC:
-                circuitC = true;
-                break;
+              circuitC = true;
+              break;
+            case circuitType.RC:
+              circuitRC = true;
+              break;
         }
     }
 
-    if(circuitR && circuitC){
+    if((circuitR && circuitC) || circuitRC){
         this.type = circuitType.RC;
     }else if (circuitC){
         this.type = circuitType.seulementC;
@@ -257,6 +271,7 @@ class Noeuds extends Composant {
         this.type = circuitType.seulementR;
     }
   }
+
   checkConnection(x, y, aproximation){
     return false;
   }

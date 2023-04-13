@@ -86,10 +86,12 @@ function test(){
 
   c3 = new Circuit(false);
   c3.ajouterComposanteALaFin(new Condensateur(0, 0, 90));
+  c3.ajouterComposanteALaFin(new Diode(0, 0, "wrong"));
   c3.ajouterComposanteALaFin(n2);
   n1.ajouterComposanteALaFin(c3);
   
   c1.ajouterComposanteALaFin(n1);
+  
   c1.update();
 }
 
