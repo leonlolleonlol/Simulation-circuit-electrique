@@ -39,6 +39,7 @@ function setup() {
   positionCanvas=canvas.position();
   //----------------------------------------
   acceuil_button.position(10,10);
+  acceuil_button.size(120,80);
   reset_button = createButton('Recommencer');
   reset_button.position(positionCanvas.x, 450);
   reset_button.size(120, 50);
@@ -135,11 +136,17 @@ function initPosition(){
 function draw() {
   background(backgroundColor);// Mettre le choix de couleur pour le background
   if(undo_list.length == 0)
+  {
 	undo_button.attribute('disabled', '');
+  reset_button.attribute('disabled', '');
+  }
   else
+  {
 	undo_button.removeAttribute('disabled');
+  reset_button.removeAttribute('disabled');
+  }
   //Dessiner la grille dépendant du du parametre
-  stroke('red')
+  stroke(backgroundColor);
   strokeWeight(2);
   push();
   applyZoom();
