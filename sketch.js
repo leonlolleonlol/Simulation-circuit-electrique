@@ -1,5 +1,4 @@
-let draggedElement; // L'élement qui est déplacer
-let draggedFil;// à supprimer
+let drag; // L'élement qui est déplacer
 let selection;
 let origin; // variable qui permet de savoir lorsque l'on crée un nouveau élément.
 //Lorsque l'on ajoute un composant, le composant sélectionner disparaît dans le sélectionneur
@@ -7,8 +6,7 @@ let origin; // variable qui permet de savoir lorsque l'on crée un nouveau élé
 let components;// Liste de composants du circuit
 // Très important que cette liste soit lorsque merge avec modèle
 
-//À supprimer dans de futur release
-let fils;
+let fils;// Liste des fils du circuit
 
 // Variable nécessaire pour placer la grille
 let grid;
@@ -25,6 +23,7 @@ let line_grid_button;
 let point_line_grid_button;
 let canvas;
 
+let undo_desactive = false;
 let c1; //variable contenant l'instance du circuit. Sert pour les calculs
 
 let backgroundColor = 'rgb(51,51,51)';//220
@@ -36,27 +35,12 @@ function setup() {
   line_grid_button = select('#line-grid');
   point_grid_button = select('#point-grid');
   point_line_grid_button = select('#point-line-grid');
-  positionCanvas=canvas.position();
+  undo_button = select('#undo');
+  reset_button = select('#redo');
+  let positionCanvas=canvas.position();
   //----------------------------------------
-  acceuil_button.position(10,10);
-  acceuil_button.size(120,80);
-  reset_button = createButton('Recommencer');
-  reset_button.position(positionCanvas.x, 450);
-  reset_button.size(120, 50);
   reset_button.mousePressed(refresh);
-  undo_button = createButton('Undo');
-  undo_button.position(positionCanvas.x, 95);
-  undo_button.size(120, 50);
   undo_button.mousePressed(undo);
-  let img_line = select('#img-line-grid');
-  let img_point = select('#img-point-grid');
-  let img_dotLine = select('#img-point-line-grid');
-  img_line.size(24,24);
-  img_point.size(24,24);
-  img_dotLine.size(24,24);//code redondant
-  line_grid_button.position(positionCanvas.x,150);
-  point_grid_button.position(positionCanvas.x +40,150);
-  point_line_grid_button.position(positionCanvas.x + 80,150);
   line_grid_button.mousePressed(function(){ grid.quadrillage='line';});
   point_grid_button.mousePressed(function(){ grid.quadrillage='point';});
   point_line_grid_button.mousePressed(function(){ grid.quadrillage='points&lines';});
@@ -103,11 +87,11 @@ function test(){
 function initComponents(){
   fils = [];
   components = [];
-  draggedElement = null;
-  draggedFil = null;
+  drag = null;
+  selection = null;
   origin = null;
   grid = {
-    offsetY: 20,
+    offsetY: 30,
     tailleCell: 30,
     translateX: 0,
     translateY: 0,
@@ -135,53 +119,33 @@ function initPosition(){
  */
 function draw() {
   background(backgroundColor);// Mettre le choix de couleur pour le background
-  if(undo_list.length == 0)
-  {
-	undo_button.attribute('disabled', '');
-  reset_button.attribute('disabled', '');
+  if(undo_list.length == 0 && !undo_desactive){
+	  undo_button.attribute('disabled', '');
+    reset_button.attribute('disabled', '');
+    undo_desactive = true;
   }
-  else
-  {
-	undo_button.removeAttribute('disabled');
-  reset_button.removeAttribute('disabled');
+  else if(undo_list.length != 0 && undo_desactive){
+	  undo_button.removeAttribute('disabled');
+    reset_button.removeAttribute('disabled');
+    undo_desactive = false;
   }
-  //Dessiner la grille dépendant du du parametre
-  stroke(backgroundColor);
-  strokeWeight(2);
   push();
-  applyZoom();
-  point((width+grid.offsetX)/2,(height+grid.offsetY)/2 )
-  if (grid.quadrillage == 'point')
-    drawPointGrid();
-  else if (grid.quadrillage == 'line')
-  drawLineGrid();
-  else drawPointLineGrid();
-  
+  scale(grid.scale);
+  drawGrid();
   drawFils();
-  for (let element of components) {
-    element.draw(grid.translateX, grid.translateY);
-  }
+  drawComposants();
   push();
   noStroke();
   fill(backgroundColor);
   rect(0, 0, grid.offsetX - 5, windowHeight);
   pop();
-  pop();
-  drawComponentsChooser();
   push();
-  applyZoom();
-  /*
-   * Solution temporaire pour que le composant s'affiche par dessus 
-   * le reste déplacer du panneau de choix
-   */
+  scale(1/grid.scale);
+  drawComponentsChooser();
+  pop();
   if (origin != null) {
-    draggedElement.draw(grid.translateX, grid.translateY,grid.scale);
+    drag.draw(grid.translateX, grid.translateY);
   }
-  pop()
-}
-
-function applyZoom(){
-  scale(grid.scale);
 }
 
 function drawComponentsChooser() {
@@ -191,15 +155,44 @@ function drawComponentsChooser() {
   stroke("rgba(52,52,52,0.78)");
   for (let i = 0; i <composants_panneau.length ; i++) {
     rect(0, 190 + 50 * i, 120, 50);
-  }
-  for (let element of composants_panneau){
-    if (element != origin)
-      element.draw(0, 0);
+    if (composants_panneau[i] != origin)
+      composants_panneau[i].draw(0, 0);
   }
   pop();
 }
 
+function drawGrid(){
+  stroke(backgroundColor);
+  strokeWeight(2);
+  if (grid.quadrillage == 'point')
+    drawPointGrid();
+  else if (grid.quadrillage == 'line')
+    drawLineGrid();
+  else if(grid.quadrillage == 'points&lines')
+    drawPointLineGrid();
+}
+
+function drawFils() {
+  push();
+  stroke("orange");
+  strokeWeight(4);
+  for (let element of fils){
+    line(element.xi + grid.translateX, element.yi + grid.translateY, element.xf + grid.translateX, element.yf + grid.translateY);
+    //temporaire avant d'avoir objet fil
+  }
+  pop();
+}
+
+function drawComposants(){
+  for (let element of components) {
+    element.draw(grid.translateX, grid.translateY);
+  }
+}
+
 // GRILLE ------------------------------------------
+
+
+
 function drawPointGrid() {
   stroke("black");
   setGrid();
@@ -215,7 +208,7 @@ function setGrid() {
       )
         point(
           grid.offsetX + i + ((grid.translateX-grid.offsetX) % grid.tailleCell),
-          grid.offsetY + j + (grid.translateY % grid.tailleCell)
+          grid.offsetY + j + ((grid.translateY-grid.offsetY) % grid.tailleCell)
         );
     }
   }
@@ -245,13 +238,13 @@ function drawLineGrid() {
     borne+= grid.tailleCell;
   }
   borne = 0;
-  while (borne < (windowHeight - grid.offsetY)/grid.scale) {
+  while (borne < windowHeight/grid.scale - grid.offsetY) {
     if (!(grid.translateY % grid.tailleCell < 0 && borne == 0))
       line(
         grid.offsetX,
-        grid.offsetY + borne + (grid.translateY % grid.tailleCell),
+        grid.offsetY + borne + ((grid.translateY-grid.offsetY) % grid.tailleCell),
         windowWidth/grid.scale,
-        grid.offsetY + borne + (grid.translateY % grid.tailleCell)
+        grid.offsetY + borne + ((grid.translateY-grid.offsetY) % grid.tailleCell)
       );
     borne+= grid.tailleCell;
   }
@@ -259,60 +252,42 @@ function drawLineGrid() {
 }
 // ---------------------------------------------------------
 
-// Function temporaire en attendant d'avoir un objet fil
-function drawFils() {
-  push();
-  stroke("orange");
-  strokeWeight(4);
-  for (let element of fils){
-    if (element != null)
-      line(element.xi + grid.translateX, element.yi + grid.translateY, element.xf + grid.translateX, element.yf + grid.translateY);
-  }
-  pop();
+
+
+/**
+ * Permet de trouver la position idéal en x et y à partir de la 
+ * position de la souris
+ * @param {*} offsetX Le décalage en x
+ * @param {*} offsetY Le décalage en y
+ * @returns Le point le plus proche sur la grille
+ */
+function findGridLock(offsetX, offsetY) {
+  let lockX = round((mouseX/grid.scale - offsetX) / grid.tailleCell) *
+    grid.tailleCell;
+  let lockY = round((mouseY/grid.scale  - offsetY) / grid.tailleCell) * 
+    grid.tailleCell
+  return {x:lockX, y: lockY};
 }
 
-  /**
-   * Permet de trouver la position idéal en x à partir de la 
-   * position de la souris
-   * @param {*} offset 
-   * @returns Le point en x le plus proche sur la grille
-   */
-function findGridLockX(offset) {
-  return (
-    round(
-      (mouseX/grid.scale - offset) / grid.tailleCell) *
-    (grid.tailleCell)
-  );
-}
-/**
- * Permet de trouver la position idéale en y à partir de la 
- * positinon de la souris
- * @param {*} offset 
- * @returns Le point en y le plus proche sur la grille
- */
-function findGridLockY(offset) {
-  return (
-    round(
-    ((mouseY- grid.offsetY)/grid.scale  - offset) / 
-    (grid.tailleCell)) * 
-    (grid.tailleCell) + grid.offsetY
-  );
-}
 function isElementDrag(element){
-  return draggedElement!=null && draggedElement === element;
+  return drag!=null && drag === element;
 }
 
 function isElementSelectionner(element){
   return selection!=null && selection === element;
 }
+
+function inGrid(x, y){
+  return x > grid.offsetX && y > grid.offsetY
+}
+
 // Fonction fil -----------------------------
 function validFilBegin(){
-let x = mouseX/grid.scale  - grid.offsetX- grid.translateX;
-let y = mouseY/grid.scale - grid.offsetY - grid.translateY;
-  if (mouseX/grid.scale <= grid.offsetX || mouseY <= grid.offsetY){
+let x = mouseX/grid.scale - grid.translateX;
+let y = mouseY/grid.scale - grid.translateY;
+  if (!inGrid(mouseX/grid.scale, mouseY/grid.scale)){
     return false;
   }
-    
   else if (!((x % (grid.tailleCell*grid.scale) < 20*grid.scale ||
             (x + 20*grid.scale) % (grid.tailleCell*grid.scale) < 20*grid.scale) &&
           (y % (grid.tailleCell*grid.scale) < 20*grid.scale ||
@@ -321,24 +296,21 @@ let y = mouseY/grid.scale - grid.offsetY - grid.translateY;
             }
     
   else {
-    let xd = mouseX/grid.scale - grid.translateX;
-    let yd = mouseY/grid.scale - grid.translateY;
-    for(let i=0;i<components.length;i++)
-      if(components[i].checkConnection(xd, yd, 10))
-        return true; 
-    for(let i=0;i<fils.length;i++){
-      if(fils[i].yi!=fils[i].yf && fils[i].xi!=fils[i].xf){
-        if(dist(min(fils[i].xi,fils[i].xf),min(fils[i].yi,fils[i].yf),xd,yd)<10 ||
-           dist(max(fils[i].xi,fils[i].xf),min(fils[i].yi,fils[i].yf),xd,yd)<10 ||
-           dist(min(fils[i].xi,fils[i].xf),max(fils[i].yi,fils[i].yf),xd,yd)<10 ||
-           dist(max(fils[i].xi,fils[i].xf),max(fils[i].yi,fils[i].yf),xd,yd)<10)
+    for (const composant of components) {
+      if(composant.checkConnection(x, y, 10))
+        return true;
+    }
+    for (const fil of fils) {
+      if(fil.yi!=fil.yf && fil.xi!=fil.xf){
+        if(dist(fil.xi, fil.yi, x, y)<10 ||
+           dist(fil.xf, fil.yf, x, y)<10)
           return true;
       } else {
-        let x1 = min(fils[i].xi-10, fils[i].xf-10)
-        let x2 = max(fils[i].xi+10, fils[i].xf+ 10);
-        let y1 = min(fils[i].yi-10, fils[i].yf-10);
-        let y2 = max(fils[i].yi+10, fils[i].yf+10);
-        if(xd > x1 && xd < x2 && yd > y1 -10 && yd < y2 + 10)
+        let x1 = Math.min(fil.xi-10, fil.xf-10)
+        let x2 = Math.max(fil.xi+10, fil.xf+ 10);
+        let y1 = Math.min(fil.yi-10, fil.yf-10);
+        let y2 = Math.max(fil.yi+10, fil.yf+10);
+        if(x > x1 && x < x2 && y > y1 && y < y2)
           return true;
       }
     }
@@ -395,7 +367,7 @@ function simplifyNewFil(testFil){
 // --------------------------------------
 
 function validComposantPos(composant){
-  if (composant.x <= grid.offsetX - grid.translateX || composant.y <= grid.offsetY/grid.scale- grid.translateY)
+  if (!inGrid(composant.x + grid.translateX, composant.y + grid.translateY))
     return false;
   for (const composantTest of components) {
     if(composantTest.checkConnection(composant.x,composant.y,1))
@@ -430,155 +402,135 @@ function simplifyComposant(composant, modif){
   }
 }
 
-function mousePressed() {
-  selection = null;
-  // Vérification drag panneau de choix
-  for (let i = 0; i < composants_panneau.length; i++) {
-    const element = composants_panneau[i];
-    var new_element;
-    if (element.inBounds(mouseX, mouseY, 0, 0)){
-      origin = element;
-      // Création d'un nouveau composants selon le composant sélectionner
-      if(element.getType() == 'batterie'){
-        new_element = new Batterie(element.x/grid.scale - grid.translateX, element.y/grid.scale - grid.translateY, 0);
-      }else if(element.getType() == 'resisteur'){
-        new_element = new Resisteur(element.x/grid.scale - grid.translateX, element.y/grid.scale - grid.translateY, 0);
-      }else if(element.getType() == 'ampoule'){
-        new_element = new Ampoule(element.x/grid.scale - grid.translateX, element.y/grid.scale - grid.translateY, 0);
-      }else if(element.getType() == 'condensateur'){
-        new_element = new Condensateur(element.x/grid.scale - grid.translateX, element.y/grid.scale - grid.translateY, 0, 'right');
-      }else if(element.getType() == 'diode'){
-        new_element = new Diode(element.x/grid.scale - grid.translateX, element.y/grid.scale - grid.translateY, 'right');
-      }
-      new_element.xOffsetDrag = (mouseX - element.x)/grid.scale;
-      new_element.yOffsetDrag = (mouseY - element.y)/grid.scale;
-      // Autres ajout dans les modules
-      
-      draggedElement = new_element;
-      selection = new_element;
-      break;
-    }
+function initDrag(element, x, y){
+  drag = element;
+  selection = element;
+  drag.xOffsetDrag = mouseX/grid.scale - x;
+  drag.yOffsetDrag = mouseY/grid.scale - y;
+}
 
-  } 
-  // Vérification drag parmis les composants de la grille
-  if(draggedElement == null) {
-    for (let element of components) {
-      if (element.inBounds(mouseX/grid.scale, mouseY/grid.scale, grid.translateX, grid.translateY)) {
-        draggedElement = element;
-        selection = element;
-        draggedElement.xOffsetDrag = mouseX/grid.scale - draggedElement.x;
-        draggedElement.yOffsetDrag = mouseY/grid.scale - draggedElement.y;
-        draggedElement.pastX = draggedElement.x;
-        draggedElement.pastY = draggedElement.y;
-        break;
-      }
-    }//mouseX - offsetX > element.x - 10
-  }
-  if (draggedElement == null && validFilBegin()) {
-    let x_point = findGridLockX(grid.translateX);
-    let y_point = findGridLockY(grid.translateY)
-    let fil = {
-        xi: x_point,
-        yi: y_point,
-        xf: x_point,
-        yf: y_point,
-        getType: function(){return "fil"},
-    };
-    draggedFil = fil;
-    selection = fil;
-    fils.push(fil);
-  }
-  if(draggedElement == null && draggedFil == null) {
-    if(mouseX/grid.scale>grid.offsetX && mouseY/grid.scale> grid.offsetY/grid.scale)
-      draggedElement = grid;
+function createComposant(original){
+  // Création d'un nouveau composants selon le composant sélectionner
+  let x = original.x/grid.scale - grid.translateX;
+  let y = original.y/grid.scale - grid.translateY;
+  switch (original.getType()) {
+    case 'batterie': return new Batterie(x, y, 0);
+    case 'resisteur': return new Resisteur(x, y, 0);
+    case 'ampoule': return new Ampoule(x, y, 0);
+    case 'condensateur': return new Condensateur(x, y, 0, 'right');
+    case 'diode': return new Diode(x, y, 'right');
   }
 }
 
-function mouseDragged() {
-  if (draggedElement != null && origin != null) {
-    //cursor('grabbing');
-    draggedElement.x = findGridLockX(
-      draggedElement.xOffsetDrag + grid.translateX
-    );
-    draggedElement.y = findGridLockY(
-      draggedElement.yOffsetDrag + grid.translateY
-    );
+function mousePressed() {
+  selection = null;
+  // Vérification drag panneau de choix
+  for (const element of composants_panneau) {
+    if (element.inBounds(mouseX, mouseY, 0, 0)){
+      origin = element;
+      let new_element = createComposant(element);
+      initDrag(new_element, new_element.x+grid.translateX, new_element.y + grid.translateY);
+      return;
+    }
+  } 
+  // Vérification drag parmis les composants de la grille
+  for (let element of components) {
+    if (element.inBounds(mouseX/grid.scale, mouseY/grid.scale, grid.translateX, grid.translateY)) {
+      initDrag(element, element.x, element.y);
+      drag.pastX = drag.x;
+      drag.pastY = drag.y;
+      return;
+    }
   }
-  else if (draggedElement != null) {
-    if(draggedElement === grid){
+  
+  if (validFilBegin()) {
+    let point = findGridLock(grid.translateX, grid.translateY)
+    drag = {
+        xi: point.x,
+        yi: point.y,
+        xf: point.x,
+        yf: point.y,
+        getType: function(){return "fil"},
+    };
+    selection = drag;
+    fils.push(drag);
+    return;
+  }
+  if(inGrid(mouseX/grid.scale,mouseY/grid.scale))
+    drag = grid;
+  
+}
+
+function mouseDragged() {
+  if(drag != null){
+    if (origin != null) {
+      //cursor('grabbing');
+      let point = findGridLock(drag.xOffsetDrag + grid.translateX,
+         drag.yOffsetDrag + grid.translateY);
+      drag.x = point.x;
+      drag.y = point.y
+    } else if(drag === grid){
       //cursor(MOVE);
       grid.translateX += (mouseX - pmouseX)/grid.scale;
       grid.translateY += (mouseY - pmouseY)/grid.scale;
+    } else if (drag.getType()=='fil') {
+      let point = findGridLock(grid.translateX, grid.translateY);
+      drag.xf = point.x;
+      drag.yf = point.y;
     } else{
-    //cursor('grabbing');
-    draggedElement.x = findGridLockX(
-      draggedElement.xOffsetDrag
-    );
+      //cursor('grabbing');
+      let point = findGridLock(drag.xOffsetDrag, drag.yOffsetDrag)
+      drag.x = point.x;
+      drag.y = point.y
     }
-    draggedElement.y = findGridLockY(
-      draggedElement.yOffsetDrag
-    );
-  } else if (draggedFil != null) {
-    draggedFil.xf = findGridLockX(grid.translateX);
-    draggedFil.yf = findGridLockY(grid.translateY);
+    
   }
 }
 
 function mouseReleased() {
   // Arrète le drag si il y en avait un en cours
   //cursor(ARROW);
-  if (draggedElement != null && origin !=null) {
-    if(validComposantPos(draggedElement)){
-      components.push(draggedElement);
-      simplifyComposant(draggedElement);
-    }
-    draggedElement = null;
+  if (drag != null){
+    if(origin !=null) {
+      if(validComposantPos(drag)){
+        components.push(drag);
+        simplifyComposant(drag);
+      }
     origin = null;
-  } else if(draggedElement != null && draggedElement===grid){
-    draggedElement = null;
-  } else if(draggedElement != null){
-    if(validComposantPos(draggedElement)){
-    simplifyComposant(draggedElement,true);
-    }else{
-      draggedElement.x = draggedElement.pastX;
-      draggedElement.y = draggedElement.pastY;
+    } else if(drag===grid){
+      // Juste pour empêcher une erreure
+    } else if (drag.getType()=='fil') {
+      simplifyNewFil(drag);
+    } else {
+        if(validComposantPos(drag)){
+          simplifyComposant(drag, true);
+        } else{
+          // Annuler le mouvement
+          drag.x = drag.pastX;
+          drag.y = drag.pastY;
+        }
     }
-    draggedElement.pastX = null;
-    draggedElement.pastY = null;
-    draggedElement = null;
-  } else if (draggedFil != null) {
-    simplifyNewFil(draggedFil);
-    draggedFil = null;
+    drag = null;
   }
 }
 
 function mouseWheel(event){
-  push();
-  if(event.delta < 0){
-    if (grid.scale * 1.1 < 13.5) {
-      grid.translateX *= grid.scale;
-      grid.translateY *= grid.scale;
-      grid.offsetX *= grid.scale;
-      grid.scale=grid.scale * 1.1;
-      grid.translateX = (grid.translateX - (mouseX - grid.translateX) * 0.1)/grid.scale;
-      grid.translateY = (grid.translateY - (mouseY - grid.translateY) * 0.1)/grid.scale;
-      grid.offsetX /= grid.scale;
-    }
+  if(event.delta < 0 && grid.scale * 1.1 < 13.5){
+    zoom();
   }
-    
-  else if(event.delta >0){
-    if(grid.scale * 0.9 > 0.2){
-      grid.translateX *= grid.scale;
-      grid.translateY *= grid.scale;
-      grid.offsetX *= grid.scale;
-      grid.scale = grid.scale * 0.9;
-      grid.translateX = (grid.translateX - (mouseX - grid.translateX) * -0.1);
-      grid.translateY = (grid.translateY - (mouseY - grid.translateY) * -0.1);
-      grid.offsetX /= grid.scale;
-    }
+  else if(event.delta > 0 && grid.scale * 0.9 > 0.2){
+    zoom(true);
   }
-  pop();
-  
+}
+
+function zoom(inverse){
+  let factor = inverse ? -0.1 : 0.1;
+  let pastScale = grid.scale;
+  grid.scale = grid.scale * (1+factor);
+  grid.translateX = (grid.translateX*pastScale - (mouseX - grid.translateX*pastScale) * factor)/grid.scale;
+  grid.translateY = (grid.translateY*pastScale - (mouseY - grid.translateY*pastScale) * factor)/grid.scale;
+  grid.offsetX *= pastScale/grid.scale;
+  grid.offsetY *= pastScale/grid.scale;
 }
 
 function keyPressed() {
@@ -593,20 +545,22 @@ function keyPressed() {
     undo();
   } else if (keyCode === 8) {
     if(selection!=null){
-      let element = components.splice(components.indexOf(selection),1)[0];
-      addActions({type:DELETE,objet:element});
+      components.splice(components.indexOf(selection),1);
+      addActions({type:DELETE,objet:selection});
       selection = null;
     }
-  } else if (keyCode === 82) {
-    let newR = new Resisteur(findGridLockX(grid.translateX), findGridLockY(grid.translateY));
-    components.push(newR);
-    addActions({type:CREATE,objet:newR});
-  } else if (keyCode === 83) {
-    let newB = new Batterie(findGridLockX(grid.translateX), findGridLockY(grid.translateY));
-    components.push(newB);
-    addActions({type:CREATE,objet:newB});
-  } else if (keyCode === 67) {
-    let newC = new Condensateur(findGridLockX(grid.translateX), findGridLockY(grid.translateY));
+  } else if(keyCode === 82 || keyCode === 83 || keyCode === 67){
+      let newC;
+      let point = findGridLock(grid.translateX, grid.translateY)
+      let x = point.x;
+      let y = point.y;
+      if (keyCode === 82) {
+        newC = new Resisteur(x, y);
+      } else if (keyCode === 83) {
+        newC = new Batterie(x, y);
+      } else if (keyCode === 67) {
+        newC = new Condensateur(x, y);
+    }
     components.push(newC);
     addActions({type:CREATE,objet:newC});
   } //else if (keyIsDown(CONTROL) && keyIsDown(SHIFT) && keyCode === 80) {
