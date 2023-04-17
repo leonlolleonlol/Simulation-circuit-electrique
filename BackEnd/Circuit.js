@@ -67,8 +67,10 @@
          * -- présence d'une 
          */
         for(let i = 0; i < this.circuit.length; i++){
+            if(this.circuit[i].getTypeCalcul){
+                
+            }
         }
-        
     }
 
     /**
@@ -233,7 +235,8 @@ let composantType = {
     resisteurType: 75839,
     condensateurType: 98435,
     noeudType: 48134,
-    diodeType: 87931
+    diodeType: 87931,
+    pileType: 45678
 }
 //ces nombres sont choisi au hasard, il faut juste que quand on compare, si le nombre est pareil, on détecte que c'est du même type
 let circuitType = {
