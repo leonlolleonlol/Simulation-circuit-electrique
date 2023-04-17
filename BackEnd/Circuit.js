@@ -25,13 +25,12 @@
         this.type;
     }
 
-    ajouterComposanteALaFin(composant){
+    ajouterComposante(composant){
         this.circuit.push(composant);
     }
-    
-    //position est l'emplacement de la valeur a modifier, le 0 est le nombre de valeur a modifier et composant est ce qu'on ajoute à la position
-    ajouterComposante(composant, position){ 
-        this.circuit.splice(position, 0, composant);
+
+    connectComposante(composanteAvant, composanteApres){
+        composanteAvant.prochaineComposante = composanteApres;
     }
     
     retirerComposante(position){

@@ -66,7 +66,7 @@ function setup() {
 }
 
 function test(){
-  c1.ajouterComposanteALaFin(new Batterie(0, 0, 12));
+  c1.ajouterComposante(new Batterie(0, 0, 12));
   n1 = new Noeuds();
   
   c2 = new Circuit(false);
@@ -77,12 +77,12 @@ function test(){
   r3 = new Condensateur(0, 0, 6e-9); 
   
 
-  c2.ajouterComposanteALaFin(r2);
-  c2.ajouterComposanteALaFin(r3);
-  c3.ajouterComposanteALaFin(r1);
+  c2.ajouterComposante(r2);
+  c2.ajouterComposante(r3);
+  c3.ajouterComposante(r1);
 
-  n1.ajouterComposanteALaFin(c2);
-  n1.ajouterComposanteALaFin(c3);
+  n1.ajouterComposante(c2);
+  n1.ajouterComposante(c3);
 /*
   n2 = new Noeuds();
   c4 = new Circuit(false);
@@ -97,7 +97,7 @@ function test(){
   c3.ajouterComposanteALaFin(n2);
   n1.ajouterComposanteALaFin(c3);
   */
-  c1.ajouterComposanteALaFin(n1);
+  c1.ajouterComposante(n1);
 
   c1.update();
   print(r1.tension);
