@@ -60,6 +60,47 @@ function setup() {
 
   //-----------------------------------------
   initComponents();
+  test();
+}
+
+function test(){
+  c1.ajouterComposanteALaFin(new Batterie(0, 0, 10));
+  n1 = new Noeuds();
+
+  
+  c2 = new Circuit(false);
+  c3 = new Circuit(false);
+
+  r1 = new Resisteur(0, 0, 30); 
+  r2 = new Resisteur(0, 0, 40); 
+
+  c2.ajouterComposanteALaFin(r1);
+  c3.ajouterComposanteALaFin(r2);
+
+  n1.ajouterComposanteALaFin(c2);
+  n1.ajouterComposanteALaFin(c3);
+/*
+  n2 = new Noeuds();
+  c4 = new Circuit(false);
+  c4.ajouterComposanteALaFin(new Condensateur(0, 0, 15));
+  c4.ajouterComposanteALaFin(new Condensateur(0, 0, 25));
+  c4.ajouterComposanteALaFin(new Condensateur(0, 0, 35));
+  n2.ajouterComposanteALaFin(c4);
+
+  c3 = new Circuit(false);
+  c3.ajouterComposanteALaFin(new Condensateur(0, 0, 90));
+  c3.ajouterComposanteALaFin(new Diode(0, 0, "wrong"));
+  c3.ajouterComposanteALaFin(n2);
+  n1.ajouterComposanteALaFin(c3);
+  */
+  c1.ajouterComposanteALaFin(n1);
+  
+  c1.ajouterComposanteALaFin(new Resisteur(0, 0, 10))
+  
+  c1.update();
+  print(r1.courant);
+  print(r2.courant);
+  Math.round(r1.courant)
 }
 
 
