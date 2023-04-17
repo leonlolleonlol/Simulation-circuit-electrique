@@ -2,7 +2,7 @@
  * Contient une suite de composantes en série. S'il y a un noeud, 
  * c'est dans le noeud qu'on retrouvera les circuits en parallèle.
  */
-class Circuit{
+ class Circuit{
     /**
      * Initialise toute ce qu'on aura besoin pour les calculs. Si c'est une branche, la variable circuit devient "children" 
      * @param {boolean} premierCircuit cette variable sert à indiquer si c'est cet objet qui contient le circuit au complet.
@@ -60,12 +60,8 @@ class Circuit{
             this.rearrangerArrayCircuit();
             this.tensionEQ = this.circuit[0].tension;
         }
-        this.validerCircuit()
-
-        if(this.valide){
-            this.trouverEq();
-        }
-    
+        this.trouverEq();
+        
     }
     
     /**
@@ -74,63 +70,60 @@ class Circuit{
      */
     rearrangerArrayCircuit(){
     }
-    
-    /**
-     * Regarde s'il y a au moins un chemin possible pour le courant. Devrait mettre la variable "valide"
-     * à false s'il n'y a pas de chemin pour le courant.
-     */
-    validerCircuit(){
-        //traverser à travers les circuits s'il y a une diode dans le sens inverse
-        // Exception si dans noeud il pile et diode sens inverse circuit au complet marche pas
-        this.valide = true;
-    }
 
     /**
      * Sert à trouver le circuit équivalent en série
      */
     trouverEq(){
         this.trouverTypeDeCircuit();
-        
-        switch (this.type){
-            case circuitType.seulementR:
-                for (let i = 0; i < this.circuit.length; i++){
-                    if(this.circuit[i].getType() == composantType.noeudType){
-                        this.resistanceEQ += this.circuit[i].resistanceEQ;
-                    }else if (this.circuit[i].getType() == composantType.resisteurType){
-                        this.resistanceEQ += this.circuit[i].resistance;
+        if(this.valide){
+            switch (this.type){
+                case circuitType.seulementR:
+                    for (let i = 0; i < this.circuit.length; i++){
+                        if(this.circuit[i].getTypeCalcul() == composantType.noeudType){
+                            this.resistanceEQ += this.circuit[i].resistanceEQ;
+                        }else if (this.circuit[i].getTypeCalcul() == composantType.resisteurType){
+                            this.resistanceEQ += this.circuit[i].resistance;
+                        }
                     }
-                }
-                if(this.premierCircuit){
-                    this.courant = this.tensionEQ / this.resistanceEQ;
-                }
-                
-                //TODO remplir les valeurs dans chaque résistances
-                this.remplirResisteursAvecCourant();
-                break;
-            case circuitType.seulementC:
-                let capaciteTemp = 0;
-                for (let i = 0; i < this.circuit.length; i++){ 
-                    if(this.circuit[i].getType() == composantType.noeudType){
-                        capaciteTemp += 1 / this.circuit[i].capaciteEQ;
-                    }else if (this.circuit[i].getType() == composantType.condensateurType){
-                        capaciteTemp += 1 / this.circuit[i].capacite;
+                    if(this.premierCircuit){
+                        this.courant = this.tensionEQ / this.resistanceEQ;
                     }
-                }
-                this.capaciteEQ = 1/capaciteTemp;
-
-                if(this.premierCircuit){
-                    this.charge = this.capaciteEQ * this.tensionEQ; 
-                }
-            
-                //TODO remplir les valeurs dans chaque Condensateur
-                break;
-            case circuitType.RC:
-                //C'est là que c'est difficile
-                //On peut aussi juste dire que le circuit est invalide.
-                alert("Ceci est en dehors de nos connaissance"); //(rip)
-                break;
+                    this.remplirResisteursAvecCourant();
+                    //TODO remplir les valeurs dans chaque résistances
+                    break;
+                case circuitType.seulementC:
+                    let capaciteTemp = 0;
+                    for (let i = 0; i < this.circuit.length; i++){ 
+                        if(this.circuit[i].getTypeCalcul() == composantType.noeudType){
+                            capaciteTemp += 1 / this.circuit[i].capaciteEQ;
+                        }else if (this.circuit[i].getTypeCalcul() == composantType.condensateurType){
+                            capaciteTemp += 1 / this.circuit[i].capacite;
+                        }
+                    }
+                    this.capaciteEQ = 1/capaciteTemp;
+                    if(this.premierCircuit){
+                        this.charge = this.capaciteEQ * this.tensionEQ; 
+                    }
+                    //TODO remplir les valeurs dans chaque Condensateur
+                    break;
+                case circuitType.RC:
+                    //C'est là que c'est difficile
+                    //On peut aussi juste dire que le circuit est invalide.
+                    alert("Circuit RC détecté"); //(rip)
+                    break;
+            }
+    
+            if(this.premierCircuit){
+                print("CapaciteEQ: " + this.capaciteEQ);
+                print("ResistanceEQ: " + this.resistanceEQ);
+            }
+        } else{
+            if(this.premierCircuit){
+                print("Pas de chemin pour le courant");
+            }
         }
-
+        
     }
 
     /**
@@ -142,7 +135,7 @@ class Circuit{
         let circuitC = false;
         let circuitRC = false;
         for (let i = 0; i < this.circuit.length; i++){ 
-            switch(this.circuit[i].getType()){
+            switch(this.circuit[i].getTypeCalcul()){
                 case composantType.resisteurType:
                     circuitR = true;
                     break;
@@ -150,7 +143,8 @@ class Circuit{
                     circuitC = true;
                     break;
                 case composantType.noeudType:
-                    switch(this.circuit[i].trouverTypeDeCircuit){
+                    this.circuit[i].trouverEq();
+                    switch(this.circuit[i].type){
                         case circuitType.seulementR:
                             circuitR = true;
                             break;
@@ -161,11 +155,13 @@ class Circuit{
                             circuitRC = true;
                             break;
                     }
-                    this.circuit[i].trouverEq();
                     break;
+                case composantType.diodeType:
+                    if(this.circuit[i].orientation == "wrong"){
+                        this.valide = false;
+                    }
             }
         }
-
         if((circuitR && circuitC) || circuitRC){
             this.type = circuitType.RC;
             //Même chose que : this.type = 09842;
@@ -176,18 +172,19 @@ class Circuit{
         }
     }
 
-    getType(){
+    getTypeCalcul(){
         return this.type;
     }
 
     remplirResisteursAvecCourant(){
+
         for (let i = 0; i < this.circuit.length; i++){
-            if(this.circuit[i].getType == composantType.resisteurType){
+            if(this.circuit[i].getTypeCalcul() == composantType.resisteurType){
+                
                 this.circuit[i].courant = this.courant;
                 this.circuit[i].tension = this.courant * this.circuit[i].resistance;
-            }else if(this.circuit[i].getType = composantType.noeudType){
+            }else if(this.circuit[i].getTypeCalcul() == composantType.noeudType){
                 this.circuit[i].tensionEQ = this.courant * this.circuit[i].resistanceEQ;
-                print(this.circuit[i].getType);
                 this.circuit[i].remplirResisteursAvecDifTension();
             }
         }
@@ -200,7 +197,8 @@ class Circuit{
 let composantType = {
     resisteurType: 75839,
     condensateurType: 98435,
-    noeudType: 48134
+    noeudType: 48134,
+    diodeType: 87931
 }
 //ces nombres sont choisi au hasard, il faut juste que quand on compare, si le nombre est pareil, on détecte que c'est du même type
 let circuitType = {
