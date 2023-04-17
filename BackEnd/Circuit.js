@@ -90,7 +90,7 @@
                         this.courant = this.tensionEQ / this.resistanceEQ;
                     }
                     this.remplirResisteursAvecCourant();
-                    //TODO remplir les valeurs dans chaque résistances
+                
                     break;
                 case circuitType.seulementC:
                     let capaciteTemp = 0;
@@ -104,13 +104,14 @@
                     this.capaciteEQ = 1/capaciteTemp;
                     if(this.premierCircuit){
                         this.charge = this.capaciteEQ * this.tensionEQ; 
+                        print(this.charge);
                     }
-                    //TODO remplir les valeurs dans chaque Condensateur
+                    this.remplirCondensateursAvecCharge();
                     break;
                 case circuitType.RC:
                     //C'est là que c'est difficile
                     //On peut aussi juste dire que le circuit est invalide.
-                    alert("Circuit RC détecté"); //(rip)
+                    print("Circuit RC détecté"); //(rip)
                     break;
             }
     
@@ -177,15 +178,25 @@
     }
 
     remplirResisteursAvecCourant(){
-
         for (let i = 0; i < this.circuit.length; i++){
-            if(this.circuit[i].getTypeCalcul() == composantType.resisteurType){
-                
+            if(this.circuit[i].getTypeCalcul() == composantType.resisteurType){    
                 this.circuit[i].courant = this.courant;
                 this.circuit[i].tension = this.courant * this.circuit[i].resistance;
             }else if(this.circuit[i].getTypeCalcul() == composantType.noeudType){
                 this.circuit[i].tensionEQ = this.courant * this.circuit[i].resistanceEQ;
                 this.circuit[i].remplirResisteursAvecDifTension();
+            }
+        }
+    }
+
+    remplirCondensateursAvecCharge(){
+        for (let i = 0; i < this.circuit.length; i++){
+            if(this.circuit[i].getTypeCalcul() == composantType.condensateurType){
+                this.circuit[i].charge = this.charge;
+                this.circuit[i].tension = this.charge / this.circuit[i].capacite;
+            }else if(this.circuit[i].getTypeCalcul() == composantType.noeudType){
+                this.circuit[i].tensionEQ = this.charge / this.capaciteEQ;
+                this.circuit[i].remplirCondensateursAvecTension();
             }
         }
     }

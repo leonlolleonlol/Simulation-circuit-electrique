@@ -66,17 +66,20 @@ function setup() {
 }
 
 function test(){
-  c1.ajouterComposanteALaFin(new Batterie(0, 0, 10));
+  c1.ajouterComposanteALaFin(new Batterie(0, 0, 12));
   n1 = new Noeuds();
   
   c2 = new Circuit(false);
   c3 = new Circuit(false);
 
-  r1 = new Resisteur(0, 0, 30); 
-  r2 = new Resisteur(0, 0, 40); 
+  r1 = new Condensateur(0, 0, 4e-9)
+  r2 = new Condensateur(0, 0, 3e-9); 
+  r3 = new Condensateur(0, 0, 6e-9); 
+  
 
-  c2.ajouterComposanteALaFin(r1);
-  c3.ajouterComposanteALaFin(r2);
+  c2.ajouterComposanteALaFin(r2);
+  c2.ajouterComposanteALaFin(r3);
+  c3.ajouterComposanteALaFin(r1);
 
   n1.ajouterComposanteALaFin(c2);
   n1.ajouterComposanteALaFin(c3);
@@ -95,13 +98,10 @@ function test(){
   n1.ajouterComposanteALaFin(c3);
   */
   c1.ajouterComposanteALaFin(n1);
-  
-  c1.ajouterComposanteALaFin(new Resisteur(0, 0, 10))
-  
+
   c1.update();
-  print(r1.courant);
-  print(r2.courant);
-  Math.round(r1.courant)
+  print(r1.tension);
+  print(r2.tension);
 }
 
 

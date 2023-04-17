@@ -283,6 +283,13 @@ class Noeuds extends Composant {
     }
   }
 
+  remplirCondensateursAvecTension(){
+    for (let i = 0; i < this.circuitsEnParallele.length; i++){
+      this.circuitsEnParallele[i].charge = this.circuitsEnParallele[i].capaciteEQ * this.tensionEQ;
+      this.circuitsEnParallele[i].remplirCondensateursAvecCharge();
+    }
+  }
+
   getType() {
     return Noeud.getType();
   }
