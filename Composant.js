@@ -230,7 +230,7 @@ class Noeuds extends Composant {
             for (let i = 0; i < this.circuitsEnParallele.length; i++){ 
               resistanceTemp += 1 / this.circuitsEnParallele[i].resistanceEQ;
             }
-            this.resistanceEQ = 1 / resistanceTemp;
+            this.resistanceEQ = (1 / resistanceTemp).round(2);
             break;
         case circuitType.seulementC:
             for (let i = 0; i < this.circuitsEnParallele.length; i++){ 
