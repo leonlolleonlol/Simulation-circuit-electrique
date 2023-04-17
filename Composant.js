@@ -2,39 +2,45 @@ class Composant {
 
   constructor(x, y){
       
-	this.x = x;
-	this.y = y;
-	// on crée automatiquement une classe de tension
-    this.courant = 0;
-    this.tension = 0;
+    this.x = x;
+    this.y = y;
+    // on crée automatiquement une classe de tension
+      this.courant = 0;
+      this.tension = 0;
   }
-  // Cette méthode est appelé à chaque fois que l'on
-  // veut calculer la tension et la différence de pottentiel d'un 
-  // composant. Les information disponible sont la branche (composant) et 
-  //si notre composant est en paralèle ou en série
-  //calcul(paralele, composant){
-  //    throw console.error();//todo préciser l'erreur
-  //}
+  /* ****INUTILE?****
+  Cette méthode est appelé à chaque fois que l'on
+  veut calculer la tension et la différence de potentiel d'un 
+  composant. Les information disponible sont la branche (composant) et 
+  si notre composant est en paralèle ou en série
+  calcul(paralele, composant){
+      throw console.error();//todo préciser l'erreur
+  }*/
   draw(offX, offY) {
     throw console.error();//todo préciser l'erreur
   }
   checkConnection(x, y, approximation){
-    if(this.orientation == 'vertical'||this.orientation == 'top'|| this.orientation == 'bottom')
-	return dist(this.x, this.y + 60/2, x, y) < approximation ||
-             dist(this.x, this.y - 60/2, x, y) < approximation;
-    else
+    if(this.orientation == 'vertical'||this.orientation == 'top'|| this.orientation == 'bottom'){
+      return dist(this.x, this.y + 60/2, x, y) < approximation ||
+      dist(this.x, this.y - 60/2, x, y) < approximation;
+    } else{
       return dist(this.x + 60/2, this.y, x, y)<approximation ||
-             dist(this.x - 60/2, this.y, x, y) < approximation;
+      dist(this.x - 60/2, this.y, x, y) < approximation;
+    }
+      
   }
   getType() {
     throw console.error();//todo préciser l'erreur
+  }
+  getTypeCalcul() {
+    this.getType();
   }
 } 
 
 class Resisteur extends Composant {
     constructor(x, y, resistance, orientation) {
         super(x, y);
-	    this.resistance = resistance;
+	      this.resistance = resistance;
         this.orientation = orientation;
     }
 
@@ -51,10 +57,15 @@ class Resisteur extends Composant {
     }
 
     getType() {
-        return Resisteur.getType();
+      return Resisteur.getType();
     }
     static getType() {
-        return 'resisteur';
+      return 'resisteur';
+    }
+
+    //Ne pas changer cette methode, elle doit être comme ça pour les calculs
+    getTypeCalcul() {
+      return composantType.resisteurType;
     }
 }
 
@@ -71,7 +82,7 @@ class Ampoule extends Resisteur {
     }
 
     draw(offX, offY) {
-        ampoule(this.x + offX,this.y + offY,this.orientation, isElementDrag(this));
+        ampoule(this.x + offX,this.y + offY, this.orientation, isElementDrag(this));
     }
 
     getType() {
@@ -79,6 +90,11 @@ class Ampoule extends Resisteur {
     }
     static getType() {
         return 'ampoule';
+    }
+
+    //Ne pas changer cette methode, elle doit être comme ça pour les calculs
+    getTypeCalcul() {
+      return composantType.Resisteur;
     }
 }
 
@@ -97,7 +113,7 @@ class Condensateur extends Composant {
   }
     
     // offsetX et offsetY à retirer
-    draw(offsetX,offsetY) {
+    draw(offsetX, offsetY) {
       condensateur(this.x + offsetX, this.y + offsetY, this.orientation, isElementDrag(this));
     }
     
@@ -107,12 +123,16 @@ class Condensateur extends Composant {
     static getType() {
         return 'condensateur';
     }
+    //Ne pas changer cette methode, elle doit être comme ça pour les calculs
+    getTypeCalcul() {
+      return composantType.condensateurType;
+    }
   }
 
   class Batterie extends Composant {
     constructor(x, y, tension, orientation) {
         super(x, y);
-	    this.tension = tension;
+	      this.tension = tension;
         this.orientation = orientation;
     }
     inBounds(mouseX, mouseY, offsetX, offsetY) {
@@ -123,7 +143,7 @@ class Condensateur extends Composant {
     }
 
     draw(offX, offY) {
-        batterie(this.x + offX,this.y + offY,this.orientation, isElementDrag(this));
+        batterie(this.x + offX,this.y + offY, this.orientation, isElementDrag(this));
     }
 
     getType() {
@@ -147,8 +167,8 @@ class Diode extends Composant {
           mouseY - offsetY < this.y + this.radius);
   }
     
-    draw(offX,offY) {
-      diode(this.x + offX,this.y + offY,this.orientation, isElementDrag(this));
+    draw(offX, offY) {
+      diode(this.x + offX,this.y + offY, this.orientation, isElementDrag(this));
     }
     
     getType() {
@@ -156,6 +176,10 @@ class Diode extends Composant {
     }
     static getType() {
         return 'diode';
+    }
+
+    getTypeCalcul(){
+      return composantType.diodeType;
     }
   }
 
@@ -172,72 +196,103 @@ class Noeuds extends Composant {
 
     //Sert stocker le type de circuit. AKA -> seulement des résistances, seulement des condensateurs ou RC.
     this.type;
+
+    //Indique si le courant à un chemin pour passer dans au moins une des branches
+    this.valide = false; //On assume que c'est faux, mais si une des branches est valide, on le met vrai.
   }
   draw(offsetX,offsetY){
 
   }
 
+  ajouterComposanteALaFin(composant){
+    this.circuitsEnParallele.push(composant);
+  }
+
+  retirerCircuit(position){
+    this.circuitsEnParallele.splice(position, 1);
+  }
  /**
   * Sert à trouver le circuit équivalent en série
   */
  trouverEq(){
-    for (let i = 0; i < circuitsEnParallele.length; i++){ 
+    for (let i = 0; i < this.circuitsEnParallele.length; i++){ 
       this.circuitsEnParallele[i].trouverEq();
+      if(this.circuitsEnParallele[i].valide){
+        this.valide = true;
+      }
     }
 
     this.trouverTypeDeCircuit();
     
     switch (this.type){
         case circuitType.seulementR:
-          let resistancetemp = 0;
+          let resistanceTemp = 0;
             for (let i = 0; i < this.circuitsEnParallele.length; i++){ 
-                resistancetemp += 1 / this.circuit[i].resistanceEQ;
+              resistanceTemp += 1 / this.circuitsEnParallele[i].resistanceEQ;
             }
             this.resistanceEQ = 1 / resistanceTemp;
             break;
         case circuitType.seulementC:
             for (let i = 0; i < this.circuitsEnParallele.length; i++){ 
-              this.capaciteEQ += this.circuit[i];
+              this.capaciteEQ += this.circuitsEnParallele[i].capaciteEQ;
             }
             break;
         case circuitType.RC:
             //C'est là que c'est difficile
             break;
     }
+
   }
 
   trouverTypeDeCircuit(){
     let circuitR = false;
     let circuitC = false;
+    let circuitRC = false;
 
-    for (let i = 0; i < circuitsEnParallele.length; i++){ 
-        switch(this.circuitsEnParallele[i].getType()){
+    for (let i = 0; i < this.circuitsEnParallele.length; i++){ 
+        switch(this.circuitsEnParallele[i].getTypeCalcul()){
             case circuitType.seulementR:
-                circuitR = true;
-                break;
+              circuitR = true;
+              break;
             case circuitType.seulementC:
-                circuitC = true;
-                break;
+              circuitC = true;
+              break;
+            case circuitType.RC:
+              circuitRC = true;
+              break;
         }
     }
 
-    if(circuitR && circuitC){
+    if((circuitR && circuitC) || circuitRC){
         this.type = circuitType.RC;
     }else if (circuitC){
         this.type = circuitType.seulementC;
     }else{
-        this.type = circuitType.seulementR
+        this.type = circuitType.seulementR;
     }
   }
+
   checkConnection(x, y, aproximation){
     return false;
   }
 
-    getType() {
-      return Noeud.getType();
+  remplirResisteursAvecDifTension(){
+    for (let i = 0; i < this.circuitsEnParallele.length; i++){
+      this.circuitsEnParallele[i].courant = this.tensionEQ / this.circuitsEnParallele[i].resistanceEQ;
+      this.circuitsEnParallele[i].remplirResisteursAvecCourant();
     }
-    static getType() {
-        return 'noeud';
-    }
+  }
+
+  getType() {
+    return Noeud.getType();
+  }
+  static getType() {
+      return 'noeud';
+  }
+
+  //Ne pas changer cette methode, elle doit être comme ça pour les calculs
+  getTypeCalcul() {
+    return composantType.noeudType;
+  }
 }
   
