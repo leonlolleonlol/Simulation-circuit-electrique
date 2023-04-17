@@ -1,147 +1,445 @@
+let draggedElement; // L'élement qui est déplacer
+let draggedFil;// à supprimer
+let selection;
+let origin; // variable qui permet de savoir lorsque l'on crée un nouveau élément.
+//Lorsque l'on ajoute un composant, le composant sélectionner disparaît dans le sélectionneur
+// et pour cela, on doit savoir quel composant panneau de choix est l'orignie
+let components;// Liste de composants du circuit
+// Très important que cette liste soit lorsque merge avec modèle
 
-let pg;
+//À supprimer dans de futur release
+let fils;
+
+// Variable nécessaire pour placer la grille
+let grid;
+let composants_panneau; // Le panneau de choix des composants
+
+// liens vers des éléments DOM utiles
+let acceuil_button;
+let undo_button;
+let reset_button;
+let pause_button;
+let stop_button;
+let point_grid_button;
+let line_grid_button;
+let point_line_grid_button;
+let canvas;
+
+let backgroundColor = 'rgb(51,51,51)';//220
+
+// Initialisation du circuit
 function setup() {
-  // put setup code here
-  let resisteur = {x:400, y:100, taille:50};
-  let batterie = {x:100-10, y:100 - 20, sec_width:20, sec_height:40}
+  canvas = createCanvas(windowWidth - 50, windowHeight - 30);
+  acceuil_button = select('#acceuil');
+  line_grid_button = select('#line-grid');
+  point_grid_button = select('#point-grid');
+  point_line_grid_button = select('#point-line-grid');
+  positionCanvas=canvas.position();
+  //----------------------------------------
+  acceuil_button.position(10,10);
+  reset_button = createButton('Recommencer');
+  reset_button.position(positionCanvas.x, 450);
+  reset_button.size(120, 50);
+  reset_button.mousePressed(refresh);
+  undo_button = createButton('Undo');
+  undo_button.position(positionCanvas.x, 95);
+  undo_button.size(120, 50);
+  undo_button.mousePressed(undo);
+  let img_line = select('#img-line-grid');
+  let img_point = select('#img-point-grid');
+  let img_dotLine = select('#img-point-line-grid');
+  img_line.size(24,24);
+  img_point.size(24,24);
+  img_dotLine.size(24,24);//code redondant
+  line_grid_button.position(positionCanvas.x,150);
+  point_grid_button.position(positionCanvas.x +40,150);
+  point_line_grid_button.position(positionCanvas.x + 80,150);
+  line_grid_button.mousePressed(function(){ grid.quadrillage='line';});
+  point_grid_button.mousePressed(function(){ grid.quadrillage='point';});
+  point_line_grid_button.mousePressed(function(){ grid.quadrillage='points&lines';});
 
-  array= [resisteur, batterie];
-  createCanvas(windowWidth-310, windowHeight-40);
-  pg = createGraphics(100,100);
-
+  //-----------------------------------------
+  initComponents();
 }
-let array;
 
+
+
+function initComponents(){
+  fils = [];
+  components = [];
+  draggedElement = null;
+  draggedFil = null;
+  origin = null;
+  grid = {
+    offsetY: 20,
+    tailleCell: 30,
+    translateX: 0,
+    translateY: 0,
+    quadrillage: 'point',
+  };
+  initPosition();
+  // Composants dans le panneau de choix
+  composants_panneau=[new Resisteur(58, 265, 25),
+                      new Batterie(58, 315),
+                      new Ampoule(58, 365, 40),
+                      new Diode(58, 415, 'right'),
+                      new Condensateur(60, 465, 'right')];
+}
+function initPosition(){
+  grid.offsetX = max(200 * width/1230,138) ;
+}
+
+/**
+ * Effectue les éléments suivant:
+ * 1. Changer le background
+ * 2. Dessiner la grille
+ * 3. Dessiner les fils et composants
+ * 4. Dessiner le panneau de choix des composants
+ */
 function draw() {
-  // put drawing code here
-  background(0);
-  createResistor(array[0]);
-  createBatterie(array[1]);
-  createResistor1();
-  createResistor2();
-  createResistor3();
-  createFils();
+  background(backgroundColor);// Mettre le choix de couleur pour le background
+  if(undo_list.length == 0)
+	undo_button.attribute('disabled', '');
+  else
+	undo_button.removeAttribute('disabled');
+  //Dessiner la grille dépendant du du parametre
+  if (grid.quadrillage == 'point')
+    drawPointGrid();
+  else if (grid.quadrillage == 'line')
+  drawLineGrid();
+  else drawPointLineGrid();
   
+  drawFils();
+  for (let element of components) {
+    element.draw(grid.translateX, grid.translateY);
+  }
+  
+  drawComponentsChooser();
+  /*
+  * Solution temporaire pour que le composant s'affiche par dessus 
+  * le reste déplacer du panneau de choix
+  */
+  if (origin != null) {
+    draggedElement.draw(grid.translateX, grid.translateY);
+  }
 }
 
-
-function createFils(){
-  noFill();
-  stroke('orange');
-  strokeWeight(10);
-  strokeCap(ROUND);
-  line(20, 30, 200, 30);
-  bezier(200, 30, 210, 30, 220, 40, 220, 50);
-  line(220, 50, 220, 150);
-
-}
-//RÉSISTEUR-------------------------------------------------------------
-
-function createResistor(resisteur){
-  noStroke();
-  fill('#299bf6');
-  circle(resisteur.x, resisteur.y, resisteur.taille);
-  fill('#a358a8');
-  triangle(resisteur.x - 80, resisteur.y, resisteur.x - 30, resisteur.y - 20, resisteur.x - 30, resisteur.y + 20);
-  triangle(resisteur.x + 80, resisteur.y, resisteur.x + 30, resisteur.y + 20, resisteur.x + 30, resisteur.y - 20);
-}
-function createResistor1(){
-  let resisteur = {x:400, y:200, taille:50};
+function drawComponentsChooser() {
   push();
   noStroke();
-  let grad = drawingContext.createRadialGradient(resisteur.x, resisteur.y, 10, resisteur.x , resisteur.y, 30);
-  grad.addColorStop(0,"#bc4e9c");
-  grad.addColorStop(1,'#f80759');
-  drawingContext.fillStyle = grad;
-  circle(resisteur.x, resisteur.y, resisteur.taille);
-  fill('#5771c1');
-  triangle(resisteur.x - 80, resisteur.y, resisteur.x - 30, resisteur.y - 20, resisteur.x - 30, resisteur.y + 20);
-  triangle(resisteur.x + 80, resisteur.y, resisteur.x + 30, resisteur.y + 20, resisteur.x + 30, resisteur.y - 20);
-  pop();
-}
-function createResistor2(){
-  let resisteur = {x:400, y:300, taille:50};
-  noStroke();
-  push();
-  let grad = drawingContext.createRadialGradient(resisteur.x, resisteur.y, 10, resisteur.x , resisteur.y, 30);
-  grad.addColorStop(0,"#bc4e9c");
-  grad.addColorStop(1,'#f80759');
-  drawingContext.fillStyle = grad;
-  circle(resisteur.x, resisteur.y, resisteur.taille);
-  fill('#5771c1');
-  triangle(resisteur.x - 80, resisteur.y, resisteur.x - 30, resisteur.y - 20, resisteur.x - 30, resisteur.y + 20);
-  triangle(resisteur.x + 80, resisteur.y, resisteur.x + 30, resisteur.y + 20, resisteur.x + 30, resisteur.y - 20);
-  pop();
-}
-function createResistor3(){
-  let resisteur = {x:400, y:400, taille:50};
-  push();
-  noStroke();
-  let grad = drawingContext.createRadialGradient(resisteur.x, resisteur.y, 10, resisteur.x , resisteur.y, 30);
-  grad.addColorStop(0,"#bc4e9c");
-  grad.addColorStop(1,'#f80759');
-  drawingContext.fillStyle = grad;
-  circle(resisteur.x, resisteur.y, resisteur.taille);
-  fill('#5771c1');
-  triangle(resisteur.x - 80, resisteur.y, resisteur.x - 30, resisteur.y - 20, resisteur.x - 30, resisteur.y + 20);
-  triangle(resisteur.x + 80, resisteur.y, resisteur.x + 30, resisteur.y + 20, resisteur.x + 30, resisteur.y - 20);
+  fill(backgroundColor);
+  rect(0, 0, grid.offsetX - 5, windowHeight);
+  fill("rgba(128,128,128,0.59)");
+  strokeWeight(4);
+  stroke("rgba(52,52,52,0.78)");
+  for (let i = 0; i <composants_panneau.length ; i++) {
+    rect(0, 190 + 50 * i, 120, 50);
+  }
+  for (let element of composants_panneau){
+    if (element != origin)
+      element.draw(0, 0);
+  }
   pop();
 }
 
-
-//BATTERIE--------------------------------------------------------------
-
-function createBatterie(batterie){
-
-  noStroke();
-  let grad = drawingContext.createLinearGradient(batterie.x - batterie.sec_width * 2, batterie.y, batterie.x + batterie.sec_width * 2 , batterie.y);
-  grad.addColorStop(0,"#e0636c");
-  grad.addColorStop(0.35,"#e0636c");
-  grad.addColorStop(0.85,"#5771c1");
-  grad.addColorStop(1,'#5771c1');
-  drawingContext.fillStyle = grad;
-  rect(batterie.x - batterie.sec_width * 2, batterie.y, batterie.sec_width * 5, batterie.sec_height, 16);
+// GRILLE ------------------------------------------
+function drawPointGrid() {
+  stroke("black");
+  setGrid();
 }
-function createBatterie1(){
-  let batterie = {x:100-10, y:160 - 20, sec_width:20, sec_height:40}
-  noStroke();
-  let grad = drawingContext.createLinearGradient(batterie.x - batterie.sec_width * 2, batterie.y + batterie.sec_height, batterie.x + batterie.sec_width * 2 , batterie.y);
-  grad.addColorStop(0,"#e0636c");
-  grad.addColorStop(0.2,"#e0636c");
-  grad.addColorStop(0.25,"#be6781");
-  grad.addColorStop(0.45,"#be6781");
-  grad.addColorStop(0.50,"#9c6a96");
-  grad.addColorStop(0.70,"#9c6a96");
-  grad.addColorStop(0.75,"#7a6dab");
-  grad.addColorStop(0.95,"#7a6dab");
-  grad.addColorStop(1,'#5771c1');
-  drawingContext.fillStyle = grad;
-  rect(batterie.x - batterie.sec_width * 2, batterie.y, batterie.sec_width * 5, batterie.sec_height);
-  
+function setGrid() {
+  push();
+  strokeWeight(6);
+  for (let i = 0; i * grid.tailleCell < windowWidth - grid.offsetX; i++) {
+    for (let j = 0; j * grid.tailleCell < windowHeight - grid.offsetY; j++) {
+      if (
+        !(grid.translateX % grid.tailleCell < 0 && i == 0) &&
+        !(grid.translateY % grid.tailleCell < 0 && j == 0)
+      )
+        point(
+          grid.offsetX + i * grid.tailleCell + (grid.translateX % grid.tailleCell),
+          grid.offsetY + j * grid.tailleCell + (grid.translateY % grid.tailleCell)
+        );
+    }
+  }
+  pop();
+}
+function drawPointLineGrid() {
+  push();
+  drawLineGrid();
+  stroke("gray");
+  setGrid();
+  pop();
 }
 
-function createBatterie2(){
-  let batterie = {x:100-10, y:220 - 20, sec_width:20, sec_height:40}
-  noStroke();
-  let grad = drawingContext.createLinearGradient(batterie.x - batterie.sec_width * 2, batterie.y, batterie.x + batterie.sec_width * 2 , batterie.y);
-  grad.addColorStop(0,"#e0636c");
-  grad.addColorStop(1,'#5771c1');
-  drawingContext.fillStyle = grad;
-  rect(batterie.x - batterie.sec_width * 2, batterie.y, batterie.sec_width * 5, batterie.sec_height);
-  
+function drawLineGrid() {
+  push();
+  var borne = 0;
+  stroke("black");
+  strokeWeight(2);
+  while (borne * grid.tailleCell < windowWidth - grid.offsetX) {
+    if (!(grid.translateX % grid.tailleCell < 0 && borne == 0))
+      line(
+        grid.offsetX + borne * grid.tailleCell + (grid.translateX % grid.tailleCell),
+        grid.offsetY,
+        grid.offsetX + borne * grid.tailleCell + (grid.translateX % grid.tailleCell),
+        windowHeight
+      );
+    borne++;
+  }
+  borne = 0;
+  while (borne * grid.tailleCell < windowHeight - grid.offsetY) {
+    if (!(grid.translateY % grid.tailleCell < 0 && borne == 0))
+      line(
+        grid.offsetX,
+        grid.offsetY + borne * grid.tailleCell + (grid.translateY % grid.tailleCell),
+        windowWidth,
+        grid.offsetY + borne * grid.tailleCell + (grid.translateY % grid.tailleCell)
+      );
+    borne++;
+  }
+  pop();
+}
+// ---------------------------------------------------------
+
+// Function temporaire en attendant d'avoir un objet fil
+function drawFils() {
+  push();
+  stroke("orange");
+  strokeWeight(4);
+  for (let element of fils){
+    if (element != null)
+      line(element.xi + grid.translateX, element.yi + grid.translateY, element.xf + grid.translateX, element.yf + grid.translateY);
+  }
+  pop();
 }
 
-function createBatterie3(){
-  let batterie = {x:100-10, y:280 - 20, sec_width:20, sec_height:40}
-  noStroke();
-  fill('#e0636c');
-  rect(batterie.x - batterie.sec_width * 2, batterie.y, batterie.sec_width, batterie.sec_height);
-  fill('#be6781');
-  rect(batterie.x - batterie.sec_width, batterie.y, batterie.sec_width, batterie.sec_height);
-  fill('#9c6a96');
-  rect(batterie.x, batterie.y, batterie.sec_width, batterie.sec_height);
-  fill('#7a6dab');
-  rect(batterie.x + batterie.sec_width, batterie.y, batterie.sec_width, batterie.sec_height);
-  fill('#5771c1');
-  rect(batterie.x + batterie.sec_width * 2, batterie.y, batterie.sec_width, batterie.sec_height);
+  /**
+   * Permet de trouver la position idéal en x à partir de la 
+   * position de la souris
+   * @param {*} offset 
+   * @returns Le point en x le plus proche sur la grille
+   */
+function findGridLockX(offset) {
+  return (
+    round(
+      (mouseX - grid.offsetX - offset) / grid.tailleCell
+    ) *
+    grid.tailleCell +
+    grid.offsetX
+  );
+}
+/**
+ * Permet de trouver la position idéale en y à partir de la 
+ * positinon de la souris
+ * @param {*} offset 
+ * @returns Le point en y le plus proche sur la grille
+ */
+function findGridLockY(offset) {
+  return (
+    round((mouseY - grid.offsetY - offset) / grid.tailleCell) * grid.tailleCell +
+    grid.offsetY
+  );
+}
+function isElementDrag(element){
+  return draggedElement!=null && draggedElement === element;
+}
+
+function isElementSelectionner(element){
+  return selection!=null && selection === element;
+}
+
+function validFilBegin(){
+let x = mouseX - grid.offsetX - grid.translateX;
+let y = mouseY - grid.offsetY - grid.translateY;
+  if (mouseX <= grid.offsetX || mouseY <= grid.offsetY)
+    return false;
+  else if (!((x % grid.tailleCell < 20 ||
+            (x + 20) % grid.tailleCell < 20) &&
+          (y % grid.tailleCell < 20 ||
+            (y + 20) % grid.tailleCell < 20)))
+    return false;
+  else {
+    let xd = mouseX - grid.translateX;
+    let yd = mouseY - grid.translateY;
+    for(let i=0;i<components.length;i++)
+      if(components[i].checkConnection(xd, yd, 10))
+        return true; 
+    for(let i=0;i<fils.length;i++){
+      if(fils[i].yi!=fils[i].yf && fils[i].xi!=fils[i].xf){
+        if(dist(min(fils[i].xi,fils[i].xf),min(fils[i].yi,fils[i].yf),xd,yd)<10 ||
+           dist(max(fils[i].xi,fils[i].xf),min(fils[i].yi,fils[i].yf),xd,yd)<10 ||
+           dist(min(fils[i].xi,fils[i].xf),max(fils[i].yi,fils[i].yf),xd,yd)<10 ||
+           dist(max(fils[i].xi,fils[i].xf),max(fils[i].yi,fils[i].yf),xd,yd)<10)
+          return true;
+      } else {
+        let x1 = min(fils[i].xi-10, fils[i].xf-10)
+        let x2 = max(fils[i].xi+10, fils[i].xf+ 10);
+        let y1 = min(fils[i].yi-10, fils[i].yf-10);
+        let y2 = max(fils[i].yi+10, fils[i].yf+10);
+        if(xd > x1 && xd < x2 && yd > y1 -10 && yd < y2 + 10)
+          return true;
+      }
+    }
+  } 
+}
+
+function mousePressed() {
+  selection = null;
+  // Vérification drag panneau de choix
+  for (let i = 0; i < composants_panneau.length; i++) {
+    const element = composants_panneau[i];
+    var new_element;
+    if (element.inBounds(mouseX, mouseY, 0, 0)){
+      origin = element;
+      // Création d'un nouveau composants selon le composant sélectionner
+      if(element.getType() == 'batterie'){
+        new_element = new Batterie(element.x - grid.translateX, element.y - grid.translateY);
+      }else if(element.getType() == 'resisteur'){
+        new_element = new Resisteur(element.x - grid.translateX, element.y - grid.translateY);
+      }else if(element.getType() == 'ampoule'){
+        new_element = new Ampoule(element.x - grid.translateX, element.y - grid.translateY);
+      }else if(element.getType() == 'condensateur'){
+        new_element = new Condensateur(element.x - grid.translateX, element.y - grid.translateY, 'right');
+      }else if(element.getType() == 'diode'){
+        new_element = new Diode(element.x - grid.translateX, element.y - grid.translateY, 'right');
+      }
+      new_element.xOffsetDrag = mouseX - element.x;
+      new_element.yOffsetDrag = mouseY - element.y;
+      // Autres ajout dans les modules
+      components.push(new_element);
+      draggedElement = new_element;
+      selection = new_element;
+      addActions( { type: CREATE, objet: new_element }, 0);
+    }
+
+  } 
+  // Vérification drag parmis les composants de la grille
+  if(draggedElement == null) {
+    for (let element of components) {
+      if (element.inBounds(mouseX, mouseY, grid.translateX, grid.translateY)) {
+        draggedElement = element;
+        selection = element;
+        draggedElement.xOffsetDrag = mouseX - draggedElement.x;
+        draggedElement.yOffsetDrag = mouseY - draggedElement.y;
+        break;
+      }
+    }//mouseX - offsetX > element.x - 10
+  }
+  if (draggedElement == null && validFilBegin()) {
+    let x_point = findGridLockX(grid.translateX);
+    let y_point = findGridLockY(grid.translateY)
+    let fil = {
+        xi: x_point,
+        yi: y_point,
+        xf: x_point,
+        yf: y_point,
+        type: "fil",
+    };
+    draggedFil = fil;
+    selection = fil;
+    fils.push(fil);
+    addActions({type:CREATE,objet:fil});
+  }
+  if(draggedElement == null && draggedFil == null) {
+    if(mouseX>grid.offsetX && mouseY> grid.offsetY)
+      draggedElement = grid;
+  }
+}
+
+function mouseDragged() {
+  if (draggedElement != null && origin != null) {
+    //cursor('grabbing');
+    draggedElement.x = findGridLockX(
+      draggedElement.xOffsetDrag + grid.translateX
+    );
+    draggedElement.y = findGridLockY(
+      draggedElement.yOffsetDrag + grid.translateY
+    );
+  }
+  else if (draggedElement != null) {
+    if(draggedElement === grid){
+      //cursor(MOVE);
+      grid.translateX += mouseX - pmouseX;
+      grid.translateY += mouseY - pmouseY;
+    } else{
+    //cursor('grabbing');
+    draggedElement.x = findGridLockX(
+      draggedElement.xOffsetDrag
+    );
+    }
+    draggedElement.y = findGridLockY(
+      draggedElement.yOffsetDrag
+    );
+  } else if (draggedFil != null) {
+    draggedFil.xf = findGridLockX(grid.translateX);
+    draggedFil.yf = findGridLockY(grid.translateY);
+  }
+}
+
+function mouseReleased() {
+  // Arrète le drag si il y en avait un en cours
+  //cursor(ARROW);
+  if (draggedElement != null && origin !=null) {
+    draggedElement.drag = false;
+    draggedElement = null;
+    origin = null;
+  } else if(draggedElement != null){
+    let action = {type:MODIFIER, objet:draggedElement, changements:[
+			{attribut:'x', ancienne_valeur:draggedElement.pastX, nouvelle_valeur:draggedElement.x},
+      {attribut:'y', ancienne_valeur:draggedElement.pastY, nouvelle_valeur:draggedElement.y}]};
+    draggedElement.pastX = null;
+    draggedElement.pastY = null;
+    draggedElement = null;
+    addActions(action);
+  } else if (draggedFil != null) {
+      if(draggedFil.xi == draggedFil.xf && draggedFil.yi == draggedFil.yf)
+	fils.pop();
+    draggedFil = null;
+  }
+}
+
+function keyPressed() {
+ /*
+  * Gestion des raccourcis clavier.
+  * Pour trouver les codes des combinaisons,
+  * aller voir https://www.toptal.com/developers/keycode
+  */
+  if (keyIsDown(CONTROL) && keyIsDown(SHIFT) && keyCode === 90) {
+    redo();
+  } else if (keyIsDown(CONTROL) && keyCode === 90) {
+    undo();
+  } else if (keyCode === 8) {
+    if(selection!=null){
+      let element = components.splice(components.indexOf(selection),1)[0];
+      addActions({type:DELETE,objet:element});
+      selection = null;
+    }
+  } else if (keyCode === 82) {
+    let newR = new Resisteur(findGridLockX(grid.translateX), findGridLockY(grid.translateY));
+    components.push(newR);
+    addActions({type:CREATE,objet:newR});
+  } else if (keyCode === 83) {
+    let newB = new Batterie(findGridLockX(grid.translateX), findGridLockY(grid.translateY));
+    components.push(newB);
+    addActions({type:CREATE,objet:newB});
+  } else if (keyCode === 67) {
+    let newC = new Condensateur(findGridLockX(grid.translateX), findGridLockY(grid.translateY));
+    components.push(newC);
+    addActions({type:CREATE,objet:newC});
+  } //else if (keyIsDown(CONTROL) && keyIsDown(SHIFT) && keyCode === 80) {
+  //  print('parameters')
+  //}
+}
+function windowResized(){
+  resizeCanvas(windowWidth - 50, windowHeight - 30);
+  initPosition();
+}
+
+/*
+ * Efface tout les composants sur la grille et remet tout les 
+ * système à zéro.
+ */
+function refresh() {
+  initComponents();
 }
