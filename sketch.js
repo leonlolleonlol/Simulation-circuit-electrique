@@ -67,19 +67,21 @@ function setup() {
 
 function test(){
   c1.ajouterComposante(new Batterie(0, 0, 12));
+  r1 = new Resisteur(0, 0, 500)
+  c1.ajouterComposante(r1);
   n1 = new Noeuds();
   
   c2 = new Circuit(false);
   c3 = new Circuit(false);
 
-  r1 = new Condensateur(0, 0, 4e-9)
-  r2 = new Condensateur(0, 0, 3e-9); 
-  r3 = new Condensateur(0, 0, 6e-9); 
+  r2 = new Resisteur(0, 0, 800)
+  r3 = new Resisteur(0, 0, 1100); 
+  r4 = new Resisteur(0, 0, 400); 
   
 
-  c2.ajouterComposante(r2);
+  c2.ajouterComposante(r4);
   c2.ajouterComposante(r3);
-  c3.ajouterComposante(r1);
+  c3.ajouterComposante(r2);
 
   n1.ajouterComposante(c2);
   n1.ajouterComposante(c3);
@@ -100,11 +102,16 @@ function test(){
   c1.ajouterComposante(n1);
 
   c1.update();
-  print(r1.tension);
-  print(r2.tension);
+  print(r1.courant.round(5) + " " + r1.tension.round(2));
+  print(r2.courant.round(5) + " " + r2.tension.round(2));
+  print(r3.courant.round(5) + " " + r3.tension.round(2));
+  print(r4.courant.round(5) + " " + r4.tension.round(2));
 }
 
-
+//Source: https://stackoverflow.com/questions/11832914/how-to-round-to-at-most-2-decimal-places-if-necessary 
+Number.prototype.round = function(places) {
+  return +(Math.round(this + "e+" + places)  + "e-" + places);
+}
 
 function initComponents(){
   fils = [];
