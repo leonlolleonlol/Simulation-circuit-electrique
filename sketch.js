@@ -25,6 +25,8 @@ let line_grid_button;
 let point_line_grid_button;
 let canvas;
 
+let c1 = new Circuit(true);
+
 let backgroundColor = 'rgb(51,51,51)';//220
 
 // Initialisation du circuit
@@ -66,7 +68,6 @@ function setup() {
 function test(){
   c1.ajouterComposanteALaFin(new Batterie(0, 0, 10));
   n1 = new Noeuds();
-
   
   c2 = new Circuit(false);
   c3 = new Circuit(false);
