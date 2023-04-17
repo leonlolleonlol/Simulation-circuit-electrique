@@ -1,12 +1,12 @@
 class Composant {
 
   constructor(x, y){
-      
     this.x = x;
     this.y = y;
     // on crée automatiquement une classe de tension
-      this.courant = 0;
-      this.tension = 0;
+    this.courant = 0;
+    this.tension = 0;
+    this.prochaineComposante;
   }
   /* ****INUTILE?****
   Cette méthode est appelé à chaque fois que l'on
@@ -204,7 +204,7 @@ class Noeuds extends Composant {
 
   }
 
-  ajouterComposanteALaFin(composant){
+  ajouterComposante(composant){
     this.circuitsEnParallele.push(composant);
   }
 
@@ -280,6 +280,13 @@ class Noeuds extends Composant {
     for (let i = 0; i < this.circuitsEnParallele.length; i++){
       this.circuitsEnParallele[i].courant = this.tensionEQ / this.circuitsEnParallele[i].resistanceEQ;
       this.circuitsEnParallele[i].remplirResisteursAvecCourant();
+    }
+  }
+
+  remplirCondensateursAvecTension(){
+    for (let i = 0; i < this.circuitsEnParallele.length; i++){
+      this.circuitsEnParallele[i].charge = this.circuitsEnParallele[i].capaciteEQ * this.tensionEQ;
+      this.circuitsEnParallele[i].remplirCondensateursAvecCharge();
     }
   }
 
