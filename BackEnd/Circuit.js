@@ -135,10 +135,10 @@
                     break;
             }
     
-            //if(this.premierCircuit){
+            if(this.premierCircuit){
                 print("CapaciteEQ: " + this.capaciteEQ);
                 print("ResistanceEQ: " + this.resistanceEQ);
-            //}
+            }
         } else{
             if(this.premierCircuit){
                 print("Pas de chemin pour le courant");
