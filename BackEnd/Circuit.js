@@ -62,9 +62,13 @@
     }
 
     validerCircuit(){
-        if(this.premierCircuit){
-        
+        /**
+         * Points à valider : 
+         * -- présence d'une 
+         */
+        for(let i = 0; i < this.circuit.length; i++){
         }
+        
     }
 
     /**
