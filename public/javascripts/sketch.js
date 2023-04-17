@@ -52,6 +52,7 @@ function setup() {
   //test();
 }
 
+
 function test(){
   c1.ajouterComposanteALaFin(new Batterie(0, 0, 10));
   n1 = new Noeuds();
