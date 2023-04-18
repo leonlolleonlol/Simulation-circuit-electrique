@@ -546,7 +546,9 @@ function keyPressed() {
     undo();
   } else if (keyCode === 8) {
     if(selection!=null){
-      components.splice(components.indexOf(selection),1);
+      if(selection.getType()!=='fil')
+        components.splice(components.indexOf(selection),1);
+      else fils.splice(fils.indexOf(selection),1);
       addActions({type:DELETE,objet:selection});
       selection = null;
     }
