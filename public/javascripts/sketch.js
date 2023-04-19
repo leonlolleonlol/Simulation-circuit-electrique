@@ -420,11 +420,11 @@ function createComposant(original){
   let x = original.x/grid.scale - grid.translateX;
   let y = original.y/grid.scale - grid.translateY;
   switch (original.getType()) {
-    case 'batterie': return new Batterie(x, y, 0);
-    case 'resisteur': return new Resisteur(x, y, 0);
-    case 'ampoule': return new Ampoule(x, y, 0);
-    case 'condensateur': return new Condensateur(x, y, 0, 'right');
-    case 'diode': return new Diode(x, y, 'right');
+    case Batterie.getType(): return new Batterie(x, y, 0);
+    case Resisteur.getType(): return new Resisteur(x, y, 0);
+    case Ampoule.getType(): return new Ampoule(x, y, 0);
+    case Condensateur.getType(): return new Condensateur(x, y, 0, 'right');
+    case Diode.getType(): return new Diode(x, y, 'right');
   }
 }
 
