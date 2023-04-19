@@ -29,12 +29,16 @@ function undo(){
       actions = [actions];
     for(const action of actions){
       if(action.type===CREATE){
-        if(action.objet.getType()!='fil')
+        if(action.objet.getType()!='fil'){
           components.splice(components.indexOf(action.objet),1);
+          //circuit.retirerComposant(action.objet);
+        }
+          
         else
           fils.pop();
       }else if(action.type===DELETE){
         components.push(action.objet);
+        //circuit.ajouterComposant(action.objet);
       }else if(action.type===MODIFIER){
         let composant = action.objet;
         for(changement of action.changements){
@@ -77,12 +81,16 @@ function redo(){
       actions = [actions];
     for (const action of actions) {
       if(action.type===CREATE){
-        if(action.objet.getType()!='fil')
+        if(action.objet.getType()!='fil'){
           components.push(action.objet);
+          //circuit.ajouterComposant(action.objet);
+        }
+          
         else
           fils.push(action.objet);
       }else if(action.type===DELETE){
         components.pop();
+        //circuit.retirerComposant(components.pop());
       }else if(action.type===MODIFIER){
         let composant = action.objet;
         for(changement of action.changements){

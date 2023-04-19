@@ -298,8 +298,9 @@ let y = mouseY/grid.scale - grid.translateY;
     
   else {
     for (const composant of components) {
-      if(composant.checkConnection(x, y, 10))
+      if(composant.checkConnection(x, y, 10)){
         return true;
+      }
     }
     for (const fil of fils) {
       if(fil.yi!=fil.yf && fil.xi!=fil.xf){
@@ -352,7 +353,7 @@ function simplifyNewFil(testFil){
   if(testFil.xi == testFil.xf &&
     testFil.yi == testFil.yf){
       fils.pop();
-	if(origin!=null)
+      if(origin!=null)
         selection = origin;
       return;
     }
@@ -410,6 +411,21 @@ function simplifyNewFil(testFil){
         testFil.yf = p2f.y;
       }
     }
+    /*for (const composant of components) {
+      if(composant.checkConnection(fils_remplacer[index].objet.xi, fils_remplacer[index].objet.yi, 10)){
+        fils_remplacer[index].objet.begin = composant;
+        break;
+      }
+    }
+    for (const composant of components) {
+      if(composant.checkConnection(fils_remplacer[index].objet.xf, fils_remplacer[index].objet.yf, 10)){
+        fils_remplacer[index].objet.end = composant;
+        break;
+      }
+    }
+    if(fils_remplacer[index].objet.begin!=null && fils_remplacer[index].objet.end){
+      circuit.connect(fils_remplacer[index].objet.begin,fils_remplacer[index].objet.end);
+    }*/
     let i = fils.indexOf(fils_remplacer[index].objet);
     fils_remplacer[index].index = i;
     fils.splice(i,1);
@@ -417,8 +433,25 @@ function simplifyNewFil(testFil){
   }
   if(fils_remplacer.length!=0)
     addActions({type:REPLACE,objet:testFil,ancien_objet:fils_remplacer})
-  else
+  else{
+    /*for (const composant of components) {
+      if(composant.checkConnection(testFil.xi, testFil.yi, 10)){
+        testFil.begin = composant;
+        break;
+      }
+    }
+    for (const composant of components) {
+      if(composant.checkConnection(testFil.xf, testFil.yf, 10)){
+        testFil.end = composant;
+        break;
+      }
+    }
+    if(testFil.begin!=null && testFil.end){
+      circuit.connect(testFil.begin,testFil.end);
+    }*/
     addActions({type:CREATE,objet:testFil})
+  }
+    
 }
 
 // --------------------------------------
@@ -565,6 +598,7 @@ function mouseReleased() {
     if(origin !=null && origin.getType()!='fil') {
       if(validComposantPos(drag)){
         components.push(drag);
+        //circuit.ajouterComposante(drag);
         simplifyComposant(drag);
       }
     origin = null;
@@ -575,6 +609,7 @@ function mouseReleased() {
     } else {
         if(validComposantPos(drag)){
           simplifyComposant(drag, true);
+          //circuit.composantPosChange(drag,drag.pastX,drag.pastY);
         } else{
           // Annuler le mouvement
           drag.x = drag.pastX;
@@ -616,15 +651,20 @@ function keyPressed() {
     undo();
   } else if (keyCode === 8) {
     if(selection!=null){
-      if(selection.getType()!=='fil')
+      if(selection.getType()!=='fil'){
         components.splice(components.indexOf(selection),1);
-      else fils.splice(fils.indexOf(selection),1);
+        //circuit.retirerComposant(selection);
+      }
+      else{
+        fils.splice(fils.indexOf(selection),1);
+        //circuit.removeConnection(selection)
+      } 
       addActions({type:DELETE,objet:selection});
       selection = null;
     }
   } else if(keyCode === 82 || keyCode === 83 || keyCode === 67){
       let newC;
-      let point = findGridLock(grid.translateX, grid.translateY)
+      let point = findGridLock(grid.translateX, grid.translateY);
       let x = point.x;
       let y = point.y;
       if (keyCode === 82) {
@@ -634,8 +674,12 @@ function keyPressed() {
       } else if (keyCode === 67) {
         newC = new Condensateur(x, y);
     }
-    components.push(newC);
-    addActions({type:CREATE,objet:newC});
+    if(validComposantPos(newC)){
+      components.push(newC);
+      //circuit.ajouterComposante(newC);
+      addActions({type:CREATE,objet:newC});
+    }
+    
   } //else if (keyIsDown(CONTROL) && keyIsDown(SHIFT) && keyCode === 80) {
   //  print('parameters')
   //}
