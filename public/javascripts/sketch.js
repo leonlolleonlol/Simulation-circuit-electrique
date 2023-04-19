@@ -306,7 +306,7 @@ let y = mouseY/grid.scale - grid.translateY;
         if(dist(fil.xi, fil.yi, x, y)<10 ||
            dist(fil.xf, fil.yf, x, y)<10)
           return true;
-      } else if(inBoundFil()){
+      } else if(inBoundFil(fil, x, y)){
         return true;
       }
     }
@@ -314,7 +314,7 @@ let y = mouseY/grid.scale - grid.translateY;
 }
 
 function inBoundFil(fil, x, y){
-  let x1 = Math.min(fil.xi-10, fil.xf-10)
+  let x1 = Math.min(fil.xi-10, fil.xf-10);
   let x2 = Math.max(fil.xi+10, fil.xf+ 10);
   let y1 = Math.min(fil.yi-10, fil.yf-10);
   let y2 = Math.max(fil.yi+10, fil.yf+10);
@@ -328,11 +328,23 @@ function pente(fil){
 function filOverlap(fil1,fil2){
   let pente1 = pente(fil1);
   let pente2= pente(fil2);
-  //ne marche pas  en diagonal
-  if(pente1 === pente2)
-    // BUG ce retour est toujours vrai
-    return ((fil1.xi - fil2.xi)*(fil1.yi - fil2.yf)) - (fil1.xi - fil2.xf)*(fil1.yi - fil2.yi) == 0 ||
-           ((fil1.xf - fil2.xi)*(fil1.yf - fil2.yf)) - (fil1.xf - fil2.xf)*(fil1.yf - fil2.yi) == 0;
+  let b1 = fil1.yi - fil1.xi * pente1;
+  let b2 = fil2.yi - fil2.xi * pente2
+  if(Math.abs(pente1) === Math.abs(pente2) && Math.abs(b1) === Math.abs(b2)){
+    if((Math.abs(pente1) == 0 && fil1.yi===fil2.yi)|| Math.abs(pente1) != 0){
+      let x1i = Math.min(fil1.xi,fil1.xf);
+      let x1f = Math.max(fil1.xi,fil1.xf);
+      let x2i = Math.min(fil2.xi,fil2.xf);
+      let x2f = Math.max(fil2.xi,fil2.xf);
+      return ((x2i <= x1f && x2i >=x1i) || (x1i <=x2f && x1i >= x2i))
+    }else if (Math.abs(pente1) == Infinity && fil1.xi===fil2.xi){
+      y1i = Math.min(fil1.yi,fil1.yf);
+      y1f = Math.max(fil1.yi,fil1.yf);
+      y2i = Math.min(fil2.yi,fil2.yf);
+      y2f = Math.max(fil2.yi,fil2.yf);
+      return ((y2i <= y1f && y2i >=y1i) || (y1i <=y2f && y1i >= y2i))
+    }
+  }
   else return false;
 }
 
@@ -340,7 +352,7 @@ function simplifyNewFil(testFil){
   if(testFil.xi == testFil.xf &&
     testFil.yi == testFil.yf){
       fils.pop();
-      if(origin!=null)
+	if(origin!=null)
         selection = origin;
       return;
     }
@@ -352,6 +364,8 @@ function simplifyNewFil(testFil){
     }
   }
   for (let index = 0; index < fils_remplacer.length; index++) {
+    let penteF = pente(fils_remplacer[index].objet);
+    if(Math.abs(penteF)==0|| Math.abs(penteF)==Infinity){
     let x0 = Math.min(fils_remplacer[index].objet.xi,testFil.xi,fils_remplacer[index].objet.xf,testFil.xf);
     let x1 = Math.max(fils_remplacer[index].objet.xi,testFil.xi,fils_remplacer[index].objet.xf,testFil.xf);
     let y0 = Math.min(fils_remplacer[index].objet.yi,testFil.yi,fils_remplacer[index].objet.yf,testFil.yf);
@@ -360,9 +374,46 @@ function simplifyNewFil(testFil){
     testFil.yi = y0;
     testFil.xf = x1
     testFil.yf = y1;
+    }else {
+      let p1i;
+      let p1f;
+      if(fils_remplacer[index].objet.xi<fils_remplacer[index].objet.xf){
+        p1i = {x:fils_remplacer[index].objet.xi,y:fils_remplacer[index].objet.yi};
+        p1f = {x:fils_remplacer[index].objet.xf,y:fils_remplacer[index].objet.yf};
+      }
+      else{
+        p1i = {x:fils_remplacer[index].objet.xf,y:fils_remplacer[index].objet.yf};
+        p1f = {x:fils_remplacer[index].objet.xi,y:fils_remplacer[index].objet.yi};
+      }
+      let p2i;
+      let p2f;
+      if(testFil.xi<testFil.xf){
+        p2i = {x:testFil.xi,y:testFil.yi};
+        p2f = {x:testFil.xf,y:testFil.yf};
+      }
+      else{
+        p2i = {x:testFil.xf,y:testFil.yf};
+        p2f = {x:testFil.xi,y:testFil.yi};
+      }
+      if(p1i.x < p2i.x){
+        testFil.xi = p1i.x
+        testFil.yi = p1i.y;
+      }else {
+        testFil.xi = p2i.x
+        testFil.yi = p2i.y;
+      }
+      if(p1f.x > p2f.x){
+        testFil.xf = p1f.x
+        testFil.yf = p1f.y;
+      }else {
+        testFil.xf = p2f.x
+        testFil.yf = p2f.y;
+      }
+    }
     let i = fils.indexOf(fils_remplacer[index].objet);
     fils_remplacer[index].index = i;
     fils.splice(i,1);
+    
   }
   if(fils_remplacer.length!=0)
     addActions({type:REPLACE,objet:testFil,ancien_objet:fils_remplacer})
@@ -394,15 +445,15 @@ function simplifyComposant(composant, modif){
     let action = {type:MODIFIER, objet:composant, changements:[
 			{attribut:'x', ancienne_valeur:composant.pastX, nouvelle_valeur:composant.x},
       {attribut:'y', ancienne_valeur:composant.pastY, nouvelle_valeur:composant.y}]};
-    let i = components.indexOf(composant_remplacer.objet);
-    composant_remplacer.index = i;
-    components.splice(i,1);
-    addActions([action,{type:REPLACE,objet:composant,ancien_objet:composant_remplacer}])
+    components.splice(components.indexOf(composant_remplacer.objet),1);
+    addActions([action,{type:DELETE,objet:composant_remplacer.objet}])
   }else if(composant_remplacer!=null){
-    let i = components.indexOf(composant_remplacer.objet);
-    composant_remplacer.index = i;
-    components.splice(i,1);
-    addActions({type:REPLACE,objet:composant,ancien_objet:composant_remplacer})
+    components.splice(components.indexOf(composant_remplacer.objet),1);
+    addActions([{type:CREATE,objet:composant},{type:DELETE,objet:composant_remplacer.objet}]);
+  }else if(modif){
+    addActions({type:MODIFIER, objet:composant, changements:[
+			{attribut:'x', ancienne_valeur:composant.pastX, nouvelle_valeur:composant.x},
+      {attribut:'y', ancienne_valeur:composant.pastY, nouvelle_valeur:composant.y}]});
   }else{
     addActions( { type: CREATE, objet: composant });
   }
@@ -458,6 +509,8 @@ function mousePressed() {
         yf: point.y,
         getType: function(){return "fil"},
     };
+    let x1 = mouseX/grid.scale - grid.translateX;
+    let y1 = mouseY/grid.scale - grid.translateY;
     for (const nfil of fils) {
       if(nfil.yi!=nfil.yf && nfil.xi!=nfil.xf){
         if(dist(nfil.xi, nfil.yi, x, y)<10 ||
@@ -465,7 +518,7 @@ function mousePressed() {
             origin = nfil;
             break;
            }
-      } else if(inBoundFil()){
+      } else if(inBoundFil(nfil,x1,y1)){
         origin = nfil;
         break;
       }

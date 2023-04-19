@@ -46,7 +46,7 @@ function undo(){
         components.splice(action.ancien_objet.index,0,action.ancien_objet.objet);
         }
         else{
-          if(objet instanceof Array){
+          if(action.objet instanceof Array){
             for (let index = action.objet.length - 1; index >=0 ; index--) {
               const fil = action.objet[index];
               fils.splice(components.indexOf(fil.objet), 1);
