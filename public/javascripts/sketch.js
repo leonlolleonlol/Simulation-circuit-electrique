@@ -306,16 +306,19 @@ let y = mouseY/grid.scale - grid.translateY;
         if(dist(fil.xi, fil.yi, x, y)<10 ||
            dist(fil.xf, fil.yf, x, y)<10)
           return true;
-      } else {
-        let x1 = Math.min(fil.xi-10, fil.xf-10)
-        let x2 = Math.max(fil.xi+10, fil.xf+ 10);
-        let y1 = Math.min(fil.yi-10, fil.yf-10);
-        let y2 = Math.max(fil.yi+10, fil.yf+10);
-        if(x > x1 && x < x2 && y > y1 && y < y2)
-          return true;
+      } else if(inBoundFil()){
+        return true;
       }
     }
   } 
+}
+
+function inBoundFil(fil, x, y){
+  let x1 = Math.min(fil.xi-10, fil.xf-10)
+  let x2 = Math.max(fil.xi+10, fil.xf+ 10);
+  let y1 = Math.min(fil.yi-10, fil.yf-10);
+  let y2 = Math.max(fil.yi+10, fil.yf+10);
+  return x > x1 && x < x2 && y > y1 && y < y2;
 }
 
 function pente(fil){
@@ -337,6 +340,8 @@ function simplifyNewFil(testFil){
   if(testFil.xi == testFil.xf &&
     testFil.yi == testFil.yf){
       fils.pop();
+      if(origin!=null)
+        selection = origin;
       return;
     }
     
@@ -453,6 +458,18 @@ function mousePressed() {
         yf: point.y,
         getType: function(){return "fil"},
     };
+    for (const nfil of fils) {
+      if(nfil.yi!=nfil.yf && nfil.xi!=nfil.xf){
+        if(dist(nfil.xi, nfil.yi, x, y)<10 ||
+           dist(nfil.xf, nfil.yf, x, y)<10){
+            origin = nfil;
+            break;
+           }
+      } else if(inBoundFil()){
+        origin = nfil;
+        break;
+      }
+    }
     selection = drag;
     fils.push(drag);
     return;
@@ -464,7 +481,7 @@ function mousePressed() {
 
 function mouseDragged() {
   if(drag != null){
-    if (origin != null) {
+    if (origin != null && origin.getType()!='fil') {
       //cursor('grabbing');
       let point = findGridLock(drag.xOffsetDrag + grid.translateX,
          drag.yOffsetDrag + grid.translateY);
@@ -492,7 +509,7 @@ function mouseReleased() {
   // Arrète le drag si il y en avait un en cours
   //cursor(ARROW);
   if (drag != null){
-    if(origin !=null) {
+    if(origin !=null && origin.getType()!='fil') {
       if(validComposantPos(drag)){
         components.push(drag);
         simplifyComposant(drag);
