@@ -4,7 +4,10 @@ const port = 3000;
 const path = require('path')
 app.use(express.static('public'))
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
+  var url = `http://localhost:${port}`
+  console.log('Server listen on '+url);
+  var start = (process.platform == 'darwin'? 'open': process.platform == 'win32'? 'start': 'xdg-open');
+  require('child_process').exec(start + ' ' + url+'/editeur');
 })
 
 app.get('/', function(req, res) {
