@@ -102,10 +102,10 @@ function initComponents(){
   initPosition();
   // Composants dans le panneau de choix
   composants_panneau=[new Resisteur(58, 215, 25),
-                      new Batterie(58, 265),
+                      new Batterie(58, 265, 12),
                       new Ampoule(58, 315, 40),
-                      new Diode(58, 365, 'right'),
-                      new Condensateur(60, 415, 'right')];
+                      new Diode(58, 365),
+                      new Condensateur(60, 415, 0)];
 }
 function initPosition(){
   grid.offsetX = round(max(200 * width/1230,138)/grid.tailleCell)*grid.tailleCell / grid.scale;
@@ -144,7 +144,7 @@ function draw() {
   scale(1/grid.scale);
   drawComponentsChooser();
   pop();
-  if (origin != null) {
+  if (origin != null && origin instanceof Composant && drag instanceof Composant) {
     drag.draw(grid.translateX, grid.translateY);
   }
 }
@@ -178,6 +178,26 @@ function drawFils() {
   stroke("orange");
   strokeWeight(4);
   for (let element of fils){
+    if(isElementSelectionner(element) && !isElementSelectionner(drag)){
+      push();
+      strokeWeight(30);
+      stroke('rgba(255, 165, 0, 0.1)');
+      let decalageXi = element.xi;
+      let decalageXf = element.xf;
+      let decalageYi = element.yi;
+      let decalageYf = element.yf;
+      if(element.xi != element.xf && element.yi == element.yf){
+        decalageXi = Math.min(element.xi,element.xf) + 9;
+        decalageXf = Math.max(element.xi,element.xf) - 9;
+      }
+      if(element.xi == element.xf && element.yi != element.yf){
+        decalageYi = Math.min(element.yi,element.yf) + 9;
+        decalageYf = Math.max(element.yi,element.yf) - 9;
+      }
+      line(grid.translateX + decalageXi, grid.translateY + decalageYi, 
+           grid.translateX + decalageXf, grid.translateY + decalageYf);
+      pop();
+    }
     line(element.xi + grid.translateX, element.yi + grid.translateY, element.xf + grid.translateX, element.yf + grid.translateY);
     //temporaire avant d'avoir objet fil
   }
@@ -355,7 +375,7 @@ function simplifyNewFil(testFil){
       fils.pop();
       if(origin!=null)
         selection = origin;
-      return;
+      return [];
     }
     
   let fils_remplacer =[];
@@ -364,53 +384,56 @@ function simplifyNewFil(testFil){
       fils_remplacer.push({objet:fil});
     }
   }
-  for (let index = 0; index < fils_remplacer.length; index++) {
-    let penteF = pente(fils_remplacer[index].objet);
-    if(Math.abs(penteF)==0|| Math.abs(penteF)==Infinity){
-    let x0 = Math.min(fils_remplacer[index].objet.xi,testFil.xi,fils_remplacer[index].objet.xf,testFil.xf);
-    let x1 = Math.max(fils_remplacer[index].objet.xi,testFil.xi,fils_remplacer[index].objet.xf,testFil.xf);
-    let y0 = Math.min(fils_remplacer[index].objet.yi,testFil.yi,fils_remplacer[index].objet.yf,testFil.yf);
-    let y1 = Math.max(fils_remplacer[index].objet.yi,testFil.yi,fils_remplacer[index].objet.yf,testFil.yf);
-    testFil.xi = x0
-    testFil.yi = y0;
-    testFil.xf = x1
-    testFil.yf = y1;
-    }else {
-      let p1i;
-      let p1f;
-      if(fils_remplacer[index].objet.xi<fils_remplacer[index].objet.xf){
-        p1i = {x:fils_remplacer[index].objet.xi,y:fils_remplacer[index].objet.yi};
-        p1f = {x:fils_remplacer[index].objet.xf,y:fils_remplacer[index].objet.yf};
-      }
-      else{
-        p1i = {x:fils_remplacer[index].objet.xf,y:fils_remplacer[index].objet.yf};
-        p1f = {x:fils_remplacer[index].objet.xi,y:fils_remplacer[index].objet.yi};
-      }
-      let p2i;
-      let p2f;
-      if(testFil.xi<testFil.xf){
-        p2i = {x:testFil.xi,y:testFil.yi};
-        p2f = {x:testFil.xf,y:testFil.yf};
-      }
-      else{
-        p2i = {x:testFil.xf,y:testFil.yf};
-        p2f = {x:testFil.xi,y:testFil.yi};
-      }
-      if(p1i.x < p2i.x){
-        testFil.xi = p1i.x
-        testFil.yi = p1i.y;
+
+  if(fils_remplacer.length!=0){
+    let actions = [];
+    for (let index = 0; index < fils_remplacer.length; index++) {
+      let penteF = pente(fils_remplacer[index].objet);
+      if(Math.abs(penteF)==0|| Math.abs(penteF)==Infinity){
+      let x0 = Math.min(fils_remplacer[index].objet.xi,testFil.xi,fils_remplacer[index].objet.xf,testFil.xf);
+      let x1 = Math.max(fils_remplacer[index].objet.xi,testFil.xi,fils_remplacer[index].objet.xf,testFil.xf);
+      let y0 = Math.min(fils_remplacer[index].objet.yi,testFil.yi,fils_remplacer[index].objet.yf,testFil.yf);
+      let y1 = Math.max(fils_remplacer[index].objet.yi,testFil.yi,fils_remplacer[index].objet.yf,testFil.yf);
+      testFil.xi = x0
+      testFil.yi = y0;
+      testFil.xf = x1
+      testFil.yf = y1;
       }else {
-        testFil.xi = p2i.x
-        testFil.yi = p2i.y;
+        let p1i;
+        let p1f;
+        if(fils_remplacer[index].objet.xi<fils_remplacer[index].objet.xf){
+          p1i = {x:fils_remplacer[index].objet.xi,y:fils_remplacer[index].objet.yi};
+          p1f = {x:fils_remplacer[index].objet.xf,y:fils_remplacer[index].objet.yf};
+        }
+        else{
+          p1i = {x:fils_remplacer[index].objet.xf,y:fils_remplacer[index].objet.yf};
+          p1f = {x:fils_remplacer[index].objet.xi,y:fils_remplacer[index].objet.yi};
+        }
+        let p2i;
+        let p2f;
+        if(testFil.xi<testFil.xf){
+          p2i = {x:testFil.xi,y:testFil.yi};
+          p2f = {x:testFil.xf,y:testFil.yf};
+        }
+        else{
+          p2i = {x:testFil.xf,y:testFil.yf};
+          p2f = {x:testFil.xi,y:testFil.yi};
+        }
+        if(p1i.x < p2i.x){
+          testFil.xi = p1i.x
+          testFil.yi = p1i.y;
+        }else {
+          testFil.xi = p2i.x
+          testFil.yi = p2i.y;
+        }
+        if(p1f.x > p2f.x){
+          testFil.xf = p1f.x
+          testFil.yf = p1f.y;
+        }else {
+          testFil.xf = p2f.x
+          testFil.yf = p2f.y;
+        }
       }
-      if(p1f.x > p2f.x){
-        testFil.xf = p1f.x
-        testFil.yf = p1f.y;
-      }else {
-        testFil.xf = p2f.x
-        testFil.yf = p2f.y;
-      }
-    }
     /*for (const composant of components) {
       if(composant.checkConnection(fils_remplacer[index].objet.xi, fils_remplacer[index].objet.yi, 10)){
         fils_remplacer[index].objet.begin = composant;
@@ -429,11 +452,11 @@ function simplifyNewFil(testFil){
     let i = fils.indexOf(fils_remplacer[index].objet);
     fils_remplacer[index].index = i;
     fils.splice(i,1);
+    actions.push({type:DELETE, objet:fils_remplacer[index].objet, i})
     
-  }
-  if(fils_remplacer.length!=0)
-    addActions({type:REPLACE,objet:testFil,ancien_objet:fils_remplacer})
-  else{
+    }
+    return actions;
+  } else{
     /*for (const composant of components) {
       if(composant.checkConnection(testFil.xi, testFil.yi, 10)){
         testFil.begin = composant;
@@ -449,9 +472,9 @@ function simplifyNewFil(testFil){
     if(testFil.begin!=null && testFil.end){
       circuit.connect(testFil.begin,testFil.end);
     }*/
-    addActions({type:CREATE,objet:testFil})
+    //addActions({type:CREATE,objet:testFil})
   }
-    
+  return []; 
 }
 
 // --------------------------------------
@@ -465,31 +488,16 @@ function validComposantPos(composant){
   }
   return true;
 }
-function simplifyComposant(composant, modif){
-  let composant_remplacer;
+function simplifyComposant(composant){
   for (const composantTest of components) {
     if(composantTest!== composant && composantTest.x == composant.x &&
        composantTest.y == composant.y){
-        composant_remplacer = {objet:composantTest};
-        break;
-    }  
+        let index = components.indexOf(composantTest);
+        components.splice(index,1);
+        return {type:DELETE,objet:composantTest, index};
+    }
   }
-  if(composant_remplacer!=null && modif){
-    let action = {type:MODIFIER, objet:composant, changements:[
-			{attribut:'x', ancienne_valeur:composant.pastX, nouvelle_valeur:composant.x},
-      {attribut:'y', ancienne_valeur:composant.pastY, nouvelle_valeur:composant.y}]};
-    components.splice(components.indexOf(composant_remplacer.objet),1);
-    addActions([action,{type:DELETE,objet:composant_remplacer.objet}])
-  }else if(composant_remplacer!=null){
-    components.splice(components.indexOf(composant_remplacer.objet),1);
-    addActions([{type:CREATE,objet:composant},{type:DELETE,objet:composant_remplacer.objet}]);
-  }else if(modif){
-    addActions({type:MODIFIER, objet:composant, changements:[
-			{attribut:'x', ancienne_valeur:composant.pastX, nouvelle_valeur:composant.x},
-      {attribut:'y', ancienne_valeur:composant.pastY, nouvelle_valeur:composant.y}]});
-  }else{
-    addActions( { type: CREATE, objet: composant });
-  }
+  return [];
 }
 
 function initDrag(element, x, y){
@@ -507,8 +515,8 @@ function createComposant(original){
     case Batterie.getType(): return new Batterie(x, y, 0);
     case Resisteur.getType(): return new Resisteur(x, y, 0);
     case Ampoule.getType(): return new Ampoule(x, y, 0);
-    case Condensateur.getType(): return new Condensateur(x, y, 0, 'right');
-    case Diode.getType(): return new Diode(x, y, 'right');
+    case Condensateur.getType(): return new Condensateur(x, y, 0);
+    case Diode.getType(): return new Diode(x, y);
   }
 }
 
@@ -546,8 +554,8 @@ function mousePressed() {
     let y1 = mouseY/grid.scale - grid.translateY;
     for (const nfil of fils) {
       if(nfil.yi!=nfil.yf && nfil.xi!=nfil.xf){
-        if(dist(nfil.xi, nfil.yi, x, y)<10 ||
-           dist(nfil.xf, nfil.yf, x, y)<10){
+        if(dist(nfil.xi, nfil.yi, point.x, point.y)<10 ||
+           dist(nfil.xf, nfil.yf, point.x, point.y)<10){
             origin = nfil;
             break;
            }
@@ -598,17 +606,25 @@ function mouseReleased() {
     if(origin !=null && origin.getType()!='fil') {
       if(validComposantPos(drag)){
         components.push(drag);
+        let action = [{type: CREATE, objet: drag}];
+        let actionSup = simplifyComposant(drag);
+        addActions(action.concat(actionSup));
         //circuit.ajouterComposante(drag);
-        simplifyComposant(drag);
       }
     origin = null;
     } else if(drag===grid){
       // Juste pour empêcher une erreure
     } else if (drag.getType()=='fil') {
-      simplifyNewFil(drag);
+      let action = [{type:CREATE, objet:drag}]
+      let actionsSup = simplifyNewFil(drag);
+      addActions(action.concat(actionsSup))
     } else {
         if(validComposantPos(drag)){
-          simplifyComposant(drag, true);
+          let action = [{type:MODIFIER, objet:drag, changements:[
+            	{attribut:'x', ancienne_valeur:drag.pastX, nouvelle_valeur:drag.x},
+              {attribut:'y', ancienne_valeur:drag.pastY, nouvelle_valeur:drag.y}]}];
+          let actionSup = simplifyComposant(drag);
+          addActions(action.concat(actionSup));
           //circuit.composantPosChange(drag,drag.pastX,drag.pastY);
         } else{
           // Annuler le mouvement
@@ -651,15 +667,18 @@ function keyPressed() {
     undo();
   } else if (keyCode === 8) {
     if(selection!=null){
+      let index;
       if(selection.getType()!=='fil'){
-        components.splice(components.indexOf(selection),1);
+        index = components.indexOf(selection)
+        components.splice(index, 1);
         //circuit.retirerComposant(selection);
       }
       else{
-        fils.splice(fils.indexOf(selection),1);
+        index = fils.indexOf(selection)
+        fils.splice(index, 1);
         //circuit.removeConnection(selection)
       } 
-      addActions({type:DELETE,objet:selection});
+      addActions({type:DELETE,objet:selection,index});
       selection = null;
     }
   } else if(keyCode === 82 || keyCode === 83 || keyCode === 67){

@@ -20,7 +20,7 @@ class Composant {
     throw console.error();//todo préciser l'erreur
   }
   checkConnection(x, y, approximation){
-    if(this.orientation == 'vertical'||this.orientation == 'top'|| this.orientation == 'bottom'){
+    if(this.orientation % HALF_PI == 0){
       return dist(this.x, this.y + 60/2, x, y) < approximation ||
       dist(this.x, this.y - 60/2, x, y) < approximation;
     } else{
@@ -28,6 +28,10 @@ class Composant {
       dist(this.x - 60/2, this.y, x, y) < approximation;
     }
       
+  }
+
+  rotate(){
+    this.orientation = (this.orientation + HALF_PI) % TWO_PI
   }
   getType() {
     throw console.error();//todo préciser l'erreur
@@ -41,7 +45,7 @@ class Resisteur extends Composant {
     constructor(x, y, resistance, orientation) {
         super(x, y);
 	      this.resistance = resistance;
-        this.orientation = orientation;
+        this.orientation = orientation??0;
     }
 
 
@@ -53,7 +57,7 @@ class Resisteur extends Composant {
     }
 
     draw(offX, offY) {
-        resisteur(this.x + offX,this.y + offY,this.orientation, isElementDrag(this));
+        resisteur(this.x + offX,this.y + offY,this.orientation, isElementSelectionner(this));
     }
 
     getType() {
@@ -82,7 +86,7 @@ class Ampoule extends Resisteur {
     }
 
     draw(offX, offY) {
-        ampoule(this.x + offX,this.y + offY, this.orientation, isElementDrag(this));
+        ampoule(this.x + offX,this.y + offY, this.orientation, isElementSelectionner(this));
     }
 
     getType() {
@@ -101,9 +105,9 @@ class Ampoule extends Resisteur {
 class Condensateur extends Composant {
     constructor(x, y, capacite, orientation) {
       super(x, y);
-	  this.capacite = capacite;
+	    this.capacite = capacite;
       this.charge = 0;
-      this.orientation = orientation;
+      this.orientation = orientation??0;
     }
     inBounds(mouseX, mouseY, offsetX, offsetY) {
       return (mouseX - offsetX > this.x - 60 / 2 &&
@@ -114,7 +118,7 @@ class Condensateur extends Composant {
     
     // offsetX et offsetY à retirer
     draw(offsetX, offsetY) {
-      condensateur(this.x + offsetX, this.y + offsetY, this.orientation, isElementDrag(this));
+      condensateur(this.x + offsetX, this.y + offsetY, this.orientation, isElementSelectionner(this));
     }
     
     getType() {
@@ -133,7 +137,7 @@ class Condensateur extends Composant {
     constructor(x, y, tension, orientation) {
         super(x, y);
 	      this.tension = tension;
-        this.orientation = orientation;
+        this.orientation = orientation??0;
     }
     inBounds(mouseX, mouseY, offsetX, offsetY) {
         return (mouseX - offsetX > this.x - 60 / 2 &&
@@ -143,7 +147,7 @@ class Condensateur extends Composant {
     }
 
     draw(offX, offY) {
-        batterie(this.x + offX,this.y + offY, this.orientation, isElementDrag(this));
+        batterie(this.x + offX, this.y + offY, this.orientation, isElementSelectionner(this));
     }
 
     getType() {
@@ -158,7 +162,7 @@ class Diode extends Composant {
     constructor(x, y, orientation) {
       super(x, y);
       this.radius = 19;
-      this.orientation = orientation;
+      this.orientation = orientation??0;
     }
     inBounds(mouseX, mouseY, offsetX, offsetY) {
       return (mouseX - offsetX > this.x - this.radius &&
@@ -168,7 +172,7 @@ class Diode extends Composant {
   }
     
     draw(offX, offY) {
-      diode(this.x + offX,this.y + offY, this.orientation, isElementDrag(this));
+      diode(this.x + offX,this.y + offY, this.orientation, isElementSelectionner(this));
     }
     
     getType() {

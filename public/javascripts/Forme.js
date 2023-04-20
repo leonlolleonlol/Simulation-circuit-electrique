@@ -3,7 +3,7 @@
  * Dessine un résisteur sur le canvas
  * @param {number} x 
  * @param {number} y 
- * @param {*} orientation 
+ * @param {number} orientation rotation du composant en radians
  * @param {boolean} drag 
  */
 function resisteur(x, y, orientation, drag) {
@@ -13,12 +13,17 @@ function resisteur(x, y, orientation, drag) {
 
   //transformation
   translate(x, y);
-  if (orientation == "vertical")
-    rotate(-HALF_PI);
-  if(drag)
-    scale(1.1);
+  rotate(orientation);
 
-    // Gradients
+  if(selection){
+    push();
+    stroke(blendBG('rgba(255,165,0,0.4)'));
+    fill('rgba(255,165,108,0.2)');
+    rect(0,0,80,45,10);
+    pop();
+  }
+
+  // Gradients
   let fillGrad = drawingContext.createLinearGradient(-25, -10, 25, 10);
   fillGrad.addColorStop(0, blendBG("rgba(241,39,17,0.6)"));
   fillGrad.addColorStop(1, blendBG("rgba(245,175,25,0.6)"));
@@ -42,7 +47,7 @@ function resisteur(x, y, orientation, drag) {
  * Dessine une batterie sur le canvas
  * @param {number} x 
  * @param {number} y 
- * @param {*} orientation 
+ * @param {number} orientation rotation du composant en radians
  * @param {boolean} drag 
  */
 function batterie(x, y, orientation, drag) {
@@ -52,15 +57,15 @@ function batterie(x, y, orientation, drag) {
 
   //transformation
   translate(x, y);
-  if (orientation == "top")
-    rotate(-HALF_PI);
-  else if (orientation == "left")
-    rotate(-PI);
-  else if (orientation == "bottom")
-    rotate(HALF_PI);
+  rotate(orientation);
 
-  if(drag)
-    scale(1.1);
+  if(selection){
+    push();
+    stroke(blendBG('rgba(224,99,108,0.4)'));
+    fill('rgba(224,99,108,0.2)');
+    rect(0,0,80,40,10);
+    pop();
+  }
 
   // Gradients
   let fillGrad = drawingContext.createLinearGradient(-25, -10, 25, -10);
@@ -79,16 +84,29 @@ function batterie(x, y, orientation, drag) {
   rect(0, 0, 60, 20, 7.5);
   pop();
 }
+
+/**
+ * 
+ * @param {number} x 
+ * @param {number} y 
+ * @param {number} orientation rotation du composant en radians
+ * @param {boolean} drag 
+ */
 function condensateur(x, y, orientation, drag) {
   push();
   rectMode(CENTER);
   strokeWeight(2);
   //transformation
   translate(x, y);
-  if (orientation == "vertical")
-    rotate(-HALF_PI);
-  if(drag)
-    scale(1.1);
+  rotate(orientation);
+
+  if(selection){
+    push();
+    stroke(blendBG('rgba(54,209,220,0.4)'));
+    fill('rgba(54,209,220,0.2)');
+    rect(0,0,80,50,10);
+    pop();
+  }
 
   // Gradients
   let fillGrad = drawingContext.createLinearGradient(-25, -10, 25, 10);
@@ -114,7 +132,7 @@ function condensateur(x, y, orientation, drag) {
  * Dessine une diode sur le canvas
  * @param {number} x 
  * @param {number} y 
- * @param {*} orientation 
+ * @param {number} orientation rotation du composant en radians
  * @param {boolean} drag 
  */
 function diode(x, y, orientation, drag) {
@@ -124,16 +142,15 @@ function diode(x, y, orientation, drag) {
 
   //transformation
   translate(x, y);
+  rotate(orientation);
 
-  if (orientation == "top")
-    rotate(-HALF_PI);
-  else if (orientation == "left")
-    rotate(-PI);
-  else if (orientation == "bottom")
-    rotate(HALF_PI);
-
-  if(drag)
-    scale(1.1);
+  if(selection){
+    push();
+    stroke(blendBG('rgba(32,189,255,0.4)'));
+    fill('rgba(32,189,255,0.2)');
+    rect(0,0,50,50,10);
+    pop();
+  }
 
   let gradCercle = drawingContext.createLinearGradient(-15, -10, 15, 10);
   gradCercle.addColorStop(1, "rgb(252,70,107)");
@@ -172,7 +189,7 @@ function diode(x, y, orientation, drag) {
  * Dessine une ampoule sur le canvas
  * @param {number} x 
  * @param {number} y 
- * @param {*} orientation 
+ * @param {number} orientation rotation du composant en radians
  * @param {boolean} drag 
  */
 function ampoule(x, y, orientation, drag) {
@@ -182,10 +199,15 @@ function ampoule(x, y, orientation, drag) {
 
   //transformation
   translate(x, y);
-  if (orientation == "vertical")
-    rotate(-HALF_PI);
-  if(drag)
-    scale(1.1);
+  rotate(orientation);
+
+  if(selection){
+    push();
+    stroke(blendBG('rgba(255,255,0,0.4)'));
+    fill('rgba(255,255,0,0.2)');
+    rect(0,0,80,44,10);
+    pop();
+  }
 
   let grad = drawingContext.createLinearGradient(-30, -10, -13, -10);
   grad.addColorStop(0, "rgb(62, 81, 81)");

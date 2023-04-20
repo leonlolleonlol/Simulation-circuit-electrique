@@ -1,7 +1,6 @@
 const MODIFIER = 'modifier';//typeAction, objet, changements:[attribut, ancienne_valeur, nouvelle_valeur]
 const CREATE = 'créer';//typeAction, objet
-const DELETE = 'delete';//typeAction,objet
-const REPLACE = 'remplacer';//typeAction, objet, ancien_objet
+const DELETE = 'delete';//typeAction, objet , index
 const RESET = 'recommencer';//typeAction,circuit
 
 
@@ -32,39 +31,20 @@ function undo(){
         if(action.objet.getType()!='fil'){
           components.splice(components.indexOf(action.objet),1);
           //circuit.retirerComposant(action.objet);
-        }
-          
+        }  
         else
-          fils.pop();
+          fils.splice(fils.indexOf(action.objet),1);
       }else if(action.type===DELETE){
-        components.push(action.objet);
-        //circuit.ajouterComposant(action.objet);
+        if(action.objet.getType()!='fil'){
+          components.splice(action.index, 0, action.objet);
+          //circuit.ajouterComposant(action.objet);
+        }
+        else
+          fils.splice(action.index, 0, action.objet);
       }else if(action.type===MODIFIER){
         let composant = action.objet;
         for(changement of action.changements){
           composant[changement.attribut] = changement.ancienne_valeur;
-        }
-      } else if(action.type===REPLACE){
-        if(action.objet.getType()!='fil'){
-        components.splice(components.indexOf(action.objet),1);
-        components.splice(action.ancien_objet.index,0,action.ancien_objet.objet);
-        }
-        else{
-          if(action.objet instanceof Array){
-            for (let index = action.objet.length - 1; index >=0 ; index--) {
-              const fil = action.objet[index];
-              fils.splice(components.indexOf(fil.objet), 1);
-            }
-          }else
-            fils.splice(components.indexOf(action.objet), 1);
-          if(action.ancien_objet instanceof Array){
-            for (let index = action.ancien_objet.length - 1; index >=0 ; index--) {
-              const fil = action.ancien_objet[index];
-              fils.splice(fil.index,0,fil.objet);
-            }
-          }else{
-            fils.splice(action.ancien_objet.index, 0, action.ancien_objet.objet);
-          }
         }
       } else if(action.type === RESET){
         //circuit = action.circuit;
@@ -89,35 +69,17 @@ function redo(){
         else
           fils.push(action.objet);
       }else if(action.type===DELETE){
-        components.pop();
-        //circuit.retirerComposant(components.pop());
+        if(action.objet.getType()!='fil'){
+          components.splice(action.index, 1);
+          //circuit.ajouterComposant(action.objet);
+        }
+        else
+          fils.splice(action.index, 1);
       }else if(action.type===MODIFIER){
         let composant = action.objet;
         for(changement of action.changements){
           composant[changement.attribut] = changement.nouvelle_valeur;
         }
-      }else if(action.type === REPLACE){
-        if(action.objet.getType()!='fil'){
-          components.splice(components.indexOf(action.ancien_objet),1)
-          components.push(action.objet);
-        }else{
-          if(action.ancien_objet instanceof Array){
-            for (const fil of action.ancien_objet){
-              fils.splice(fils.indexOf(fil.objet),1);
-            }
-          } else{
-            fils.splice(fils.indexOf(action.ancien_objet),1);
-          }
-          if(action.objet instanceof Array){
-            for (const fil of action.objet){
-              fils.splice(fil.objet.index, 0, fil.objet.objet);
-            }
-          }else{
-            fils.push(action.objet);
-          }
-          
-        }
-        
       }else if(action.type === RESET){
         initComponents();
       }
@@ -128,8 +90,7 @@ function redo(){
 function validerAction(action){
   
   if(action.type !== CREATE && action.type !== DELETE && 
-     action.type !== MODIFIER && action.type !== REPLACE &&
-     action.type !== RESET)
+     action.type !== MODIFIER && action.type !== RESET)
     return false;
   if(action.type === RESET || !(action.objet instanceof Composant || action.objet.getType()==='fil'))
     return false;
@@ -142,10 +103,6 @@ function validerAction(action){
           changement.nouvelle_valeur==null)
         return false;
     }
-  }
-  if(action.type === REPLACE){
-    if(!action.ancien_objet instanceof Composant)
-      return false;
   }
   if(action.type === RESET){
     if(!action.circuit instanceof Circuit)
