@@ -298,8 +298,8 @@ function inGrid(x, y){
 
 // Fonction fil -----------------------------
 function validFilBegin(){
-let x = mouseX/grid.scale - grid.translateX;
-let y = mouseY/grid.scale - grid.translateY;
+  let x = mouseX/grid.scale - grid.translateX;
+  let y = mouseY/grid.scale - grid.translateY;
   if (!inGrid(mouseX/grid.scale, mouseY/grid.scale)){
     return false;
   }
@@ -311,29 +311,50 @@ let y = mouseY/grid.scale - grid.translateY;
             }
     
   else {
-    for (const composant of components) {
-      if(composant.checkConnection(x, y, 10)){
-        return true;
-      }
-    }
-    for (const fil of fils) {
-      if(fil.yi!=fil.yf && fil.xi!=fil.xf){
-        if(dist(fil.xi, fil.yi, x, y)<10 ||
-           dist(fil.xf, fil.yf, x, y)<10)
-          return true;
-      } else if(inBoundFil(fil, x, y)){
-        return true;
-      }
-    }
+    if(getConnectingComposant(x,y) != null)
+      return true;
+    else if(filStart(x, y)!=null)
+      return true;
   } 
 }
 
-function inBoundFil(fil, x, y){
+function getConnectingComposant(x, y){
+  for (const composant of components) {
+    if(composant.checkConnection(x, y, 10)){
+      return composant;
+    }
+  }
+}
+
+function filStart(x, y){
+  for (const fil of fils) {
+    if(fil.yi!=fil.yf && fil.xi!=fil.xf){
+      if(dist(fil.xi, fil.yi, x, y)<10 ||
+         dist(fil.xf, fil.yf, x, y)<10)
+        return fil;
+    } else if(inBoxBoundFil(fil, x, y)){
+      return fil;
+    }
+  }
+}
+
+function inBoxBoundFil(fil, x, y){
   let x1 = Math.min(fil.xi-10, fil.xf-10);
   let x2 = Math.max(fil.xi+10, fil.xf+ 10);
   let y1 = Math.min(fil.yi-10, fil.yf-10);
   let y2 = Math.max(fil.yi+10, fil.yf+10);
   return x > x1 && x < x2 && y > y1 && y < y2;
+}
+
+function filInBounds(fil, x, y){
+  if(!inBoxBoundFil(fil,x,y)){
+    return false;
+  }
+  let penteF = pente(fil);
+  let b = fil.yi - fil.xi * penteF;
+  let xTest = (y - b)/penteF;
+  let yTest = x * penteF + b;
+  return dist(xTest, y, x, y) < 15 || dist(x, yTest, x, y) < 15
 }
 
 function pente(fil){
@@ -344,23 +365,29 @@ function angle(fil){
   return(Math.atan(1/pente));
 }
 
-function filOverlap(fil1,fil2){
+function lengthFil(fil){
+  return dist(fil.xi, fil.yi, fil.xf, fil.yf);
+}
+
+function filOverlap(fil1, fil2){
   let pente1 = pente(fil1);
-  let pente2= pente(fil2);
+  let pente2 = pente(fil2);
   let b1 = fil1.yi - fil1.xi * pente1;
   let b2 = fil2.yi - fil2.xi * pente2
-  if(Math.abs(pente1) === Math.abs(pente2) && Math.abs(b1) === Math.abs(b2)){
-    if((Math.abs(pente1) == 0 && fil1.yi===fil2.yi)|| Math.abs(pente1) != 0){
+  pente1 = Math.abs(pente1);
+  pente2 = Math.abs(pente2);
+  if(pente1 === pente2 && Math.abs(b1) === Math.abs(b2)){
+    if((pente1 == 0 && fil1.yi===fil2.yi)|| pente1 != 0){
       let x1i = Math.min(fil1.xi,fil1.xf);
       let x1f = Math.max(fil1.xi,fil1.xf);
       let x2i = Math.min(fil2.xi,fil2.xf);
       let x2f = Math.max(fil2.xi,fil2.xf);
-      return ((x2i <= x1f && x2i >=x1i) || (x1i <=x2f && x1i >= x2i))
-    }else if (Math.abs(pente1) == Infinity && fil1.xi===fil2.xi){
-      y1i = Math.min(fil1.yi,fil1.yf);
-      y1f = Math.max(fil1.yi,fil1.yf);
-      y2i = Math.min(fil2.yi,fil2.yf);
-      y2f = Math.max(fil2.yi,fil2.yf);
+      return ((x2i >=x1i && x2i <= x1f) || (x1i >= x2i && x1i <=x2f))
+    }else if (pente1 == Infinity && fil1.xi===fil2.xi){
+      let y1i = Math.min(fil1.yi,fil1.yf);
+      let y1f = Math.max(fil1.yi,fil1.yf);
+      let y2i = Math.min(fil2.yi,fil2.yf);
+      let y2f = Math.max(fil2.yi,fil2.yf);
       return ((y2i <= y1f && y2i >=y1i) || (y1i <=y2f && y1i >= y2i))
     }
   }
@@ -368,14 +395,6 @@ function filOverlap(fil1,fil2){
 }
 
 function simplifyNewFil(testFil){
-  if(testFil.xi == testFil.xf &&
-    testFil.yi == testFil.yf){
-      fils.pop();
-      if(origin!=null)
-        selection = origin;
-      return [];
-    }
-    
   let fils_remplacer =[];
   for (const fil of fils) {
     if(fil!==testFil && filOverlap(testFil,fil)){
@@ -386,51 +405,21 @@ function simplifyNewFil(testFil){
   if(fils_remplacer.length!=0){
     let actions = [];
     for (let index = 0; index < fils_remplacer.length; index++) {
-      let penteF = pente(fils_remplacer[index].objet);
-      if(Math.abs(penteF)==0|| Math.abs(penteF)==Infinity){
-      let x0 = Math.min(fils_remplacer[index].objet.xi,testFil.xi,fils_remplacer[index].objet.xf,testFil.xf);
-      let x1 = Math.max(fils_remplacer[index].objet.xi,testFil.xi,fils_remplacer[index].objet.xf,testFil.xf);
-      let y0 = Math.min(fils_remplacer[index].objet.yi,testFil.yi,fils_remplacer[index].objet.yf,testFil.yf);
-      let y1 = Math.max(fils_remplacer[index].objet.yi,testFil.yi,fils_remplacer[index].objet.yf,testFil.yf);
-      testFil.xi = x0
-      testFil.yi = y0;
-      testFil.xf = x1
-      testFil.yf = y1;
+      let fil = fils_remplacer[index].objet;
+      if(Math.abs(pente(fil))==Infinity){
+        let y0 = Math.min(fil.yi, testFil.yi, fil.yf, testFil.yf);
+        let y1 = Math.max(fil.yi, testFil.yi, fil.yf, testFil.yf);
+        testFil.yi = y0;
+        testFil.yf = y1;
+
       }else {
-        let p1i;
-        let p1f;
-        if(fils_remplacer[index].objet.xi<fils_remplacer[index].objet.xf){
-          p1i = {x:fils_remplacer[index].objet.xi,y:fils_remplacer[index].objet.yi};
-          p1f = {x:fils_remplacer[index].objet.xf,y:fils_remplacer[index].objet.yf};
-        }
-        else{
-          p1i = {x:fils_remplacer[index].objet.xf,y:fils_remplacer[index].objet.yf};
-          p1f = {x:fils_remplacer[index].objet.xi,y:fils_remplacer[index].objet.yi};
-        }
-        let p2i;
-        let p2f;
-        if(testFil.xi<testFil.xf){
-          p2i = {x:testFil.xi,y:testFil.yi};
-          p2f = {x:testFil.xf,y:testFil.yf};
-        }
-        else{
-          p2i = {x:testFil.xf,y:testFil.yf};
-          p2f = {x:testFil.xi,y:testFil.yi};
-        }
-        if(p1i.x < p2i.x){
-          testFil.xi = p1i.x
-          testFil.yi = p1i.y;
-        }else {
-          testFil.xi = p2i.x
-          testFil.yi = p2i.y;
-        }
-        if(p1f.x > p2f.x){
-          testFil.xf = p1f.x
-          testFil.yf = p1f.y;
-        }else {
-          testFil.xf = p2f.x
-          testFil.yf = p2f.y;
-        }
+        let array = [{x:fil.xi, y:fil.yi}, {x:fil.xf, y:fil.yf},
+           {x:testFil.xi, y:testFil.yi}, {x:testFil.xf, y:testFil.yf}];
+        array.sort(function(a, b){return a.x - b.x});
+        testFil.xi = array[0].x;
+        testFil.yi = array[0].y;
+        testFil.xf = array[array.length - 1].x;
+        testFil.yf = array[array.length - 1].y;
       }
     /*for (const composant of components) {
       if(composant.checkConnection(fils_remplacer[index].objet.xi, fils_remplacer[index].objet.yi, 10)){
@@ -447,10 +436,9 @@ function simplifyNewFil(testFil){
     if(fils_remplacer[index].objet.begin!=null && fils_remplacer[index].objet.end){
       circuit.connect(fils_remplacer[index].objet.begin,fils_remplacer[index].objet.end);
     }*/
-    let i = fils.indexOf(fils_remplacer[index].objet);
-    fils_remplacer[index].index = i;
+    let i = fils.indexOf(fil);
     fils.splice(i,1);
-    actions.push({type:DELETE, objet:fils_remplacer[index].objet, i})
+    actions.push({type:DELETE, objet:fil, index: i})
     
     }
     return actions;
@@ -538,46 +526,30 @@ function mousePressed() {
       return;
     }
   }
-  
+  let x1 = mouseX/grid.scale - grid.translateX;
+  let y1 = mouseY/grid.scale - grid.translateY;
   if (validFilBegin()) {
     let point = findGridLock(grid.translateX, grid.translateY)
-    selection = {
+    drag = {
         xi: point.x,
         yi: point.y,
         xf: point.x,
         yf: point.y,
         getType: function(){return "fil"},
     };
-    let x1 = mouseX/grid.scale - grid.translateX;
-    let y1 = mouseY/grid.scale - grid.translateY;
-    for (const nfil of fils) {
-      if(nfil.yi!=nfil.yf && nfil.xi!=nfil.xf){
-        if(dist(nfil.xi, nfil.yi, point.x, point.y)<10 ||
-           dist(nfil.xf, nfil.yf, point.x, point.y)<10){
-            origin = nfil;
-            break;
-           }
-      } else if(inBoundFil(nfil,x1,y1)){
-        origin = nfil;
-        break;
-      }
+    const nfil = filStart(x1,y1);
+    if(nfil!=null){
+      origin = nfil;
     }
-    drag = selection;
-    fils.push(selection);
+    selection = drag
+    fils.push(drag);
     return;
   }
-  let x1 = mouseX/grid.scale - grid.translateX;
-  let y1 = mouseY/grid.scale - grid.translateY;
+
   for (const nfil of fils) {
-    if(inBoundFil(nFill,x1,y1)){
-      let penteF = pente(nfil);
-      let b = nfil.yi - nfil.xi * penteF;
-      let pointXTest = (y1 - b)/penteF;
-      let pointYTest = x1 * penteF + b;
-      if(dist(pointXTest,y1,x1,y1)<15 || dist(x1,pointYTest,x1,y1)<15){
-        selection = nfil;
-        return;
-      }
+    if(filInBounds(nfil, x1, y1)){
+      selection = nfil;
+      return;
     }
   }
   if(inGrid(mouseX/grid.scale,mouseY/grid.scale))
@@ -627,11 +599,19 @@ function mouseReleased() {
     } else if(drag===grid){
       // Juste pour empêcher une erreure
     } else if (drag.getType()=='fil') {
-      let action = [{type:CREATE, objet:drag}]
-      let actionsSup = simplifyNewFil(drag);
-      addActions(action.concat(actionsSup))
+      if(lengthFil(drag)>0){
+        let action = [{type:CREATE, objet:drag}];
+        let actionsSup = simplifyNewFil(drag);
+        addActions(action.concat(actionsSup));
+      }else {
+        fils.pop();
+        if(origin!=null){
+          selection = origin;
+          origin = null;
+        }
+      }
     } else {
-        if(validComposantPos(drag)){
+        if(validComposantPos(drag) && dist(drag.pastX, drag.pastY, drag.x, drag.y) > 0){
           let action = [{type:MODIFIER, objet:drag, changements:[
             	{attribut:'x', ancienne_valeur:drag.pastX, nouvelle_valeur:drag.x},
               {attribut:'y', ancienne_valeur:drag.pastY, nouvelle_valeur:drag.y}]}];
