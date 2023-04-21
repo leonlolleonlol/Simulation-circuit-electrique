@@ -34,6 +34,9 @@ function undo(){
         }  
         else
           fils.splice(fils.indexOf(action.objet),1);
+        if(selection == action.objet){
+          selection = null;
+        }
       }else if(action.type===DELETE){
         if(action.objet.getType()!='fil'){
           components.splice(action.index, 0, action.objet);
@@ -41,6 +44,7 @@ function undo(){
         }
         else
           fils.splice(action.index, 0, action.objet);
+        
       }else if(action.type===MODIFIER){
         let composant = action.objet;
         for(changement of action.changements){
@@ -74,6 +78,9 @@ function redo(){
         }
         else
           fils.splice(action.index, 1);
+        if(selection == action.objet){
+            selection = null;
+          }
       }else if(action.type===MODIFIER){
         let composant = action.objet;
         for(changement of action.changements){
