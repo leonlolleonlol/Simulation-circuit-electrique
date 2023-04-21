@@ -65,7 +65,6 @@ function redo(){
           components.push(action.objet);
           //circuit.ajouterComposant(action.objet);
         }
-          
         else
           fils.push(action.objet);
       }else if(action.type===DELETE){

@@ -30,8 +30,8 @@ class Composant {
       
   }
 
-  rotate(){
-    this.orientation = (this.orientation + HALF_PI) % TWO_PI
+  rotate(inverse){
+    this.orientation = (this.orientation + (inverse?-HALF_PI:HALF_PI)) % TWO_PI
   }
   getType() {
     throw console.error();//todo préciser l'erreur

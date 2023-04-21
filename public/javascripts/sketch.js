@@ -182,20 +182,14 @@ function drawFils() {
       push();
       strokeWeight(30);
       stroke('rgba(255, 165, 0, 0.1)');
-      let decalageXi = element.xi;
-      let decalageXf = element.xf;
-      let decalageYi = element.yi;
-      let decalageYf = element.yf;
-      if(element.xi != element.xf && element.yi == element.yf){
-        decalageXi = Math.min(element.xi,element.xf) + 9;
-        decalageXf = Math.max(element.xi,element.xf) - 9;
+      let decalageX = 9 * Math.sin(angle(element));
+      let decalageY = 9 * Math.cos(angle(element));
+      if(element.yi >element.yf){
+       decalageX *= -1;
+       decalageY *= -1;
       }
-      if(element.xi == element.xf && element.yi != element.yf){
-        decalageYi = Math.min(element.yi,element.yf) + 9;
-        decalageYf = Math.max(element.yi,element.yf) - 9;
-      }
-      line(grid.translateX + decalageXi, grid.translateY + decalageYi, 
-           grid.translateX + decalageXf, grid.translateY + decalageYf);
+      line(element.xi + grid.translateX + decalageX, element.yi + grid.translateY + decalageY, 
+           element.xf + grid.translateX - decalageX, element.yf + grid.translateY - decalageY);
       pop();
     }
     line(element.xi + grid.translateX, element.yi + grid.translateY, element.xf + grid.translateX, element.yf + grid.translateY);
@@ -346,6 +340,10 @@ function pente(fil){
   return (fil.yf-fil.yi)/(fil.xf-fil.xi);
 }
 
+function angle(fil){
+  return(Math.atan(1/pente));
+}
+
 function filOverlap(fil1,fil2){
   let pente1 = pente(fil1);
   let pente2= pente(fil2);
@@ -483,7 +481,7 @@ function validComposantPos(composant){
   if (!inGrid(composant.x + grid.translateX, composant.y + grid.translateY))
     return false;
   for (const composantTest of components) {
-    if(composantTest.checkConnection(composant.x,composant.y,1))
+    if(composantTest.checkConnection(composant.x,composant.y,1) || composant.checkConnection(composantTest.x,composantTest.y,1))
       return false;
   }
   return true;
@@ -543,7 +541,7 @@ function mousePressed() {
   
   if (validFilBegin()) {
     let point = findGridLock(grid.translateX, grid.translateY)
-    drag = {
+    selection = {
         xi: point.x,
         yi: point.y,
         xf: point.x,
@@ -564,9 +562,23 @@ function mousePressed() {
         break;
       }
     }
-    selection = drag;
-    fils.push(drag);
+    drag = selection;
+    fils.push(selection);
     return;
+  }
+  let x1 = mouseX/grid.scale - grid.translateX;
+  let y1 = mouseY/grid.scale - grid.translateY;
+  for (const nfil of fils) {
+    if(inBoundFil(nFill,x1,y1)){
+      let penteF = pente(nfil);
+      let b = nfil.yi - nfil.xi * penteF;
+      let pointXTest = (y1 - b)/penteF;
+      let pointYTest = x1 * penteF + b;
+      if(dist(pointXTest,y1,x1,y1)<15 || dist(x1,pointYTest,x1,y1)<15){
+        selection = nfil;
+        return;
+      }
+    }
   }
   if(inGrid(mouseX/grid.scale,mouseY/grid.scale))
     drag = grid;
@@ -665,38 +677,53 @@ function keyPressed() {
     redo();
   } else if (keyIsDown(CONTROL) && keyCode === 90) {
     undo();
-  } else if (keyCode === 8) {
-    if(selection!=null){
-      let index;
-      if(selection.getType()!=='fil'){
-        index = components.indexOf(selection)
-        components.splice(index, 1);
-        //circuit.retirerComposant(selection);
+  } else if (keyCode === 8 && selection!=null) {
+    let index;
+    if(selection.getType()!=='fil'){
+      index = components.indexOf(selection)
+      components.splice(index, 1);
+      //circuit.retirerComposant(selection);
+    } else{
+      index = fils.indexOf(selection)
+      fils.splice(index, 1);
+      //circuit.removeConnection(selection)
+    } 
+    addActions({type:DELETE,objet:selection,index});
+    selection = null;
+  } else if(!keyIsDown(CONTROL) && keyCode === 84 && selection!=null){
+    if(selection instanceof Composant){
+      let pRotate = selection.orientation;
+      selection.rotate(keyIsDown(SHIFT));
+      if(validComposantPos(selection)){
+        addActions({type:MODIFIER, objet:selection, changements:[
+          {attribut:'orientation', ancienne_valeur:pRotate, nouvelle_valeur:selection.orientation}]});
+      }else{
+        selection.orientation = pRotate;
       }
-      else{
-        index = fils.indexOf(selection)
-        fils.splice(index, 1);
-        //circuit.removeConnection(selection)
-      } 
-      addActions({type:DELETE,objet:selection,index});
-      selection = null;
     }
-  } else if(keyCode === 82 || keyCode === 83 || keyCode === 67){
-      let newC;
-      let point = findGridLock(grid.translateX, grid.translateY);
-      let x = point.x;
-      let y = point.y;
-      if (keyCode === 82) {
-        newC = new Resisteur(x, y);
-      } else if (keyCode === 83) {
-        newC = new Batterie(x, y);
-      } else if (keyCode === 67) {
-        newC = new Condensateur(x, y);
+      
+  } else if(!keyIsDown(CONTROL) && (keyCode === 82 || keyCode === 83 ||
+      keyCode === 67 || keyCode === 65 || keyCode === 68)){
+    let newC;
+    let point = findGridLock(grid.translateX, grid.translateY);
+    let x = point.x;
+    let y = point.y;
+    if (keyCode === 82) {
+      newC = new Resisteur(x, y);
+    } else if (keyCode === 83) {
+      newC = new Batterie(x, y);
+    } else if (keyCode === 65) {
+      newC = new Ampoule(x, y);
+    } else if (keyCode === 67) {
+      newC = new Condensateur(x, y);
+    } else if (keyCode === 68) {
+      newC = new Diode(x, y);
     }
     if(validComposantPos(newC)){
+      action = simplifyComposant(newC);
       components.push(newC);
       //circuit.ajouterComposante(newC);
-      addActions({type:CREATE,objet:newC});
+      addActions([{type:CREATE,objet:newC}].concat(action));
     }
     
   } //else if (keyIsDown(CONTROL) && keyIsDown(SHIFT) && keyCode === 80) {
