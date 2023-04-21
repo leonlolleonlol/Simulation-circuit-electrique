@@ -76,22 +76,23 @@
      * circuit devrait commencer de la pile, puis finir à la composante juste avant la pile.
      */
     rearrangerArrayCircuit(){
+        /*
         let index
         this.validerCircuit();
         for(;true;){
-            /**apartir de la pile on retrace le chemin en utilisant les fil pour définir la prochaine com*/
+            //apartir de la pile on retrace le chemin en utilisant les fil pour définir la prochaine com
           this.circuit[index++] 
            if(true){//le fil donne lieu à 2 différents fils
             //étape 1 : fil 1 = 
             //
-            /** on se retouvre dans un noeud*/
+            // on se retouvre dans un noeud
             while(this.circuit[index]){
                 index++
             }
         }else{index++}
         }
              
-       
+       */
         
     }
 
