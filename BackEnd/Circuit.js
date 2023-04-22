@@ -24,11 +24,11 @@
         //Sert stocker le type de circuit. AKA -> seulement des résistances, seulement des condensateurs ou RC.
         this.type;
     }
-
     ajouterComposante(composant){
         this.circuit.push(composant);
     }
 
+    //C'est mieux si tu m'envoi un objet composante, ça facilite la suite des chose
     connectComposante(composanteAvant, composanteApres){
         composanteAvant.prochaineComposante = composanteApres;
     }
@@ -56,7 +56,7 @@
      */
     update(){//Chaque fois qu'il y a un changement dans le circuit
         
-        this.rearrangerArrayCircuit();
+       // this.rearrangerArrayCircuit();
         this.tensionEQ = this.circuit[0].tension;
         this.trouverEq();
     }
@@ -64,11 +64,30 @@
     validerCircuit(){
         /**
          * Points à valider : 
-         * -- présence d'une 
+         * -- présence d'une pile
+         * -- 
          */
-        for(let i = 0; i < this.circuit.length; i++){
+        //cree un boolean
+        if(this.premierCircuit){
+            for(let i = 0; i < this.circuit.length; i++){
+                if(Array.isArray(this.circuit[i])){//C'est un circuit 
+                    this.traverseCircuit(this.circuit[i]);
+                }else if(this.circuit[i].getTypeCalcul() == composantType.batterieType){
+                    presenceBattrie = true;
+                }
         }
-        
+    }   
+    }
+
+    traverseCircuit(circuit){
+        for(let i = 0; i < circuit.length; i++){
+            if(this.circuit[i].getTypeCalcul() == composantType.batterieType){
+                // Il n'y a pas de batterie
+                print('Ce circuit ne contient pas de batterie');
+            }else if (Array.isArray(this.circuit[i])){
+                this.traverseCircuit(this.circuit[i]);
+            }
+        }
     }
 
     /**
@@ -76,23 +95,22 @@
      * circuit devrait commencer de la pile, puis finir à la composante juste avant la pile.
      */
     rearrangerArrayCircuit(){
-        /*
+        
         let index
         this.validerCircuit();
-        for(;true;){
-            //apartir de la pile on retrace le chemin en utilisant les fil pour définir la prochaine com
+        for(let i = 0; i < this.circuit.length; i++){
+            //apartir de la pile on retrace le chemin en utilisant les fil pour définir la prochaine composante
+            //if()
           this.circuit[index++] 
            if(true){//le fil donne lieu à 2 différents fils
-            //étape 1 : fil 1 = 
-            //
-            // on se retouvre dans un noeud
+            
             while(this.circuit[index]){
                 index++
             }
         }else{index++}
         }
              
-       */
+       
         
     }
 
@@ -234,7 +252,8 @@ let composantType = {
     resisteurType: 75839,
     condensateurType: 98435,
     noeudType: 48134,
-    diodeType: 87931
+    diodeType: 87931,
+    batterieType:34890
 }
 //ces nombres sont choisi au hasard, il faut juste que quand on compare, si le nombre est pareil, on détecte que c'est du même type
 let circuitType = {
@@ -242,3 +261,4 @@ let circuitType = {
     seulementC: 10854,
     RC: 90842
 }
+let presenceBattrie;
