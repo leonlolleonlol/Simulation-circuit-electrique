@@ -101,12 +101,18 @@
         if(this.premierCircuit){    
             for(let i = 0; i < this.circuit.length; i++){
                 if (!this.circuit[0].getTypeCalcul() != composantType.batterieType && this.circuit[i] == composantType.batterieType){
-                    this.echangerComposantes(i,0)
+                    this.echangerComposantes(i,0);
+                }else if(this.circuit[i].getTypeCalcul == composantType.noeudType){// s'occuper de la prochaine composante
+                    this.circuit[i] = new Circuit(false).ajouterComposante(this.circuit[i]);   
                 }
             }
         }else{
             for(let i = 0; i < this.circuit.length; i++){
                 // if (noeud) == new circuit
+                if(this.circuit[i].getTypeCalcul == composantType.noeudType){
+                    this.circuit[i] = new Circuit(false).ajouterComposante(this.circuit[i]); 
+                }
+
             }
         }
 
