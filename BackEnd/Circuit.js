@@ -275,6 +275,26 @@
 }
 
 /**
+ * Traverse le circuit pour trouver les mailles de celui-ci (voir lois des mailles ou boucles)
+ * @param {Array} composants Liste des composants d'un circuit
+ * @param {Array} mailles Liste de mailles qui va enregistrer les mailles au fur et à mesure de
+   * l'itération dans la branche ou noeud.
+ * @param {Array} maille Maille présentement écrite
+ */
+function circuitMaille(composants, mailles, maille){
+    for (let i = 0; i < composants.length; i++) {
+        const element = composants[i];
+        if(element.getType()===Noeuds.getType()){
+            element.maille(composants, mailles, [...maille], i);
+            return;
+        }else {
+            maille.push(element);
+        }
+    }
+    mailles.push(maille);
+}
+
+/**
  * C'est objet là ont le même rôle que des enum en java.
  */
 let composantType = {
