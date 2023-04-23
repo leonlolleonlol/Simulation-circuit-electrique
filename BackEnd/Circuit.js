@@ -65,25 +65,25 @@
         /**
          * Points à valider : 
          * -- présence d'une pile
-         * -- 
+         * -- est-ce que les fils retourne à la pile
          */
         //cree un boolean
-        if(this.premierCircuit){
+        
             for(let i = 0; i < this.circuit.length; i++){
                 if(Array.isArray(this.circuit[i])){//C'est un circuit 
                     this.traverseCircuit(this.circuit[i]);
                 }else if(this.circuit[i].getTypeCalcul() == composantType.batterieType){
-                    presenceBattrie = true;
+                    this.premierCircuit = true;
+                    return true;
                 }
         }
-    }   
     }
 
     traverseCircuit(circuit){
         for(let i = 0; i < circuit.length; i++){
             if(this.circuit[i].getTypeCalcul() == composantType.batterieType){
-                // Il n'y a pas de batterie
-                print('Ce circuit ne contient pas de batterie');
+                this.premierCircuit = true;
+                return true; // variable à la place return true
             }else if (Array.isArray(this.circuit[i])){
                 this.traverseCircuit(this.circuit[i]);
             }
@@ -98,6 +98,20 @@
         
         let index
         this.validerCircuit();
+        if(this.premierCircuit){    
+            for(let i = 0; i < this.circuit.length; i++){
+                if (!this.circuit[0].getTypeCalcul() != composantType.batterieType && this.circuit[i] == composantType.batterieType){
+                    this.echangerComposantes(i,0)
+                }
+            }
+        }else{
+            for(let i = 0; i < this.circuit.length; i++){
+                // if (noeud) == new circuit
+            }
+        }
+
+
+        /*
         for(let i = 0; i < this.circuit.length; i++){
             //apartir de la pile on retrace le chemin en utilisant les fil pour définir la prochaine composante
             //if()
@@ -108,11 +122,20 @@
                 index++
             }
         }else{index++}
-        }
-             
-       
-        
+        } 
+        */
     }
+
+    // https://stackoverflow.com/questions/4011629/swapping-two-items-in-a-javascript-array 
+    /* 
+    swapArrayElements (arr, indexA, indexB) {
+        var temp = arr[indexA];
+        arr[indexA] = arr[indexB];
+        arr[indexB] = temp;
+      }
+     */ 
+      
+      
 
     /**
      * Sert à trouver le circuit équivalent en série
