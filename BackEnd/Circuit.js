@@ -2,7 +2,7 @@
  * Contient une suite de composantes en série. S'il y a un noeud, 
  * c'est dans le noeud qu'on retrouvera les circuits en parallèle.
  */
- class Circuit{
+class Circuit{
     /**
      * Initialise toute ce qu'on aura besoin pour les calculs. Si c'est une branche, la variable circuit devient "children" 
      * @param {boolean} premierCircuit cette variable sert à indiquer si c'est cet objet qui contient le circuit au complet.
@@ -12,6 +12,8 @@
         this.premierCircuit = premierCircuit;
         this.circuit = []; //Array de composantes qui sont en série
         this.valide = true;
+        this.presenceBattrie = false;
+        this.indexPile = 0;
 
         this.courant = 0;
         this.charge = 0;
@@ -57,6 +59,7 @@
     update(){//Chaque fois qu'il y a un changement dans le circuit
         
        // this.rearrangerArrayCircuit();
+       this.validerCircuit();
         this.tensionEQ = this.circuit[0].tension;
         this.trouverEq();
     }
@@ -68,24 +71,29 @@
          * -- est-ce que les fils retourne à la pile
          */
         //cree un boolean
-        
-            for(let i = 0; i < this.circuit.length; i++){
-                if(Array.isArray(this.circuit[i])){//C'est un circuit 
-                    this.traverseCircuit(this.circuit[i]);
-                }else if(this.circuit[i].getTypeCalcul() == composantType.batterieType){
-                    this.premierCircuit = true;
-                    return true;
-                }
+        let element; 
+        this.trouverPile(this.circuit)
+        if(false){
+            while(element.getTypeCalcul == composantType.batterieType){
+                element = this.circuit.find(this.circuit[this.indexPile].prochaineComposante)
+            } 
         }
+
+        
     }
 
-    traverseCircuit(circuit){
+
+    trouverPile(circuit){
+        let element = []; 
         for(let i = 0; i < circuit.length; i++){
-            if(this.circuit[i].getTypeCalcul() == composantType.batterieType){
+            if(circuit[i].getTypeCalcul() == composantType.batterieType){
                 this.premierCircuit = true;
-                return true; // variable à la place return true
-            }else if (Array.isArray(this.circuit[i])){
-                this.traverseCircuit(this.circuit[i]);
+                this.presenceBattrie = true;
+                this.indexPile = i; 
+                element = circuit[i].prochaineComposante;
+                
+            }else if (circuit[i].getTypeCalcul() == composantType.noeudType){
+                this.trouverPile(circuit[i].getCircuitNoeud());
             }
         }
     }
@@ -275,6 +283,27 @@
 }
 
 /**
+ * Traverse le circuit pour trouver les mailles de celui-ci (voir lois des mailles ou boucles)
+ * @param {Array} composants Liste des composants d'un circuit
+ * @param {Array} mailles Liste de mailles qui va enregistrer les mailles au fur et à mesure de
+   * l'itération dans la branche ou noeud.
+ * @param {Array} maille Maille présentement écrite
+ */
+function circuitMaille(composants, mailles, maille){
+    for (let i = 0; i < composants.length; i++) {
+        const element = composants[i];
+        if(element.getType()===Noeuds.getType()){
+            element.maille(composants, mailles, [...maille], i);
+            return;
+        }else {
+            maille.push(element);
+        }
+    }
+    mailles.push(maille);
+}
+
+
+/**
  * C'est objet là ont le même rôle que des enum en java.
  */
 let composantType = {
@@ -290,4 +319,4 @@ let circuitType = {
     seulementC: 10854,
     RC: 90842
 }
-let presenceBattrie;
+
