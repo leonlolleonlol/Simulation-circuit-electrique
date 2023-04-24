@@ -7,6 +7,7 @@ let grid;
 let historique;
 let distances;
 let timers;
+let percent;
 function setup() {
   createCanvas(windowWidth - 50, windowHeight - 30);
   let undo_button = createButton('Recommencer');
@@ -26,6 +27,7 @@ let dio;
 let condensateur_1;
 function initComponents(){
   timers=Array(1000).fill(0);
+  percent=0;
   distances=[];
   fils = [];
   components = [];
@@ -127,64 +129,38 @@ function drawLineGrid() {
   }
 }
 function drawFils() {
-  distances=[];
-  strokeWeight(4);
-  for (let a = 0; a < fils.length; a++)
-  {
-    timers[a]+=0.5;
-  }
-  for (let a = 0; a < fils.length; a++)
-  {
-    element=fils[a];
-    if (element != null)
-    {
+  push();
+  const addition = 0.01;
+  let vitesse = 2;
+  percent += addition * vitesse;
+  for (let element of fils){
+    if (element != null){
       stroke("orange");
-      line(element.xi + grid.translateX, element.yi + grid.translateY, element.xf + grid.translateX, element.yf + grid.translateY);
-      distances[a]=Math.sqrt(Math.pow(element.yf-element.yi,2)+Math.pow(element.xf-element.xi,2));
+      strokeWeight(4);
+      line(element.xi + grid.translateX, element.yi + grid.translateY,
+           element.xf + grid.translateX, element.yf + grid.translateY);
+      fill('red');
+      for(let i = 0;i < Math.floor(Math.sqrt(Math.pow(element.xf-element.xi,2)+Math.pow(element.yf-element.yi,2))/30);i++){
+        let distance=Math.floor(Math.sqrt(Math.pow(element.xf-element.xi,2)+Math.pow(element.yf-element.yi,2))/30)*30;
+        let percentCharge = (30*percent/distance) % 1+ i/distance*30;
+        percentCharge = percentCharge % 1;
+        let pos = getLineXYatPercent(element, percentCharge);
+        circle(pos.x,pos.y,10);
+      }
     }
   }
-  stroke("white");
-  for (let a = 0; a < fils.length; a++)
-  {
-    element=fils[a];
-    if(fils[a].xf-fils[a].xi>0)
-    {
-    for (let b = 0; b < distances[a]/30; b++) {
-    if(timers[a]<30)
-      circle(element.xi + grid.translateX+Math.round(30*b+timers[a]), element.yi + grid.translateY,5);
-    else
-      timers[a]=0;
-    }
-  }
-  if(fils[a].yf-fils[a].yi>0)
-    {
-    for (let b = 0; b < distances[a]/30; b++) {
-    if(timers[a]<30)
-      circle(element.xi + grid.translateX, element.yi + grid.translateY+Math.round(30*b+timers[a]),5);
-    else
-      timers[a]=0;
-    }
-  }
-  if(fils[a].xi-fils[a].xf>0)
-    {
-    for (let b = 0; b < distances[a]/30; b++) {
-    if(timers[a]<30)
-      circle(element.xi + grid.translateX+Math.round(-30*b-timers[a]), element.yi + grid.translateY,5);
-    else
-      timers[a]=0;
-    }
-  }
-  if(fils[a].yi-fils[a].yf>0)
-    {
-    for (let b = 0; b < distances[a]/30; b++) {
-    if(timers[a]<30)
-      circle(element.xi + grid.translateX, element.yi + grid.translateY+Math.round(-30*b-timers[a]),5);
-    else
-      timers[a]=0;
-    }
-  }
-  }
-  }
+  pop();
+}
+function getLineXYatPercent(fil, percent) {
+  var dx = fil.xf - fil.xi;
+  var dy = fil.yf - fil.yi;
+  var X = fil.xi+ grid.translateX + dx * percent;
+  var Y = fil.yi+ grid.translateY + dy * percent;
+  return ({
+      x: X,
+      y: Y
+  });
+}
 
 function findGridLockX(offset) {
   return (
