@@ -22,11 +22,12 @@ let point_grid_button;
 let line_grid_button;
 let point_line_grid_button;
 let canvas;
+let percent;
 
 let undo_desactive = false;
 let c1; //variable contenant l'instance du circuit. Sert pour les calculs
 
-let backgroundColor = 'rgb(51,51,51)';//220
+let backgroundColor = 'rgb(200,200,200)';//220
 
 // Initialisation du circuit
 function setup() {
@@ -111,6 +112,7 @@ function initComponents(){
   drag = null;
   selection = null;
   origin = null;
+  percent=0;
   grid = {
     offsetY: 30,
     tailleCell: 30,
@@ -197,7 +199,10 @@ function drawFils() {
   push();
   stroke("orange");
   strokeWeight(4);
-  
+  const addition = 0.01;
+  let vitesse = 2;
+  percent += addition * vitesse;
+  let grad=1;
   for (let element of fils){
     if(isElementSelectionner(element) && !isElementSelectionner(drag)){
       push();
@@ -213,12 +218,60 @@ function drawFils() {
            element.xf + grid.translateX - decalageX, element.yf + grid.translateY - decalageY);
       pop();
     }
+    fill(0,255*(1-(grad/(fils.length+1))),0);
+    stroke(0,255*(1-(grad/(fils.length+1))),0);
     line(element.xi + grid.translateX, element.yi + grid.translateY, element.xf + grid.translateX, element.yf + grid.translateY);
     //temporaire avant d'avoir objet fil
+    //stroke('rgba(127, 255, 0, 0.9)');      
+    strokeWeight(4);
+      line(element.xi + grid.translateX, element.yi + grid.translateY,
+           element.xf + grid.translateX, element.yf + grid.translateY);
+      let florRes = Math.floor(Math.sqrt(Math.pow(element.xf-element.xi,2)+Math.pow(element.yf-element.yi,2))/30);
+      for(let i = 0;i < florRes;i++){
+        let percentCharge = (percent*(1+Math.floor(element.courant))/florRes) % 1+ i/florRes;
+        percentCharge = percentCharge % 1;
+        let pos = getLineXYatPercent(element, percentCharge);
+        circle(pos.x,pos.y,10);
+      }
+      grad++;
   }
   pop();
 }
-
+/*
+function drawFils() {
+  push();
+  const addition = 0.01;
+  let vitesse = 2;
+  percent += addition * vitesse;
+  for (let element of fils){
+    if (element != null){
+      stroke("orange");
+      strokeWeight(4);
+      line(element.xi + grid.translateX, element.yi + grid.translateY,
+           element.xf + grid.translateX, element.yf + grid.translateY);
+      fill('red');
+      for(let i = 0;i < Math.floor(Math.sqrt(Math.pow(element.xf-element.xi,2)+Math.pow(element.yf-element.yi,2))/30);i++){
+        let distance=Math.floor(Math.sqrt(Math.pow(element.xf-element.xi,2)+Math.pow(element.yf-element.yi,2))/30)*30;
+        let percentCharge = (30*percent/distance) % 1+ i/distance*30;
+        percentCharge = percentCharge % 1;
+        let pos = getLineXYatPercent(element, percentCharge);
+        circle(pos.x,pos.y,10);
+      }
+    }
+  }
+  pop();
+}
+*/
+function getLineXYatPercent(fil, percent) {
+  var dx = fil.xf - fil.xi;
+  var dy = fil.yf - fil.yi;
+  var X = fil.xi+ grid.translateX + dx * percent;
+  var Y = fil.yi+ grid.translateY + dy * percent;
+  return ({
+      x: X,
+      y: Y
+  });
+}
 function drawComposants(){
   for (let element of components) {
     element.draw(grid.translateX, grid.translateY);
@@ -562,6 +615,7 @@ function mousePressed() {
         yi: point.y,
         xf: point.x,
         yf: point.y,
+        courant:Math.random()*10,
         getType: function(){return "fil"},
     };
     const nfil = filStart(x1,y1);

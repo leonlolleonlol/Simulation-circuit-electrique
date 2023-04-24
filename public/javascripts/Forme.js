@@ -61,23 +61,23 @@ function batterie(x, y, orientation, selection) {
 
   if(selection){
     push();
-    stroke(blendBG('rgba(224,99,108,0.4)'));
-    fill('rgba(224,99,108,0.2)');
+    stroke(blendBG('rgba(0,0,0,0.4)'));
+    fill('rgba(0,255,0,0.2)');
     rect(0,0,80,40,10);
     pop();
   }
 
   // Gradients
   let fillGrad = drawingContext.createLinearGradient(-25, -10, 25, -10);
-  fillGrad.addColorStop(0, blendBG("rgba(224,99,108,0.6)"));
-  fillGrad.addColorStop(0.35, blendBG("rgba(224,99,108,0.6)"));
-  fillGrad.addColorStop(0.85, blendBG("rgba(87,113,193,0.6)"));
-  fillGrad.addColorStop(1, blendBG("rgba(87,113,193,0.6)"));
+  fillGrad.addColorStop(0, blendBG("rgba(0,0,0,0.6)"));
+  fillGrad.addColorStop(0.35, blendBG("rgba(0,0,0,0.6)"));
+  fillGrad.addColorStop(0.85, blendBG("rgba(0,255,0,0.6)"));
+  fillGrad.addColorStop(1, blendBG("rgba(0,255,0,0.6)"));
   let strokeGrad = drawingContext.createLinearGradient(-25, -10, 25, -10);
-  strokeGrad.addColorStop(0, "#e0636c");
-  strokeGrad.addColorStop(0.35, "#e0636c");
-  strokeGrad.addColorStop(0.85, "#5771c1");
-  strokeGrad.addColorStop(1, "#5771c1");
+  strokeGrad.addColorStop(0, "#000000");
+  strokeGrad.addColorStop(0.35, "#000000");
+  strokeGrad.addColorStop(0.85, "#00FF00");
+  strokeGrad.addColorStop(1, "#00FF00");
   drawingContext.fillStyle = fillGrad;
   drawingContext.strokeStyle = strokeGrad;
   
