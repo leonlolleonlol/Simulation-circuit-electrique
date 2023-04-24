@@ -25,7 +25,7 @@ let line_grid_button;
 let point_line_grid_button;
 let canvas;
 
-let c1 = new Circuit(true);
+let c1 = new Circuit(false);
 
 let backgroundColor = 'rgb(51,51,51)';//220
 
@@ -66,11 +66,10 @@ function setup() {
 }
 
 function test(){
-  c1.ajouterComposante(new Batterie(0, 0, 12));
+  p1 = new Batterie(0, 0, 12);
   r1 = new Resisteur(0, 0, 500)
-  c1.ajouterComposante(r1);
-  n1 = new Noeuds();
   
+  n1 = new Noeuds();
   c2 = new Circuit(false);
   c3 = new Circuit(false);
 
@@ -99,15 +98,25 @@ function test(){
   c3.ajouterComposanteALaFin(n2);
   n1.ajouterComposanteALaFin(c3);
   */
+  
   c1.ajouterComposante(n1);
-
+  c1.ajouterComposante(r1);
+  c1.ajouterComposante(p1);
   c1.update();
+
+  c1.connectComposante(p1, r1);
+  c1.connectComposante(r1, n1);
+  c1.connectComposante(n1, p1);
   
   print(r1.courant.round(5) + " " + r1.tension.round(2));
   print(r2.courant.round(5) + " " + r2.tension.round(2));
   print(r3.courant.round(5) + " " + r3.tension.round(2));
   print(r4.courant.round(5) + " " + r4.tension.round(2));
-  
+  /*
+  let mailles = [];
+  circuitMaille(c1.circuit,mailles,[])
+  print(mailles)
+  */
 }
 
 //Source: https://stackoverflow.com/questions/11832914/how-to-round-to-at-most-2-decimal-places-if-necessary 

@@ -12,7 +12,7 @@ class Circuit{
         this.premierCircuit = premierCircuit;
         this.circuit = []; //Array de composantes qui sont en série
         this.valide = true;
-        this.presenceBattrie = false;
+        this.presenceBatterie = false;
         this.index = 0;
 
         this.courant = 0;
@@ -40,17 +40,12 @@ class Circuit{
         this.circuit.splice(position, 1);
     }
     
-    echangerComposantes(position1, position2){
-        let temp1 = circuit[position1];
-        let temp2 = circuit[position2];
-        if(position1 < position2){
-            this.circuit.splice(position1, 1, temp2);
-            this.circuit.splice(position2, 1, temp1);
-        } else if(position2 < position1){
-            this.circuit.splice(position2, 1, temp1);
-            this.circuit.splice(position1, 1, temp2);
-        }
-    }
+    // https://stackoverflow.com/questions/4011629/swapping-two-items-in-a-javascript-array  
+    echangerComposantes (indexA, indexB) {
+        var temp = this.circuit[indexA];
+        this.circuit[indexA] = this.circuit[indexB];
+        this.circuit[indexB] = temp;
+      }
   
     /**
      * Doit se faire appeler quand il y a une nouvelle connection entre 2 composantes, quand une connection est brisée et
@@ -59,8 +54,9 @@ class Circuit{
      */
     update(){//Chaque fois qu'il y a un changement dans le circuit
         
-       // this.rearrangerArrayCircuit();
-       this.validerCircuit();
+        //this.rearrangerArrayCircuit();
+        this.validerCircuit();
+        //this.trouverPile(this.circuit);
         this.tensionEQ = this.circuit[0].tension;
         this.trouverEq();
     }
@@ -72,40 +68,36 @@ class Circuit{
          * -- est-ce que les fils retourne à la pile
          */
         //cree un boolean
-        let element = this.circuit[this.index].getProchaineComposante(); 
         this.trouverPile(this.circuit)
+        let element = this.circuit[this.index].getProchaineComposante();
         if(this.premierCircuit){
             //let cpt = 0;
+            /*
             while(element.getTypeCalcul != composantType.batterieType){//for (cpt != circuit.lenght)
                 this.index = this.circuit.indexOf(this.circuit[this.index].getProchaineComposante());// créer une exception dans le cas ou ça trouve pas la composante
                 element = this.circuit[this.index].getProchaineComposante();
                 //cpt++;
             } 
+            */
         }
-
-        
     }
 
 
     trouverPile(circuit){
-        let element; 
-        
         for(let i = 0; i < circuit.length; i++){
             if(circuit[i].getTypeCalcul() == composantType.batterieType){
                 this.premierCircuit = true;
-                this.presenceBattrie = true;
-                this.index = i; //inutile 
-
+                this.presenceBatterie = true;
+            
                 if(i!= 0){// le place à la première place
-                    this.echangerComposantes(i,0);
+                    this.echangerComposantes(i, 0);
                 }
-                
             }else if (circuit[i].getTypeCalcul() == composantType.noeudType){
                 this.trouverPile(circuit[i].getCircuitNoeud());
             }else if (circuit[i] instanceof Circuit){
-               this.trouverPile(circuit[i].circuit);
+                this.trouverPile(circuit[i].circuit);
             }
-        }       
+        }
     }
 
     /**
@@ -113,28 +105,31 @@ class Circuit{
      * circuit devrait commencer de la pile, puis finir à la composante juste avant la pile.
      */
     rearrangerArrayCircuit(){
-        let element; 
-        this.validerCircuit();//Quelle méthode faut-il appeler quand on pas de circuit valide.
-        if(this.premierCircuit){
-            for(let i = 0; i < this.circuit.length; i++){
-                element = this.circuit[i].getProchaineComposante();
+        let nouvCircuit = [];
+        this.trouverPile(this.circuit)
+        
+        if(this.premierCircuit){ //Si la pile n'est pas dans un noeud
+            nouvCircuit[0] = this.circuit[0];
+            for(let i = 1; i < this.circuit.length; i++){
+                nouvCircuit[i] = this.circuit[i - 1].getProchaineComposante();            
             }
-            
+        }else{
+
         }
+        print(nouvCircuit);
+        this.circuit = nouvCircuit;
+        /*
         //Dans noeud creer une methode valider pour prochaine composante
         
             for(let i = 0; i < this.circuit.length; i++){
                 // if (noeud) == new circuit
-                /*
+                
                 if(this.circuit[i].getTypeCalcul == composantType.noeudType){
                     this.circuit[i] = new Circuit(false).ajouterComposante(this.circuit[i]); 
                 }
-                */
+                
 
             }
-        
-
-
         /*
         for(let i = 0; i < this.circuit.length; i++){
             //apartir de la pile on retrace le chemin en utilisant les fil pour définir la prochaine composante
@@ -150,14 +145,7 @@ class Circuit{
         */
     }
 
-    // https://stackoverflow.com/questions/4011629/swapping-two-items-in-a-javascript-array 
-    /* 
-    swapArrayElements (arr, indexA, indexB) {
-        var temp = arr[indexA];
-        arr[indexA] = arr[indexB];
-        arr[indexB] = temp;
-      }
-     */ 
+    
       
       
 
