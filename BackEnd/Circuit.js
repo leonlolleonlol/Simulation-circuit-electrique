@@ -8,8 +8,8 @@
      * @param {boolean} premierCircuit cette variable sert à indiquer si c'est cet objet qui contient le circuit au complet.
      * Donc c'est true si ce n'est pas une branche du circuit construit par l'utilisateur.
      */
-    constructor(premierCircuit){
-        this.premierCircuit = premierCircuit;
+    constructor(){
+        this.contientPile;
         this.circuit = []; //Array de composantes qui sont en série
         this.valide = true;
         this.presenceBatterie = false;
@@ -54,39 +54,15 @@
     update(){//Chaque fois qu'il y a un changement dans le circuit
         
         //this.rearrangerArrayCircuit();
-        this.validerCircuit();
-        //this.trouverPile(this.circuit);
         this.tensionEQ = this.circuit[0].tension;
         this.trouverEq();
-    }
-
-    validerCircuit(){
-        /**
-         * Points à valider : 
-         * -- présence d'une 
-         */
-        //cree un boolean
-        this.trouverPile(this.circuit)
-        let element = this.circuit[this.index].getProchaineComposante();
-        if(this.premierCircuit){
-            //let cpt = 0;
-            /*
-            while(element.getTypeCalcul != composantType.batterieType){//for (cpt != circuit.lenght)
-                this.index = this.circuit.indexOf(this.circuit[this.index].getProchaineComposante());// créer une exception dans le cas ou ça trouve pas la composante
-                element = this.circuit[this.index].getProchaineComposante();
-                //cpt++;
-            } 
-            */
-        }
     }
 
 
     trouverPile(circuit){
         for(let i = 0; i < circuit.length; i++){
             if(circuit[i].getTypeCalcul() == composantType.batterieType){
-                this.premierCircuit = true;
-                this.presenceBatterie = true;
-            
+                this.contientPile = true;
                 if(i!= 0){// le place à la première place
                     this.echangerComposantes(i, 0);
                 }
@@ -106,15 +82,14 @@
         let nouvCircuit = [];
         this.trouverPile(this.circuit)
         
-        if(this.premierCircuit){ //Si la pile n'est pas dans un noeud
+        if(this.contientPile){ //Si la pile est dans c1
             nouvCircuit[0] = this.circuit[0];
             for(let i = 1; i < this.circuit.length; i++){
                 nouvCircuit[i] = this.circuit[i - 1].getProchaineComposante();            
             }
         }else{
-
+            //c1 ne contient pas la pile
         }
-        print(nouvCircuit);
         this.circuit = nouvCircuit;
     }
 
@@ -133,7 +108,7 @@
                             this.resistanceEQ += this.circuit[i].resistance;
                         }
                     }
-                    if(this.premierCircuit){
+                    if(this.contientPile){
                         this.courant = this.tensionEQ / this.resistanceEQ;
                     }
                     this.remplirResisteursAvecCourant();
@@ -149,7 +124,7 @@
                         }
                     }
                     this.capaciteEQ = (1/capaciteTemp).round(2);
-                    if(this.premierCircuit){
+                    if(this.contientPile){
                         this.charge = this.capaciteEQ * this.tensionEQ; 
                         print(this.charge);
                     }
@@ -162,12 +137,12 @@
                     break;
             }
     
-            if(this.premierCircuit){
+            if(this.contientPile){
                 print("CapaciteEQ: " + this.capaciteEQ);
                 print("ResistanceEQ: " + this.resistanceEQ);
             }
         } else{
-            if(this.premierCircuit){
+            if(this.contientPile){
                 print("Pas de chemin pour le courant");
             }
         }

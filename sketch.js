@@ -70,8 +70,8 @@ function test(){
   r1 = new Resisteur(0, 0, 500)
   
   n1 = new Noeuds();
-  c2 = new Circuit(false);
-  c3 = new Circuit(false);
+  c2 = new Circuit();
+  c3 = new Circuit();
 
   r2 = new Resisteur(0, 0, 800)
   r3 = new Resisteur(0, 0, 1100); 
