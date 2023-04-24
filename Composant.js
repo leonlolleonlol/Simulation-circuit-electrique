@@ -8,14 +8,7 @@ class Composant {
     this.tension = 0;
     this.prochaineComposante;
   }
-  /* ****INUTILE?****
-  Cette méthode est appelé à chaque fois que l'on
-  veut calculer la tension et la différence de potentiel d'un 
-  composant. Les information disponible sont la branche (composant) et 
-  si notre composant est en paralèle ou en série
-  calcul(paralele, composant){
-      throw console.error();//todo préciser l'erreur
-  }*/
+  
   draw(offX, offY) {
     throw console.error();//todo préciser l'erreur
   }
@@ -29,11 +22,22 @@ class Composant {
     }
       
   }
+
+  getMenu(){
+    throw console.error();
+  }
+
   getType() {
     throw console.error();//todo préciser l'erreur
   }
   getTypeCalcul() {
     this.getType();
+  }
+  setProchaineComposante(composante){
+    this.prochaineComposante = composante;
+  }
+  getProchaineComposante(){
+    return this.prochaineComposante;
   }
 } 
 
@@ -56,6 +60,10 @@ class Resisteur extends Composant {
         resisteur(this.x + offX,this.y + offY,this.orientation, isElementDrag(this));
     }
 
+    getMenu(){
+      return ["DeltaV: " + this.tension, "Courant: " + this.courant, "Résistance: " + this.resistance];
+    }
+
     getType() {
       return Resisteur.getType();
     }
@@ -72,7 +80,9 @@ class Resisteur extends Composant {
 
 class Ampoule extends Resisteur {
     constructor(x, y, resistance, orientation) {
-        super(x, y, resistance, orientation);
+        super(x, y);
+        this.resistance = resistance;
+        this.orientation = orientation;
     }
     inBounds(mouseX, mouseY, offsetX, offsetY) {
         return (mouseX - offsetX > this.x - 60 / 2 &&
@@ -83,6 +93,10 @@ class Ampoule extends Resisteur {
 
     draw(offX, offY) {
         ampoule(this.x + offX,this.y + offY, this.orientation, isElementDrag(this));
+    }
+
+    getMenu(){
+      return ["Position x: " + this.x, "Position y: " + this.y, "DeltaV: " + this.tension, "Courant: " + this.courant, "Résistance: " + this.resistance];
     }
 
     getType() {
@@ -101,7 +115,7 @@ class Ampoule extends Resisteur {
 class Condensateur extends Composant {
     constructor(x, y, capacite, orientation) {
       super(x, y);
-	  this.capacite = capacite;
+	    this.capacite = capacite;
       this.charge = 0;
       this.orientation = orientation;
     }
@@ -115,6 +129,10 @@ class Condensateur extends Composant {
     // offsetX et offsetY à retirer
     draw(offsetX, offsetY) {
       condensateur(this.x + offsetX, this.y + offsetY, this.orientation, isElementDrag(this));
+    }
+
+    getMenu(){
+      return ["Position x: " + this.x, "Position y: " + this.y, "DeltaV: " + this.tension, "Charge: " + this.charge, "Capacité: " + this.capacite];
     }
     
     getType() {
@@ -146,11 +164,19 @@ class Condensateur extends Composant {
         batterie(this.x + offX,this.y + offY, this.orientation, isElementDrag(this));
     }
 
+    getMenu(){
+      return ["Position x: " + this.x, "Position y: " + this.y, "DeltaV: " + this.tension];
+    }
+
     getType() {
       return Batterie.getType();
     }
     static getType() {
       return 'batterie';
+    }
+
+    getTypeCalcul() {
+      return composantType.batterieType;
     }
 }
 
@@ -165,12 +191,16 @@ class Diode extends Composant {
           mouseX - offsetX < this.x + this.radius &&
           mouseY - offsetY > this.y - this.radius &&
           mouseY - offsetY < this.y + this.radius);
-  }
+    }
     
     draw(offX, offY) {
       diode(this.x + offX,this.y + offY, this.orientation, isElementDrag(this));
     }
     
+    getMenu(){
+      return ["Position x: " + this.x, "Position y: " + this.y, "Sens: " + this.orientation];
+    }
+
     getType() {
         return Diode.getType();
     }
@@ -290,8 +320,32 @@ class Noeuds extends Composant {
     }
   }
 
+  /**
+   * Continue la maille écrite en séparant la maille pour toute ses branches. Aussi, fait l'inventaire
+   * des mailles internes
+   * @param {Circuit} composants Liste de composante globale
+   * @param {Array} mailles Liste de mailles qui va enregistrer les mailles au fur et à mesure de
+   * l'itération dans la branche ou noeud.
+   * @param {Array} maille Maille présentement écrite
+   * @param {number} index L'index du noeud dans le circuit parent
+   */
+  maille(composants, mailles, maille, index){
+    for (const element of this.circuitsEnParallele) {
+      circuitMaille(element.circuit.concat(composants.slice(index+1)), mailles, 
+      [...maille]);
+    }
+    // Trouver les mailles interne
+    for (let i = 0; i < this.circuitsEnParallele.length - 1; i++) {
+      const branch = this.circuitsEnParallele[i].circuit;
+      for (let j = i + 1; j < this.circuitsEnParallele.length; j++) {
+        const reverseBranch = this.circuitsEnParallele[j].circuit.reverse();
+        circuitMaille(branch.concat(reverseBranch), mailles, []);
+      }
+    }
+  }
+
   getType() {
-    return Noeud.getType();
+    return Noeuds.getType();
   }
   static getType() {
       return 'noeud';
@@ -300,6 +354,9 @@ class Noeuds extends Composant {
   //Ne pas changer cette methode, elle doit être comme ça pour les calculs
   getTypeCalcul() {
     return composantType.noeudType;
+  }
+  getCircuitNoeud(){
+    return this.circuitsEnParallele;
   }
 }
   

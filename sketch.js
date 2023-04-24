@@ -102,10 +102,12 @@ function test(){
   c1.ajouterComposante(n1);
 
   c1.update();
+  
   print(r1.courant.round(5) + " " + r1.tension.round(2));
   print(r2.courant.round(5) + " " + r2.tension.round(2));
   print(r3.courant.round(5) + " " + r3.tension.round(2));
   print(r4.courant.round(5) + " " + r4.tension.round(2));
+  
 }
 
 //Source: https://stackoverflow.com/questions/11832914/how-to-round-to-at-most-2-decimal-places-if-necessary 
