@@ -117,11 +117,6 @@
         print(nouvCircuit);
         this.circuit = nouvCircuit;
     }
-             
-
-    
-      
-      
 
     /**
      * Sert à trouver le circuit équivalent en série
