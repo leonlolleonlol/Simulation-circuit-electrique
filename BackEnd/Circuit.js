@@ -2,7 +2,7 @@
  * Contient une suite de composantes en série. S'il y a un noeud, 
  * c'est dans le noeud qu'on retrouvera les circuits en parallèle.
  */
-class Circuit{
+ class Circuit{
     /**
      * Initialise toute ce qu'on aura besoin pour les calculs. Si c'est une branche, la variable circuit devient "children" 
      * @param {boolean} premierCircuit cette variable sert à indiquer si c'est cet objet qui contient le circuit au complet.
@@ -26,14 +26,13 @@ class Circuit{
         //Sert stocker le type de circuit. AKA -> seulement des résistances, seulement des condensateurs ou RC.
         this.type;
     }
+
     ajouterComposante(composant){
         this.circuit.push(composant);
     }
 
-    //C'est mieux si tu m'envoi un objet composante, ça facilite la suite des chose
     connectComposante(composanteAvant, composanteApres){
-        //if(composanteAvant.getTypeCalcul() == composantType.batterieType){print("okkkk")}
-        composanteAvant.setProchaineComposante(composanteApres);
+        composanteAvant.prochaineComposante = composanteApres;
     }
     
     retirerComposante(position){
@@ -64,8 +63,7 @@ class Circuit{
     validerCircuit(){
         /**
          * Points à valider : 
-         * -- présence d'une pile
-         * -- est-ce que les fils retourne à la pile
+         * -- présence d'une 
          */
         //cree un boolean
         this.trouverPile(this.circuit)
@@ -118,32 +116,8 @@ class Circuit{
         }
         print(nouvCircuit);
         this.circuit = nouvCircuit;
-        /*
-        //Dans noeud creer une methode valider pour prochaine composante
-        
-            for(let i = 0; i < this.circuit.length; i++){
-                // if (noeud) == new circuit
-                
-                if(this.circuit[i].getTypeCalcul == composantType.noeudType){
-                    this.circuit[i] = new Circuit(false).ajouterComposante(this.circuit[i]); 
-                }
-                
-
-            }
-        /*
-        for(let i = 0; i < this.circuit.length; i++){
-            //apartir de la pile on retrace le chemin en utilisant les fil pour définir la prochaine composante
-            //if()
-          this.circuit[index++] 
-           if(true){//le fil donne lieu à 2 différents fils
-            
-            while(this.circuit[index]){
-                index++
-            }
-        }else{index++}
-        } 
-        */
     }
+             
 
     
       
@@ -281,27 +255,6 @@ class Circuit{
 }
 
 /**
- * Traverse le circuit pour trouver les mailles de celui-ci (voir lois des mailles ou boucles)
- * @param {Array} composants Liste des composants d'un circuit
- * @param {Array} mailles Liste de mailles qui va enregistrer les mailles au fur et à mesure de
-   * l'itération dans la branche ou noeud.
- * @param {Array} maille Maille présentement écrite
- */
-function circuitMaille(composants, mailles, maille){
-    for (let i = 0; i < composants.length; i++) {
-        const element = composants[i];
-        if(element.getType()===Noeuds.getType()){
-            element.maille(composants, mailles, [...maille], i);
-            return;
-        }else {
-            maille.push(element);
-        }
-    }
-    mailles.push(maille);
-}
-
-
-/**
  * C'est objet là ont le même rôle que des enum en java.
  */
 let composantType = {
@@ -309,7 +262,7 @@ let composantType = {
     condensateurType: 98435,
     noeudType: 48134,
     diodeType: 87931,
-    batterieType:34890
+    pileType: 45678
 }
 //ces nombres sont choisi au hasard, il faut juste que quand on compare, si le nombre est pareil, on détecte que c'est du même type
 let circuitType = {
@@ -317,4 +270,3 @@ let circuitType = {
     seulementC: 10854,
     RC: 90842
 }
-
