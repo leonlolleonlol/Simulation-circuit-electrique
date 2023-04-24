@@ -177,11 +177,12 @@ function drawFils() {
   push();
   stroke("orange");
   strokeWeight(4);
+  
   for (let element of fils){
     if(isElementSelectionner(element) && !isElementSelectionner(drag)){
       push();
       strokeWeight(30);
-      stroke('rgba(255, 165, 0, 0.1)');
+      stroke('rgba(255, 165, 0, 0.2)');
       let decalageX = 9 * Math.sin(angle(element));
       let decalageY = 9 * Math.cos(angle(element));
       if(element.yi >element.yf){
@@ -298,8 +299,8 @@ function inGrid(x, y){
 
 // Fonction fil -----------------------------
 function validFilBegin(){
-  let x = mouseX/grid.scale - grid.translateX;
-  let y = mouseY/grid.scale - grid.translateY;
+let x = mouseX/grid.scale - grid.translateX;
+let y = mouseY/grid.scale - grid.translateY;
   if (!inGrid(mouseX/grid.scale, mouseY/grid.scale)){
     return false;
   }
@@ -362,18 +363,18 @@ function pente(fil){
 }
 
 function angle(fil){
-  return(Math.atan(1/pente));
+  return Math.atan(1/pente(fil));
 }
 
 function lengthFil(fil){
   return dist(fil.xi, fil.yi, fil.xf, fil.yf);
 }
 
-function filOverlap(fil1, fil2){
+function filOverlap(fil1,fil2){
   let pente1 = pente(fil1);
   let pente2 = pente(fil2);
   let b1 = fil1.yi - fil1.xi * pente1;
-  let b2 = fil2.yi - fil2.xi * pente2
+  let b2 = fil2.yi - fil2.xi * pente2;
   pente1 = Math.abs(pente1);
   pente2 = Math.abs(pente2);
   if(pente1 === pente2 && Math.abs(b1) === Math.abs(b2)){
@@ -406,21 +407,25 @@ function simplifyNewFil(testFil){
     let actions = [];
     for (let index = 0; index < fils_remplacer.length; index++) {
       let fil = fils_remplacer[index].objet;
-      if(Math.abs(pente(fil))==Infinity){
+      let penteF = Math.abs(pente(fil));
+      if(penteF==Infinity){
         let y0 = Math.min(fil.yi, testFil.yi, fil.yf, testFil.yf);
         let y1 = Math.max(fil.yi, testFil.yi, fil.yf, testFil.yf);
         testFil.yi = y0;
         testFil.yf = y1;
-
       }else {
-        let array = [{x:fil.xi, y:fil.yi}, {x:fil.xf, y:fil.yf},
-           {x:testFil.xi, y:testFil.yi}, {x:testFil.xf, y:testFil.yf}];
+        let p1i = {x:fil.xi, y:fil.yi};
+        let p1f = {x:fil.xf, y:fil.yf};
+        let p2i = {x:testFil.xi, y:testFil.yi};
+        let p2f = {x:testFil.xf, y:testFil.yf};
+        let array = [p1i, p2i, p1f, p2f];
         array.sort(function(a, b){return a.x - b.x});
         testFil.xi = array[0].x;
         testFil.yi = array[0].y;
         testFil.xf = array[array.length - 1].x;
         testFil.yf = array[array.length - 1].y;
       }
+      
     /*for (const composant of components) {
       if(composant.checkConnection(fils_remplacer[index].objet.xi, fils_remplacer[index].objet.yi, 10)){
         fils_remplacer[index].objet.begin = composant;
@@ -436,7 +441,9 @@ function simplifyNewFil(testFil){
     if(fils_remplacer[index].objet.begin!=null && fils_remplacer[index].objet.end){
       circuit.connect(fils_remplacer[index].objet.begin,fils_remplacer[index].objet.end);
     }*/
+    
     let i = fils.indexOf(fil);
+    fils_remplacer[index].index = i;
     fils.splice(i,1);
     actions.push({type:DELETE, objet:fil, index: i})
     
@@ -541,7 +548,7 @@ function mousePressed() {
     if(nfil!=null){
       origin = nfil;
     }
-    selection = drag
+    selection = drag;
     fils.push(drag);
     return;
   }
@@ -600,7 +607,7 @@ function mouseReleased() {
       // Juste pour empêcher une erreure
     } else if (drag.getType()=='fil') {
       if(lengthFil(drag)>0){
-        let action = [{type:CREATE, objet:drag}];
+        let action = [{type:CREATE, objet:drag}]
         let actionsSup = simplifyNewFil(drag);
         addActions(action.concat(actionsSup));
       }else {
@@ -681,26 +688,26 @@ function keyPressed() {
         selection.orientation = pRotate;
       }
     }
-      
   } else if(!keyIsDown(CONTROL) && (keyCode === 82 || keyCode === 83 ||
-      keyCode === 67 || keyCode === 65 || keyCode === 68)){
-    let newC;
-    let point = findGridLock(grid.translateX, grid.translateY);
-    let x = point.x;
-    let y = point.y;
-    if (keyCode === 82) {
-      newC = new Resisteur(x, y);
-    } else if (keyCode === 83) {
-      newC = new Batterie(x, y);
-    } else if (keyCode === 65) {
-      newC = new Ampoule(x, y);
-    } else if (keyCode === 67) {
-      newC = new Condensateur(x, y);
-    } else if (keyCode === 68) {
-      newC = new Diode(x, y);
-    }
+        keyCode === 67 || keyCode === 65 || keyCode === 68)){
+      let newC;
+      let point = findGridLock(grid.translateX, grid.translateY);
+      let x = point.x;
+      let y = point.y;
+      if (keyCode === 82) {
+        newC = new Resisteur(x, y);
+      } else if (keyCode === 83) {
+        newC = new Batterie(x, y);
+      } else if (keyCode === 65) {
+        newC = new Ampoule(x, y);
+      } else if (keyCode === 67) {
+        newC = new Condensateur(x, y);
+      } else if (keyCode === 68) {
+        newC = new Diode(x, y);
+      }
     if(validComposantPos(newC)){
       action = simplifyComposant(newC);
+      selection = newC;
       components.push(newC);
       //circuit.ajouterComposante(newC);
       addActions([{type:CREATE,objet:newC}].concat(action));
@@ -720,46 +727,5 @@ function windowResized(){
  * système à zéro.
  */
 function refresh() {
-  initComponents();
-}
-
-function saveCircuit(){
-  //Envoyer à la database
-  let error;
-  if(error != null){
-    //message
-  } else{
-    //savedCircuit = circuit;
-  }
-}
-
-function verifierSave(){
-  //return saveCircuit == circuit
-}
-
-function telecharger(){
-  let download = true;
-  if(!verifierSave()){
-    let response;// = Message de confirmation
-    if(response =='save'){
-      saveCircuit();
-    }else if(response =='annuler'){
-      download = false;
-    }
-  }
-  if(download){
-    //save(circuit,projet.name + '.json')
-  }
-}
-
-function cadrerGrille(){
-  let xMin = Math.min.apply(Math, components.map(composant => composant.x));
-  let xMax = Math.max.apply(Math, components.map(composant => composant.x));
-  let yMin = Math.min.apply(Math, components.map(composant => composant.y));
-  let yMax = Math.max.apply(Math, components.map(composant => composant.y));
-  //let deltaX = xMax - xMin;
-  //let deltaY = yMax - yMin;
-  grid.translateX = (width - (xMin + xMax) + grid.offsetX)/2;
-  grid.translateY = (height - (yMin + yMax) + grid.offsetY)/2;
-  // il reste la partie scale si on veut que tout rentre
+  initComponents
 }
