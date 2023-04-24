@@ -32,7 +32,8 @@ class Circuit{
 
     //C'est mieux si tu m'envoi un objet composante, ça facilite la suite des chose
     connectComposante(composanteAvant, composanteApres){
-        composanteAvant.prochaineComposante = composanteApres;
+        //if(composanteAvant.getTypeCalcul() == composantType.batterieType){print("okkkk")}
+        composanteAvant.setProchaineComposante(composanteApres);
     }
     
     retirerComposante(position){
@@ -84,18 +85,29 @@ class Circuit{
 
 
     trouverPile(circuit){
-        let element = []; 
+        let element; 
+        
         for(let i = 0; i < circuit.length; i++){
             if(circuit[i].getTypeCalcul() == composantType.batterieType){
                 this.premierCircuit = true;
                 this.presenceBattrie = true;
                 this.indexPile = i; 
-                element = circuit[i].prochaineComposante;
+                //element = circuit[i].getProchaineComposante();
+                //if(element.getTypeCalcul() == composantType.resisteurType){
+                 //   print("Yoooo")
+               // }
                 
             }else if (circuit[i].getTypeCalcul() == composantType.noeudType){
                 this.trouverPile(circuit[i].getCircuitNoeud());
+            }else if (circuit[i] instanceof Circuit){
+               this.trouverPile(circuit[i].circuit);
             }
         }
+        if(this.premierCircuit){
+            element = this.circuit.indexOf(this.circuit[0].getProchaineComposante());
+            print(element);//work
+        }
+       
     }
 
     /**
