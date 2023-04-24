@@ -20,15 +20,15 @@ class Composant {
     throw console.error();//todo préciser l'erreur
   }
   checkConnection(x, y, approximation){
-    if(this.orientation % HALF_PI == 0){
-      return dist(this.x, this.y + 60/2, x, y) < approximation ||
-      dist(this.x, this.y - 60/2, x, y) < approximation;
-    } else{
-      return dist(this.x + 60/2, this.y, x, y)<approximation ||
-      dist(this.x - 60/2, this.y, x, y) < approximation;
+    if(this.orientation % PI == 0){
+    return dist(this.x + 60/2, this.y, x, y)<approximation ||
+    dist(this.x - 60/2, this.y, x, y) < approximation;
+    } else if (this.orientation % HALF_PI == 0){
+     return dist(this.x, this.y + 60/2, x, y) < approximation ||
+     dist(this.x, this.y - 60/2, x, y) < approximation;
     }
-      
-  }
+    else return false;
+    }
 
   rotate(inverse){
     this.orientation = (this.orientation + (inverse?-HALF_PI:HALF_PI)) % TWO_PI

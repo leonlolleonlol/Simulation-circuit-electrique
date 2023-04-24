@@ -561,7 +561,6 @@ function mousePressed() {
   }
   if(inGrid(mouseX/grid.scale,mouseY/grid.scale))
     drag = grid;
-  
 }
 
 function mouseDragged() {
@@ -727,5 +726,5 @@ function windowResized(){
  * système à zéro.
  */
 function refresh() {
-  initComponents
+  initComponents();
 }

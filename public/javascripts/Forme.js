@@ -6,7 +6,7 @@
  * @param {number} orientation rotation du composant en radians
  * @param {boolean} drag 
  */
-function resisteur(x, y, orientation, drag) {
+function resisteur(x, y, orientation, selection) {
   push();
   rectMode(CENTER);
   strokeWeight(2);
@@ -50,7 +50,7 @@ function resisteur(x, y, orientation, drag) {
  * @param {number} orientation rotation du composant en radians
  * @param {boolean} drag 
  */
-function batterie(x, y, orientation, drag) {
+function batterie(x, y, orientation, selection) {
   push();
   rectMode(CENTER);
   strokeWeight(2);
@@ -92,7 +92,7 @@ function batterie(x, y, orientation, drag) {
  * @param {number} orientation rotation du composant en radians
  * @param {boolean} drag 
  */
-function condensateur(x, y, orientation, drag) {
+function condensateur(x, y, orientation, selection) {
   push();
   rectMode(CENTER);
   strokeWeight(2);
@@ -135,7 +135,7 @@ function condensateur(x, y, orientation, drag) {
  * @param {number} orientation rotation du composant en radians
  * @param {boolean} drag 
  */
-function diode(x, y, orientation, drag) {
+function diode(x, y, orientation, selection) {
   push();
   rectMode(CENTER);
   strokeWeight(2);
@@ -192,7 +192,7 @@ function diode(x, y, orientation, drag) {
  * @param {number} orientation rotation du composant en radians
  * @param {boolean} drag 
  */
-function ampoule(x, y, orientation, drag) {
+function ampoule(x, y, orientation, selection) {
   push();
   strokeWeight(2);
   rectMode(CENTER);
