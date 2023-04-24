@@ -33,6 +33,12 @@ class Composant {
   getTypeCalcul() {
     this.getType();
   }
+  setProchaineComposante(composante){
+    this.prochaineComposante = composante;
+  }
+  getProchaineComposante(){
+    return this.prochaineComposante;
+  }
 } 
 
 class Resisteur extends Composant {
@@ -167,6 +173,10 @@ class Condensateur extends Composant {
     }
     static getType() {
       return 'batterie';
+    }
+
+    getTypeCalcul() {
+      return composantType.batterieType;
     }
 }
 
@@ -310,8 +320,32 @@ class Noeuds extends Composant {
     }
   }
 
+  /**
+   * Continue la maille écrite en séparant la maille pour toute ses branches. Aussi, fait l'inventaire
+   * des mailles internes
+   * @param {Circuit} composants Liste de composante globale
+   * @param {Array} mailles Liste de mailles qui va enregistrer les mailles au fur et à mesure de
+   * l'itération dans la branche ou noeud.
+   * @param {Array} maille Maille présentement écrite
+   * @param {number} index L'index du noeud dans le circuit parent
+   */
+  maille(composants, mailles, maille, index){
+    for (const element of this.circuitsEnParallele) {
+      circuitMaille(element.circuit.concat(composants.slice(index+1)), mailles, 
+      [...maille]);
+    }
+    // Trouver les mailles interne
+    for (let i = 0; i < this.circuitsEnParallele.length - 1; i++) {
+      const branch = this.circuitsEnParallele[i].circuit;
+      for (let j = i + 1; j < this.circuitsEnParallele.length; j++) {
+        const reverseBranch = this.circuitsEnParallele[j].circuit.reverse();
+        circuitMaille(branch.concat(reverseBranch), mailles, []);
+      }
+    }
+  }
+
   getType() {
-    return Noeud.getType();
+    return Noeuds.getType();
   }
   static getType() {
       return 'noeud';
@@ -320,6 +354,9 @@ class Noeuds extends Composant {
   //Ne pas changer cette methode, elle doit être comme ça pour les calculs
   getTypeCalcul() {
     return composantType.noeudType;
+  }
+  getCircuitNoeud(){
+    return this.circuitsEnParallele;
   }
 }
   
