@@ -13,7 +13,7 @@ class Circuit{
         this.circuit = []; //Array de composantes qui sont en série
         this.valide = true;
         this.presenceBattrie = false;
-        this.indexPile = 0;
+        this.index = 0;
 
         this.courant = 0;
         this.charge = 0;
@@ -72,11 +72,14 @@ class Circuit{
          * -- est-ce que les fils retourne à la pile
          */
         //cree un boolean
-        let element; 
+        let element = this.circuit[this.index].getProchaineComposante(); 
         this.trouverPile(this.circuit)
-        if(false){
-            while(element.getTypeCalcul == composantType.batterieType){
-                element = this.circuit.find(this.circuit[this.indexPile].prochaineComposante)
+        if(this.premierCircuit){
+            //let cpt = 0;
+            while(element.getTypeCalcul != composantType.batterieType){//for (cpt != circuit.lenght)
+                this.index = this.circuit.indexOf(this.circuit[this.index].getProchaineComposante());// créer une exception dans le cas ou ça trouve pas la composante
+                element = this.circuit[this.index].getProchaineComposante();
+                //cpt++;
             } 
         }
 
@@ -91,23 +94,18 @@ class Circuit{
             if(circuit[i].getTypeCalcul() == composantType.batterieType){
                 this.premierCircuit = true;
                 this.presenceBattrie = true;
-                this.indexPile = i; 
-                //element = circuit[i].getProchaineComposante();
-                //if(element.getTypeCalcul() == composantType.resisteurType){
-                 //   print("Yoooo")
-               // }
+                this.index = i; //inutile 
+
+                if(i!= 0){// le place à la première place
+                    this.echangerComposantes(i,0);
+                }
                 
             }else if (circuit[i].getTypeCalcul() == composantType.noeudType){
                 this.trouverPile(circuit[i].getCircuitNoeud());
             }else if (circuit[i] instanceof Circuit){
                this.trouverPile(circuit[i].circuit);
             }
-        }
-        if(this.premierCircuit){
-            element = this.circuit.indexOf(this.circuit[0].getProchaineComposante());
-            print(element);//work
-        }
-       
+        }       
     }
 
     /**
@@ -115,26 +113,26 @@ class Circuit{
      * circuit devrait commencer de la pile, puis finir à la composante juste avant la pile.
      */
     rearrangerArrayCircuit(){
-        
-        let index
-        this.validerCircuit();
-        if(this.premierCircuit){    
+        let element; 
+        this.validerCircuit();//Quelle méthode faut-il appeler quand on pas de circuit valide.
+        if(this.premierCircuit){
             for(let i = 0; i < this.circuit.length; i++){
-                if (!this.circuit[0].getTypeCalcul() != composantType.batterieType && this.circuit[i] == composantType.batterieType){
-                    this.echangerComposantes(i,0);
-                }else if(this.circuit[i].getTypeCalcul == composantType.noeudType){// s'occuper de la prochaine composante
-                    this.circuit[i] = new Circuit(false).ajouterComposante(this.circuit[i]);   
-                }
+                element = this.circuit[i].getProchaineComposante();
             }
-        }else{
+            
+        }
+        //Dans noeud creer une methode valider pour prochaine composante
+        
             for(let i = 0; i < this.circuit.length; i++){
                 // if (noeud) == new circuit
+                /*
                 if(this.circuit[i].getTypeCalcul == composantType.noeudType){
                     this.circuit[i] = new Circuit(false).ajouterComposante(this.circuit[i]); 
                 }
+                */
 
             }
-        }
+        
 
 
         /*
