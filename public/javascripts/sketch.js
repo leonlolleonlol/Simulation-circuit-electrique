@@ -48,6 +48,9 @@ function setup() {
 
   //-----------------------------------------
   initComponents();
+  var sol = nerdamer.solveEquations(['x+y=1', '2*x=6', '4*z+y=6']);
+console.log(sol.toString());
+  //testSympy();
 
   //test();
 }
@@ -83,6 +86,23 @@ function test(){
   c1.update();
   print(c1.circuit[1].courant);
   print(c1.circuit[2].courant);
+}
+
+function testSympy(){
+  let resisteur1 = {"chiffre": -1000,"var": "i1"};
+  let resisteur2 = {"chiffre": -2300,"var": "i2"};
+  let resisteur3 = {"chiffre": -1700,"var": "i3"};
+  let resisteur4 = {"chiffre": -800,"var": "i3"};
+  let batterie1 = { "chiffre": -3};
+  let batterie2 = {"chiffre": 4.40};
+  let batterie3 = {"chiffre": 5.50};
+  let n1 = [{"mul":-1, "var":"i1"}, {"mul":1, "var":"i2"}, {"mul":1, "var":"i3"}];
+
+  let eq1 = [batterie2,resisteur2,resisteur1,batterie1];
+  let eq2 = [batterie3,resisteur3,resisteur1,batterie1,resisteur4];
+  let equations = [eq1,eq2];
+  product = asyncCall(equations, [n1]);
+  print(product)
 }
 
 function initComponents(){

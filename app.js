@@ -2,6 +2,12 @@ const express = require('express')
 const app = express()
 const port = 3000;
 const path = require('path')
+var nerdamer = require('nerdamer'); 
+// Load additional modules. These are not required.  
+require('nerdamer/Algebra'); 
+require('nerdamer/Calculus'); 
+require('nerdamer/Solve'); 
+
 app.use(express.static('public'))
 app.listen(port, () => {
   var url = `http://localhost:${port}`
@@ -13,8 +19,14 @@ app.listen(port, () => {
 app.get('/', function(req, res) {
     res.sendFile(path.join(__dirname, '/acceuil.html'));
   });
+  app.get('/nerdamer.core.js', function(req, res) {
+    res.sendFile(path.join(__dirname, 'node_modules/nerdamer/all.min.js'));
+  });
   app.get('/sketch.js', function(req, res) {
     res.sendFile(path.join(__dirname, 'public/javascripts/sketch.js'));
+  });
+  app.get('/Sympy.js', function(req, res) {
+    res.sendFile(path.join(__dirname, 'public/javascripts/Sympy.js'));
   });
   app.get('/Forme.js', function(req, res) {
     res.sendFile(path.join(__dirname, 'public/javascripts/Forme.js'));
@@ -38,3 +50,4 @@ app.get('/editeur', function(req, res) {
   app.use
   res.sendFile(path.join(__dirname, '/editeur.html'));
 });
+
