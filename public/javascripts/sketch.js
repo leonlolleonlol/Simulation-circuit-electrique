@@ -610,6 +610,8 @@ function mousePressed() {
   let y1 = mouseY/grid.scale - grid.translateY;
   if (validFilBegin()) {
     let point = findGridLock(grid.translateX, grid.translateY)
+    //drag = new Fil(point.x,point.y)
+    
     drag = {
         xi: point.x,
         yi: point.y,
