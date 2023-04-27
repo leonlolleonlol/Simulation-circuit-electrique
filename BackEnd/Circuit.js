@@ -149,6 +149,72 @@
         
     }
 
+    setSymbol(symbole){
+        this.symbole = symbole;
+        for (const enfant of this.circuit) {
+            enfant.symbole = symbole;
+        }
+    }
+
+    /**
+     * Permet de trouver le courrant de chaque circuit selon les lois
+     * de kirchhoff
+     */
+    solveCourrantkirchhoff(){
+        let circuits = [];
+        this.getCircuits(circuits);
+        let dictCourrant = new Map();
+        for (let i = 0; i < circuits.length; i++) {
+            const element = circuits[i];
+            element.setSymbol('i'+(i+1));
+            dictCourrant.set('i'+(i+1), element);
+        }
+        let equations = [];
+        this.noeudEq(equations);
+        let mailles = [];
+        circuitMaille(this.circuit, mailles,[], false, -1);
+        for (const maille of mailles) {
+            let equation = '0 = '+maille[0].element.getEq(maille[0].sens);
+            for (let index = 1; index < maille.length; index++) {
+                const obj = maille[index];
+                equation +=' + '+obj.element.getEq(obj.sens);
+            }
+            equations.push(equation);
+        }
+        let reponse ={'i1':2}//temporaire
+        //nerdamer.set('SOLUTIONS_AS_OBJECT', true)
+        //let reponse = nerdamer.solveEquations(equations);
+        for (const symbole in reponse){
+            dictCourrant.get(symbole).courrant = reponse[symbole];
+        }
+
+    }
+
+    noeudEq(equations){
+        for (const element of this.circuit) {
+            if(element.getType() == Noeuds.getType()){
+                let equation = this.symbole +' = ' + element.circuitsEnParallele[0].symbole;
+                for (let index = 1; index < element.circuitsEnParallele.length; index++) {
+                    const c = element.circuitsEnParallele[index];
+                    equation +=' + '+c.symbole
+                    c.noeudEq(equations);
+                }
+                equations.push(equation);
+            }
+        }
+    }
+
+    getCircuits(circuits){
+        circuits.push(this);
+        for (const element of this.circuit) {
+            if(element.getType() == Noeuds.getType()){
+                for (const branch of element.circuitsEnParallele) {
+                    branch.getCircuits(circuits);
+                }
+            }
+        }
+    }
+
     /**
      * Sert à trouver si le circuit contient seulement des Résistances, seulement des Condensateurs ou contient les deux. Devrait
      * changer la variable "type" en le type du circuit.
@@ -222,6 +288,27 @@
             }
         }
     }
+}
+
+/**
+ * Traverse le circuit pour trouver les mailles de celui-ci (voir lois des mailles ou boucles)
+ * @param {Array} composants Liste des composants d'un circuit
+ * @param {Array} mailles Liste de mailles qui va enregistrer les mailles au fur et à mesure de
+   * l'itération dans la branche ou noeud.
+ * @param {Array} maille Maille présentement écrite
+ */
+function circuitMaille(composants, mailles, maille, inverse, indexSeparate){
+    for (let i = 0; i < composants.length; i++) {
+        const element = composants[i];
+        if(element.getType()===Noeuds.getType()){
+            element.maille(composants, mailles, [...maille], i, inverse);
+            return;
+        }else {
+            let sens = indexSeparate>i ? inverse : !inverse;
+            maille.push({element, sens});
+        }
+    }
+    mailles.push(maille);
 }
 
 /**

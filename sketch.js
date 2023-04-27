@@ -70,17 +70,31 @@ function test(){
   r1 = new Resisteur(0, 0, 500)
   
   n1 = new Noeuds();
+  
   c2 = new Circuit();
   c3 = new Circuit();
 
-  r2 = new Resisteur(0, 0, 800)
-  r3 = new Resisteur(0, 0, 1100); 
+  r2 = new Resisteur(0, 0, 800);
+  r3 = new Resisteur(0, 0, 1100);
   r4 = new Resisteur(0, 0, 400); 
   
+
+  r5 = new Resisteur(0, 0, 400);
+  r6 = new Resisteur(0, 0, 250);
+  r7 = new Resisteur(0, 0, 100);
+  c4 = new Circuit();
+  c5 = new Circuit();
+  n2 = new Noeuds();
+  c4.ajouterComposante(r5);
+  c4.ajouterComposante(r6);
+  c5.ajouterComposante(r7);
+  n2.ajouterComposante(c4);
+  n2.ajouterComposante(c5);
 
   c2.ajouterComposante(r4);
   c2.ajouterComposante(r3);
   c3.ajouterComposante(r2);
+  c3.ajouterComposante(n2);
 
   n1.ajouterComposante(c2);
   n1.ajouterComposante(c3);
@@ -112,11 +126,8 @@ function test(){
   print(r2.courant.round(5) + " " + r2.tension.round(2));
   print(r3.courant.round(5) + " " + r3.tension.round(2));
   print(r4.courant.round(5) + " " + r4.tension.round(2));
-  /*
-  let mailles = [];
-  circuitMaille(c1.circuit,mailles,[])
-  print(mailles)
-  */
+  
+  c1.solveCourrantkirchhoff();
 }
 
 //Source: https://stackoverflow.com/questions/11832914/how-to-round-to-at-most-2-decimal-places-if-necessary 
