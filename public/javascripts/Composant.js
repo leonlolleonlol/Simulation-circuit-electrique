@@ -16,19 +16,41 @@ class Composant {
   calcul(paralele, composant){
       throw console.error();//todo préciser l'erreur
   }*/
-  draw(offX, offY) {
+  draw() {
     throw console.error();//todo préciser l'erreur
   }
   checkConnection(x, y, approximation){
+    this.getBorne(x,y,approximation)!=null;
+  }
+  getConnections(){
+    let pos;
     if(this.orientation % PI == 0){
-    return dist(this.x + 60/2, this.y, x, y)<approximation ||
-    dist(this.x - 60/2, this.y, x, y) < approximation;
+      pos = [{x:this.x + 60/2, y:this.y},{x:this.x - 60/2, y:this.y}];
+      pos.sort(function(a, b){return a.x - b.x});
     } else if (this.orientation % HALF_PI == 0){
-     return dist(this.x, this.y + 60/2, x, y) < approximation ||
-     dist(this.x, this.y - 60/2, x, y) < approximation;
+      pos = [{x : this.x, y : this.y + 60/2},{x:this.x, y:this.y - 60/2}];
+      pos.sort(function(a, b){return a.y - b.y});
     }
-    else return false;
+    return pos;
+  }
+  getConnection(borne){
+    let connections = this.getConnection();
+    return (borne == 'gauche' || borne =='haut')
+    ? connections[0] : connections[1];
+  }
+  getBorne(x, y, approximation){
+    if(this.orientation % PI == 0){
+      if(dist(this.x + 60/2, this.y, x, y) < approximation)
+        return 'droite';
+      else if (dist(this.x - 60/2, this.y, x, y) < approximation)
+        return 'gauche';
+    } else if (this.orientation % HALF_PI == 0){
+      if(dist(this.x, this.y + 60/2, x, y) < approximation)
+        return 'bas';
+      else if (dist(this.x, this.y - 60/2, x, y) < approximation)
+        return 'haut';
     }
+  }
 
   rotate(inverse){
     this.orientation = (this.orientation + (inverse?-HALF_PI:HALF_PI)) % TWO_PI

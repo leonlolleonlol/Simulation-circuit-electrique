@@ -83,23 +83,15 @@ class Fil{
 
   get xi(){
     if(this.begin instanceof Composant){
-      if(this.begin.orientation ===0){
-        return this.begin.x + (this.borne*25);
-      }else if(this.begin.orientation === PI){
-        return this.begin.x - (this.borne*25);
-      }else return this.begin.x;
+      return (this.begin.getConnection(this.borneA)??this.begin).x;
     }
     else if(this.begin instanceof Fil){
       return this.begin.xf;
-    }else return this.begin.x;
+    }
   }
   get yi(){
     if(this.begin instanceof Composant){
-      if(this.begin.orientation === HALF_PI){
-        return this.begin.y + (this.borne*25);
-      }else if(this.begin.orientation == (HALF_PI+PI)){
-        return this.begin.y - (this.borne*25);
-      }else return this.begin.y;
+      return (this.begin.getConnection(this.borneA)??this.begin).y;
     }
     else if(this.begin instanceof Fil){
       return this.begin.yf;
@@ -107,23 +99,15 @@ class Fil{
   }
   get xf(){
     if(this.end instanceof Composant){
-      if(this.end.orientation ===0){
-        return this.end.x + (this.borne*25);
-      }else if(this.end.orientation === PI){
-        return this.end.x - (this.borne*25);
-      }else return this.end.x;
+      return (this.end.getConnection(this.borneB)??this.end).x;
     }
     else if(this.end instanceof Fil){
       return this.end.xi;
-    }else return this.end.x;
+    }
   }
   get yf(){
     if(this.end instanceof Composant){
-      if(this.end.orientation === HALF_PI){
-        return this.end.y + (this.borne*25);
-      }else if(this.end.orientation == (HALF_PI+PI)){
-        return this.end.y - (this.borne*25);
-      }else return this.end.y;
+      return (this.end.getConnection(this.borneB)??this.end).y;
     }
     else if(this.end instanceof Fil){
       return this.end.yi;
