@@ -4,9 +4,7 @@ const port = 3000;
 const path = require('path')
 var nerdamer = require('nerdamer'); 
 // Load additional modules. These are not required.  
-require('nerdamer/Algebra'); 
-require('nerdamer/Calculus'); 
-require('nerdamer/Solve'); 
+require('nerdamer/Solve');
 
 app.use(express.static('public'))
 app.listen(port, () => {
@@ -17,34 +15,40 @@ app.listen(port, () => {
 })
 
 app.get('/', function(req, res) {
-    res.sendFile(path.join(__dirname, '/acceuil.html'));
-  });
-  app.get('/nerdamer.core.js', function(req, res) {
-    res.sendFile(path.join(__dirname, 'node_modules/nerdamer/all.min.js'));
-  });
-  app.get('/sketch.js', function(req, res) {
-    res.sendFile(path.join(__dirname, 'public/javascripts/sketch.js'));
-  });
-  app.get('/Sympy.js', function(req, res) {
-    res.sendFile(path.join(__dirname, 'public/javascripts/Sympy.js'));
-  });
-  app.get('/Forme.js', function(req, res) {
-    res.sendFile(path.join(__dirname, 'public/javascripts/Forme.js'));
-  });
-  app.get('/Historique.js', function(req, res) {
-    res.sendFile(path.join(__dirname, 'public/javascripts/Historique.js'));
-  });
-  app.get('/Circuit.js', function(req, res) {
-    res.sendFile(path.join(__dirname, 'public/javascripts/BackEnd/Circuit.js'));
-  });
-  app.get('/p5.min.js', function(req, res) {
-    res.sendFile(path.join(__dirname, 'public/javascripts/lib/p5.min.js'));
-  });
-  app.get('/Composant.js', function(req, res) {
-    res.sendFile(path.join(__dirname, 'public/javascripts/Composant.js'));
-  });
+  res.sendFile(path.join(__dirname, '/acceuil.html'));
+});
 app.get('/acceuil', function(req, res) {
   res.sendFile(path.join(__dirname, '/acceuil.html'));
+});
+app.get('/nerdamer.core.js', function(req, res) {
+  res.sendFile(path.join(__dirname, 'node_modules/nerdamer/nerdamer.core.js'));
+});
+app.get('/nerdamer/Solve.js', function(req, res) {
+  res.sendFile(path.join(__dirname, 'node_modules/nerdamer/Solve.js'));
+});
+app.get('/sketch.js', function(req, res) {
+  res.sendFile(path.join(__dirname, 'public/javascripts/sketch.js'));
+});
+app.get('/Sympy.js', function(req, res) {
+  res.sendFile(path.join(__dirname, 'public/javascripts/Sympy.js'));
+});
+app.get('/Forme.js', function(req, res) {
+  res.sendFile(path.join(__dirname, 'public/javascripts/Forme.js'));
+});
+app.get('/constantes.js', function(req, res) {
+  res.sendFile(path.join(__dirname, 'public/javascripts/constantes.js'));
+});
+app.get('/Historique.js', function(req, res) {
+  res.sendFile(path.join(__dirname, 'public/javascripts/Historique.js'));
+});
+app.get('/Circuit.js', function(req, res) {
+  res.sendFile(path.join(__dirname, 'public/javascripts/BackEnd/Circuit.js'));
+});
+app.get('/p5.min.js', function(req, res) {
+  res.sendFile(path.join(__dirname, 'public/javascripts/lib/p5.min.js'));
+});
+app.get('/Composant.js', function(req, res) {
+  res.sendFile(path.join(__dirname, 'public/javascripts/Composant.js'));
 });
 app.get('/editeur', function(req, res) {
   app.use

@@ -42,9 +42,9 @@ function setup() {
   //----------------------------------------
   reset_button.mousePressed(refresh);
   undo_button.mousePressed(undo);
-  line_grid_button.mousePressed(function(){ grid.quadrillage='line';});
-  point_grid_button.mousePressed(function(){ grid.quadrillage='point';});
-  point_line_grid_button.mousePressed(function(){ grid.quadrillage='points&lines';});
+  line_grid_button.mousePressed(function(){ grid.quadrillage=QUADRILLE;});
+  point_grid_button.mousePressed(function(){ grid.quadrillage=POINT;});
+  point_line_grid_button.mousePressed(function(){ grid.quadrillage=QUADRILLEPOINT;});
   c1 = new Circuit(true);
 
   //-----------------------------------------
@@ -87,23 +87,6 @@ function test(){
   c1.update();
   print(c1.circuit[1].courant);
   print(c1.circuit[2].courant);
-}
-
-function testSympy(){
-  let resisteur1 = {"chiffre": -1000,"var": "i1"};
-  let resisteur2 = {"chiffre": -2300,"var": "i2"};
-  let resisteur3 = {"chiffre": -1700,"var": "i3"};
-  let resisteur4 = {"chiffre": -800,"var": "i3"};
-  let batterie1 = { "chiffre": -3};
-  let batterie2 = {"chiffre": 4.40};
-  let batterie3 = {"chiffre": 5.50};
-  let n1 = [{"mul":-1, "var":"i1"}, {"mul":1, "var":"i2"}, {"mul":1, "var":"i3"}];
-
-  let eq1 = [batterie2,resisteur2,resisteur1,batterie1];
-  let eq2 = [batterie3,resisteur3,resisteur1,batterie1,resisteur4];
-  let equations = [eq1,eq2];
-  product = asyncCall(equations, [n1]);
-  print(product)
 }
 
 function initComponents(){
@@ -578,11 +561,11 @@ function createComposant(original){
   let x = original.x/grid.scale - grid.translateX;
   let y = original.y/grid.scale - grid.translateY;
   switch (original.getType()) {
-    case Batterie.getType(): return new Batterie(x, y, 0);
-    case Resisteur.getType(): return new Resisteur(x, y, 0);
-    case Ampoule.getType(): return new Ampoule(x, y, 0);
-    case Condensateur.getType(): return new Condensateur(x, y, 0);
-    case Diode.getType(): return new Diode(x, y);
+    case BATTERIE: return new Batterie(x, y, 0);
+    case RESISTEUR: return new Resisteur(x, y, 0);
+    case AMPOULE: return new Ampoule(x, y, 0);
+    case CONDENSATEUR: return new Condensateur(x, y, 0);
+    case DIODE: return new Diode(x, y);
   }
 }
 

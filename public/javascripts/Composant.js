@@ -35,20 +35,20 @@ class Composant {
   }
   getConnection(borne){
     let connections = this.getConnection();
-    return (borne == 'gauche' || borne =='haut')
+    return (borne == GAUCHE || borne ==HAUT)
     ? connections[0] : connections[1];
   }
   getBorne(x, y, approximation){
     if(this.orientation % PI == 0){
       if(dist(this.x + 60/2, this.y, x, y) < approximation)
-        return 'droite';
+        return DROITE;
       else if (dist(this.x - 60/2, this.y, x, y) < approximation)
-        return 'gauche';
+        return GAUCHE;
     } else if (this.orientation % HALF_PI == 0){
       if(dist(this.x, this.y + 60/2, x, y) < approximation)
-        return 'bas';
+        return BAS;
       else if (dist(this.x, this.y - 60/2, x, y) < approximation)
-        return 'haut';
+        return HAUT;
     }
   }
 
@@ -83,10 +83,7 @@ class Resisteur extends Composant {
     }
 
     getType() {
-      return Resisteur.getType();
-    }
-    static getType() {
-      return 'resisteur';
+      return RESISTEUR;
     }
 
     //Ne pas changer cette methode, elle doit être comme ça pour les calculs
@@ -112,10 +109,7 @@ class Ampoule extends Resisteur {
     }
 
     getType() {
-        return Ampoule.getType();
-    }
-    static getType() {
-        return 'ampoule';
+        return AMPOULE;
     }
 
     //Ne pas changer cette methode, elle doit être comme ça pour les calculs
@@ -144,10 +138,7 @@ class Condensateur extends Composant {
     }
     
     getType() {
-        return Condensateur.getType();
-    }
-    static getType() {
-        return 'condensateur';
+        return CONDENSATEUR;
     }
     //Ne pas changer cette methode, elle doit être comme ça pour les calculs
     getTypeCalcul() {
@@ -173,10 +164,7 @@ class Condensateur extends Composant {
     }
 
     getType() {
-      return Batterie.getType();
-    }
-    static getType() {
-      return 'batterie';
+      return BATTERIE;
     }
 }
 
@@ -310,10 +298,7 @@ class Noeuds extends Composant {
   }
 
   getType() {
-    return Noeud.getType();
-  }
-  static getType() {
-      return 'noeud';
+    return NOEUD;
   }
 
   //Ne pas changer cette methode, elle doit être comme ça pour les calculs
