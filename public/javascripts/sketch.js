@@ -372,7 +372,8 @@ let y = mouseY/grid.scale - grid.translateY;
       return true;
     else if(filStart(x, y)!=null)
       return true;
-  } 
+    else return false;
+  }
 }
 
 function getConnectingComposant(x, y){

@@ -20,7 +20,7 @@ class Composant {
     throw console.error();//todo préciser l'erreur
   }
   checkConnection(x, y, approximation){
-    this.getBorne(x,y,approximation)!=null;
+    return this.getBorne(x,y,approximation)!=null;
   }
   getConnections(){
     let pos;

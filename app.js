@@ -20,11 +20,8 @@ app.get('/', function(req, res) {
 app.get('/acceuil', function(req, res) {
   res.sendFile(path.join(__dirname, '/acceuil.html'));
 });
-app.get('/nerdamer.core.js', function(req, res) {
-  res.sendFile(path.join(__dirname, 'node_modules/nerdamer/nerdamer.core.js'));
-});
-app.get('/nerdamer/Solve.js', function(req, res) {
-  res.sendFile(path.join(__dirname, 'node_modules/nerdamer/Solve.js'));
+app.get('/nerdamer/all.min.js', function(req, res) {
+  res.sendFile(path.join(__dirname, 'node_modules/nerdamer/all.min.js'));
 });
 app.get('/sketch.js', function(req, res) {
   res.sendFile(path.join(__dirname, 'public/javascripts/sketch.js'));
