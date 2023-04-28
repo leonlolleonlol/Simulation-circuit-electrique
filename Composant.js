@@ -194,7 +194,7 @@ class Condensateur extends Composant {
     }
 
     getTypeCalcul() {
-      return composantType.batterieType;
+      return composantType.pileType;
     }
 }
 

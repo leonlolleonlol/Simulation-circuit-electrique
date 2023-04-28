@@ -116,11 +116,13 @@ function test(){
   c1.ajouterComposante(n1);
   c1.ajouterComposante(r1);
   c1.ajouterComposante(p1);
-  c1.update();
 
   c1.connectComposante(p1, r1);
   c1.connectComposante(r1, n1);
   c1.connectComposante(n1, p1);
+  c1.update();
+
+  
   
   print(r1.courant.round(5) + " " + r1.tension.round(2));
   print(r2.courant.round(5) + " " + r2.tension.round(2));

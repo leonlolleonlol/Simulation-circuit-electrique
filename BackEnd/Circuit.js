@@ -53,7 +53,7 @@
      */
     update(){//Chaque fois qu'il y a un changement dans le circuit
         
-        //this.rearrangerArrayCircuit();
+        this.rearrangerArrayCircuit();
         this.tensionEQ = this.circuit[0].tension;
         this.trouverEq();
     }
@@ -61,7 +61,7 @@
 
     trouverPile(circuit){
         for(let i = 0; i < circuit.length; i++){
-            if(circuit[i].getTypeCalcul() == composantType.batterieType){
+            if(circuit[i].getTypeCalcul() == composantType.pileType){
                 this.contientPile = true;
                 if(i!= 0){// le place à la première place
                     this.echangerComposantes(i, 0);
