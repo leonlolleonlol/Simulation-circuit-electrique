@@ -430,11 +430,11 @@ function lengthFil(fil){
 function filOverlap(fil1,fil2){
   let pente1 = pente(fil1);
   let pente2 = pente(fil2);
-  let b1 = fil1.yi - fil1.xi * pente1;
-  let b2 = fil2.yi - fil2.xi * pente2;
+  let b1 = Math.abs(fil1.yi - fil1.xi * pente1);
+  let b2 = Math.abs(fil2.yi - fil2.xi * pente2);
   pente1 = Math.abs(pente1);
   pente2 = Math.abs(pente2);
-  if(pente1 === pente2 && Math.abs(b1) === Math.abs(b2)){
+  if(pente1 === pente2 && b1 === b2){
     if((pente1 == 0 && fil1.yi===fil2.yi)|| pente1 != Infinity){
       let x1i = Math.min(fil1.xi,fil1.xf);
       let x1f = Math.max(fil1.xi,fil1.xf);
@@ -457,15 +457,13 @@ function simplifyNewFil(testFil){
   let fils_remplacer =[];
   for (const fil of fils) {
     if(fil!==testFil && filOverlap(testFil,fil)){
-      fils_remplacer.push({objet:fil});
+      fils_remplacer.push(fil);
     }
   }
 
   if(fils_remplacer.length!=0){
-    for (let index = 0; index < fils_remplacer.length; index++) {
-      let fil = fils_remplacer[index].objet;
-      let penteF = Math.abs(pente(fil));
-      if(penteF==Infinity){
+    for (const fil of fils_remplacer){
+      if(Math.abs(pente(fil))==Infinity){
         let y0 = Math.min(fil.yi, testFil.yi, fil.yf, testFil.yf);
         let y1 = Math.max(fil.yi, testFil.yi, fil.yf, testFil.yf);
         testFil.yi = y0;
@@ -499,10 +497,9 @@ function simplifyNewFil(testFil){
       circuit.connect(fils_remplacer[index].objet.begin,fils_remplacer[index].objet.end);
     }*/
     
-    let i = fils.indexOf(fil);
-    fils_remplacer[index].index = i;
-    fils.splice(i,1);
-    actions.push({type:DELETE, objet:fil, index: i})
+    let index = fils.indexOf(fil);
+    fils.splice(index, 1);
+    actions.push({type:DELETE, objet:fil, index})
     }
   } else{
     /*for (const composant of components) {
@@ -519,62 +516,61 @@ function simplifyNewFil(testFil){
     }
     if(testFil.begin!=null && testFil.end){
       circuit.connect(testFil.begin,testFil.end);
-    }*/
-    //addActions({type:CREATE,objet:testFil})
+    }
+    addActions({type:CREATE,objet:testFil})*/
   }
   let penteFil = Math.abs(pente(testFil));
+  const index = fils.indexOf(testFil);
+  let array = [{x:testFil.xi, y:testFil.yi}, {x:testFil.xf, y:testFil.yf}];
+  if(penteFil==0)
+    array.sort(function(a, b){return a.x - b.x});
+  else array.sort(function(a, b){return a.y - b.y});
+  let pi = array[0];
+  let pf = array[1];
   if(penteFil==Infinity || penteFil==0){
     for (const composant of components) {
       if((penteFil===0 && composant.orientation%PI!=0)||
       (penteFil===Infinity && composant.orientation%PI==0)){
         continue;
       }
-      const index = fils.indexOf(testFil);
       let fil = testFil;
       let connections = composant.getConnections();
-      let b1 = connections[0];
-      let b2 = connections[1];
-
-      let array = [{x:fil.xi, y:fil.yi}, {x:fil.xf, y:fil.yf}];
-      if(penteFil==0)
-        array.sort(function(a, b){return a.x - b.x});
-      else array.sort(function(a, b){return a.y - b.y});
-      let pi = array[0];
-      let pf = array[1];
-      let p1Bounds = composant.inBounds(pi.x,pi.y);
-      let p2Bounds = composant.inBounds(pf.x,pf.y);
-      if(p1Bounds && p2Bounds){
+      let borne1 = connections[0];
+      let borne2 = connections[1];
+      let piInBound = composant.inBounds(pi.x,pi.y);
+      let pfInBound = composant.inBounds(pf.x,pf.y);
+      if(piInBound && pfInBound){
         fils.splice(index,1);
         actions.push({type:DELETE,objet:fil, index});
         break;
-      }else if(p1Bounds && !p2Bounds){
+      }else if(piInBound && !pfInBound){
         actions.push({type:MODIFIER, objet:fil, changements:[
-          {attribut:'xi', ancienne_valeur:fil.xi, nouvelle_valeur:b2.x},
-          {attribut:'yi', ancienne_valeur:fil.yi, nouvelle_valeur:b2.y}]});
-        fil.xi = b2.x;
-        fil.yi = b2.y;
+          {attribut:'xi', ancienne_valeur:fil.xi, nouvelle_valeur:borne2.x},
+          {attribut:'yi', ancienne_valeur:fil.yi, nouvelle_valeur:borne2.y}]});
+        fil.xi = borne2.x;
+        fil.yi = borne2.y;
         fil.xf = pf.x;
         fil.yf = pf.y;
-      }else if(!p1Bounds && p2Bounds){
+      }else if(!piInBound && pfInBound){
         actions.push({type:MODIFIER, objet:fil, changements:[
-          {attribut:'xf', ancienne_valeur:fil.xf, nouvelle_valeur:b1.x},
-          {attribut:'yf', ancienne_valeur:fil.yf, nouvelle_valeur:b1.y}]});
+          {attribut:'xf', ancienne_valeur:fil.xf, nouvelle_valeur:borne1.x},
+          {attribut:'yf', ancienne_valeur:fil.yf, nouvelle_valeur:borne1.y}]});
         fil.xi = pi.x;
         fil.yi = pi.y;
-        fil.xf = b1.x;
-        fil.yf = b1.y;
+        fil.xf = borne1.x;
+        fil.yf = borne1.y;
       }else if(inBoxBoundFil(fil, composant.x,composant.y)){
         let fil1 = {
           xi: pi.x,
           yi: pi.y,
-          xf: b1.x,
-          yf: b1.y,
+          xf: borne1.x,
+          yf: borne1.y,
           courant:Math.random()*10,
           getType: function(){return "fil"},
         };
         let fil2 = {
-          xi: b2.x,
-          yi: b2.y,
+          xi: borne2.x,
+          yi: borne2.y,
           xf: pf.x,
           yf: pf.y,
           courant:Math.random()*10,
@@ -583,13 +579,12 @@ function simplifyNewFil(testFil){
         fils.splice(index,1);
         actions.push({type:DELETE,objet:fil,index});
         fils.push(fil1);
-        actions.push({type:CREATE,objet:fil1});
         fils.push(fil2);
+        actions.push({type:CREATE,objet:fil1});
         actions.push({type:CREATE,objet:fil2});
         actions.concat(simplifyNewFil(fil1));
         actions.concat(simplifyNewFil(fil2));
         break;
-        // à partir d'ici, faire que les nouveaux fils soit vérifier
       }
     }
   }
@@ -618,10 +613,10 @@ function simplifyComposant(composant){
         break;
     }
   }
-  let horizontal = composant.orientation%PI==0;
+  let horizontal = composant.orientation % PI === 0;
   let connections = composant.getConnections();
-    let b1 = connections[0];
-    let b2 = connections[1];
+  let borne1 = connections[0];
+  let borne2 = connections[1];
   for (const fil of fils) {
     let penteFil = Math.abs(pente(fil));
     if(penteFil!=Infinity && penteFil!=0 || (penteFil == Infinity && horizontal) || 
@@ -635,35 +630,35 @@ function simplifyComposant(composant){
     else array.sort(function(a, b){return a.y - b.y});
     let pi = array[0];
     let pf = array[1];
-    let p1Bounds = composant.inBounds(pi.x,pi.y);
-    let p2Bounds = composant.inBounds(pf.x,pf.y);
-    if(p1Bounds && p2Bounds){
+    let piInBound = composant.inBounds(pi.x,pi.y);
+    let pfInBound = composant.inBounds(pf.x,pf.y);
+    if(piInBound && pfInBound){
       fils.splice(index,1);
       actions.push({type:DELETE,objet:fil, index})
-    }else if(p1Bounds && !p2Bounds){
+    }else if(piInBound && !pfInBound){
       actions.push({type:MODIFIER, objet:fil, changements:[
-        {attribut:'xi', ancienne_valeur:fil.xi, nouvelle_valeur:b2.x},
-        {attribut:'yi', ancienne_valeur:fil.yi, nouvelle_valeur:b2.y}]});
-      fil.xi = b2.x;
-      fil.yi = b2.y;
-    }else if(!p1Bounds && p2Bounds){
+        {attribut:'xi', ancienne_valeur:fil.xi, nouvelle_valeur:borne2.x},
+        {attribut:'yi', ancienne_valeur:fil.yi, nouvelle_valeur:borne2.y}]});
+      fil.xi = borne2.x;
+      fil.yi = borne2.y;
+    }else if(!piInBound && pfInBound){
       actions.push({type:MODIFIER, objet:fil, changements:[
-        {attribut:'xf', ancienne_valeur:fil.xf, nouvelle_valeur:b1.x},
-        {attribut:'yf', ancienne_valeur:fil.yf, nouvelle_valeur:b1.y}]});
-      fil.xf = b1.x;
-      fil.yf = b1.y;
+        {attribut:'xf', ancienne_valeur:fil.xf, nouvelle_valeur:borne1.x},
+        {attribut:'yf', ancienne_valeur:fil.yf, nouvelle_valeur:borne1.y}]});
+      fil.xf = borne1.x;
+      fil.yf = borne1.y;
     }else if(inBoxBoundFil(fil, composant.x, composant.y)){
       let fil1 = {
         xi: pi.x,
         yi: pi.y,
-        xf: b1.x,
-        yf: b1.y,
+        xf: borne1.x,
+        yf: borne1.y,
         courant:Math.random()*10,
         getType: function(){return "fil"},
       };
       let fil2 = {
-        xi: b2.x,
-        yi: b2.y,
+        xi: borne2.x,
+        yi: borne2.y,
         xf: pf.x,
         yf: pf.y,
         courant:Math.random()*10,
@@ -672,8 +667,8 @@ function simplifyComposant(composant){
       fils.splice(index,1);
       actions.push({type:DELETE,objet:fil,index});
       fils.push(fil1);
-      actions.push({type:CREATE,objet:fil1});
       fils.push(fil2);
+      actions.push({type:CREATE,objet:fil1});
       actions.push({type:CREATE,objet:fil2});
     }
   }
