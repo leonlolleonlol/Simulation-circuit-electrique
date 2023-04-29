@@ -453,6 +453,7 @@ function filOverlap(fil1,fil2){
 }
 
 function simplifyNewFil(testFil){
+  let actions = [];
   let fils_remplacer =[];
   for (const fil of fils) {
     if(fil!==testFil && filOverlap(testFil,fil)){
@@ -461,7 +462,6 @@ function simplifyNewFil(testFil){
   }
 
   if(fils_remplacer.length!=0){
-    let actions = [];
     for (let index = 0; index < fils_remplacer.length; index++) {
       let fil = fils_remplacer[index].objet;
       let penteF = Math.abs(pente(fil));
@@ -503,9 +503,7 @@ function simplifyNewFil(testFil){
     fils_remplacer[index].index = i;
     fils.splice(i,1);
     actions.push({type:DELETE, objet:fil, index: i})
-    
     }
-    return actions;
   } else{
     /*for (const composant of components) {
       if(composant.checkConnection(testFil.xi, testFil.yi, 10)){
@@ -524,7 +522,11 @@ function simplifyNewFil(testFil){
     }*/
     //addActions({type:CREATE,objet:testFil})
   }
-  return []; 
+  for (const composant of components) {
+    let actionsSup = corrigerConnection(composant, testFil);
+    actions = actions.concat(actionsSup);
+  }
+  return actions; 
 }
 
 // --------------------------------------
@@ -539,15 +541,82 @@ function validComposantPos(composant){
   return true;
 }
 function simplifyComposant(composant){
-  for (const composantTest of components) {
-    if(composantTest!== composant && composantTest.x == composant.x &&
-       composantTest.y == composant.y){
-        let index = components.indexOf(composantTest);
+  let actions = [];
+  for (let index = 0; index < components.length; index++) {
+    const element = components[index];
+    if(element!== composant && element.x == composant.x &&
+      element.y == composant.y){
         components.splice(index,1);
-        return {type:DELETE,objet:composantTest, index};
+        actions.push({type:DELETE,objet:composantTest, index});
+        break;
     }
   }
-  return [];
+  for (const fil of fils) {
+    let actionsSup = corrigerConnection(composant,fil)
+    actions = actions.concat(actionsSup);
+  }
+  return actions;
+}
+
+function corrigerConnection(composant, fil){
+    let actions = [];
+    const index = fils.indexOf(fil);
+    let connections = composant.getConnections();
+    let b1 = connections[0];
+    let b2 = connections[1];
+    let array = [{x:fil.xi, y:fil.yi}, {x:fil.xf, y:fil.yf}];
+    array.sort(function(a, b){return a.x - b.x});
+    let pi = array[0];
+    let pf = array[1];
+    let p1Bounds = pi.x > composant.x - 60 / 2 &&
+    pi.x < composant.x + 60 / 2 &&
+    pi.y > composant.y - 25 / 2 &&
+    pi.y < composant.y + 25 / 2;
+    let p2Bounds = pf.x > composant.x - 60 / 2 &&
+    pf.x < composant.x + 60 / 2 &&
+    pf.y > composant.y - 25 / 2 &&
+    pf.y < composant.y + 25 / 2;
+    if(p1Bounds && p2Bounds){
+      fils.splice(index,1);
+      actions.push({type:DELETE,objet:fil, index});
+    }else if(p1Bounds && !p2Bounds){
+      actions.push({type:MODIFIER, objet:fil, changements:[
+        {attribut:'xi', ancienne_valeur:fil.xi, nouvelle_valeur:b2.x},
+        {attribut:'yi', ancienne_valeur:fil.yi, nouvelle_valeur:b2.y}]});
+      fil.xi = b2.x;
+      fil.yi = b2.y;
+    }else if(!p1Bounds && p2Bounds){
+      actions.push({type:MODIFIER, objet:fil, changements:[
+        {attribut:'xf', ancienne_valeur:fil.xf, nouvelle_valeur:b1.x},
+        {attribut:'yf', ancienne_valeur:fil.yf, nouvelle_valeur:b1.y}]});
+      fil.xf = b1.x;
+      fil.yf = b1.y;
+    }else if(filInBounds(fil, composant.x,composant.y)){
+      let fil1 = {
+        xi: pi.x,
+        yi: pi.y,
+        xf: b1.x,
+        yf: b1.y,
+        courant:Math.random()*10,
+        getType: function(){return "fil"},
+      };
+      let fil2 = {
+        xi: b2.x,
+        yi: b2.y,
+        xf: pf.x,
+        yf: pf.y,
+        courant:Math.random()*10,
+        getType: function(){return "fil"},
+      };
+      fils.splice(index,1);
+      actions.push({type:DELETE,objet:fil,index});
+      fils.push(fil1);
+      actions.push({type:CREATE,objet:fil1});
+      fils.push(fil2);
+      actions.push({type:CREATE,objet:fil2});
+      // à partir d'ici, faire que les nouveaux fils soit vérifier
+    }
+    return actions;
 }
 
 function initDrag(element, x, y){
