@@ -72,8 +72,12 @@ class Resisteur extends Composant {
 
 
     inBounds(x, y) {
+      if(this.orientation % PI === 0)
         return x >= this.x - 60 / 2 && x <= this.x + 60 / 2 &&
             y >= this.y - 25 / 2 && y <= this.y + 25 / 2;
+      else
+        return x >= this.x - 25 / 2 && x <= this.x + 25 / 2 &&
+            y >= this.y - 60 / 2 && y <= this.y + 60 / 2;
     }
 
     draw(offX, offY) {
@@ -96,8 +100,12 @@ class Ampoule extends Resisteur {
         super(x, y, resistance, orientation);
     }
     inBounds(x, y) {
+      if(this.orientation % PI === 0)
         return x >= this.x - 60 / 2 && x <= this.x + 60 / 2 &&
             y >= this.y - 22 / 2 && y <= this.y + 22 / 2;
+      else
+        return x >= this.x - 22 / 2 && x <= this.x + 22 / 2 &&
+            y >= this.y - 60 / 2 && y <= this.y + 60 / 2;
     }
 
     draw(offX, offY) {
@@ -122,8 +130,12 @@ class Condensateur extends Composant {
       this.orientation = orientation??0;
     }
     inBounds(x, y) {
-      return x >= this.x - 60 / 2 && x <= this.x + 60 / 2 &&
+      if(this.orientation % PI === 0)
+        return x >= this.x - 60 / 2 && x <= this.x + 60 / 2 &&
           y >= this.y - 30 / 2 && y <= this.y + 30 / 2;
+      else
+        return x >= this.x - 30 / 2 && x <= this.x + 30 / 2 &&
+            y >= this.y - 60 / 2 && y <= this.y + 60 / 2;
   }
     
     // offsetX et offsetY à retirer
@@ -147,8 +159,12 @@ class Condensateur extends Composant {
         this.orientation = orientation??0;
     }
     inBounds(x, y) {
+      if(this.orientation % PI === 0)
         return x >= this.x - 60 / 2 && x <= this.x + 60 / 2 &&
             y >= this.y - 30 / 2 && y <= this.y + 30 / 2;
+      else
+        return x >= this.x - 30 / 2 && x <= this.x + 30 / 2 &&
+            y >= this.y - 60 / 2 && y <= this.y + 60 / 2;
     }
 
     draw(offX, offY) {
@@ -167,8 +183,9 @@ class Diode extends Composant {
       this.orientation = orientation??0;
     }
     inBounds(x, y) {
-      return x >= this.x - this.radius && x <= this.x + this.radius &&
-          y >= this.y - this.radius && y <= this.y + this.radius;
+      return x >= this.x - this.radius && x <= this.x + this.radius && 
+        y >= this.y - this.radius && y <= this.y + this.radius;
+
   }
     
     draw(offX, offY) {
