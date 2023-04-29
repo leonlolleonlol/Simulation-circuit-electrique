@@ -71,11 +71,9 @@ class Resisteur extends Composant {
     }
 
 
-    inBounds(mouseX, mouseY, offsetX, offsetY) {
-        return (mouseX - offsetX > this.x - 60 / 2 &&
-            mouseX - offsetX < this.x + 60 / 2 &&
-            mouseY - offsetY > this.y - 25 / 2 &&
-            mouseY - offsetY < this.y + 25 / 2);
+    inBounds(x, y) {
+        return x >= this.x - 60 / 2 && x <= this.x + 60 / 2 &&
+            y >= this.y - 25 / 2 && y <= this.y + 25 / 2;
     }
 
     draw(offX, offY) {
@@ -97,11 +95,9 @@ class Ampoule extends Resisteur {
     constructor(x, y, resistance, orientation) {
         super(x, y, resistance, orientation);
     }
-    inBounds(mouseX, mouseY, offsetX, offsetY) {
-        return (mouseX - offsetX > this.x - 60 / 2 &&
-            mouseX - offsetX < this.x + 60 / 2 &&
-            mouseY - offsetY > this.y - 22 / 2 &&
-            mouseY - offsetY < this.y + 22 / 2);
+    inBounds(x, y) {
+        return x >= this.x - 60 / 2 && x <= this.x + 60 / 2 &&
+            y >= this.y - 22 / 2 && y <= this.y + 22 / 2;
     }
 
     draw(offX, offY) {
@@ -125,11 +121,9 @@ class Condensateur extends Composant {
       this.charge = 0;
       this.orientation = orientation??0;
     }
-    inBounds(mouseX, mouseY, offsetX, offsetY) {
-      return (mouseX - offsetX > this.x - 60 / 2 &&
-          mouseX - offsetX < this.x + 60 / 2 &&
-          mouseY - offsetY > this.y - 30 / 2 &&
-          mouseY - offsetY < this.y + 30 / 2);
+    inBounds(x, y) {
+      return x >= this.x - 60 / 2 && x <= this.x + 60 / 2 &&
+          y >= this.y - 30 / 2 && y <= this.y + 30 / 2;
   }
     
     // offsetX et offsetY à retirer
@@ -152,11 +146,9 @@ class Condensateur extends Composant {
 	      this.tension = tension;
         this.orientation = orientation??0;
     }
-    inBounds(mouseX, mouseY, offsetX, offsetY) {
-        return (mouseX - offsetX > this.x - 60 / 2 &&
-            mouseX - offsetX < this.x + 60 / 2 &&
-            mouseY - offsetY > this.y - 30 / 2 &&
-            mouseY - offsetY < this.y + 30 / 2);
+    inBounds(x, y) {
+        return x >= this.x - 60 / 2 && x <= this.x + 60 / 2 &&
+            y >= this.y - 30 / 2 && y <= this.y + 30 / 2;
     }
 
     draw(offX, offY) {
@@ -174,11 +166,9 @@ class Diode extends Composant {
       this.radius = 19;
       this.orientation = orientation??0;
     }
-    inBounds(mouseX, mouseY, offsetX, offsetY) {
-      return (mouseX - offsetX > this.x - this.radius &&
-          mouseX - offsetX < this.x + this.radius &&
-          mouseY - offsetY > this.y - this.radius &&
-          mouseY - offsetY < this.y + this.radius);
+    inBounds(x, y) {
+      return x >= this.x - this.radius && x <= this.x + this.radius &&
+          y >= this.y - this.radius && y <= this.y + this.radius;
   }
     
     draw(offX, offY) {
