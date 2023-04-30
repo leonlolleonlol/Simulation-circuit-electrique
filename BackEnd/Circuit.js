@@ -14,6 +14,7 @@
         this.valide = true;
         this.presenceBatterie = false;
         this.index = 0;
+        this.arrangerC = false;
 
         this.courant = 0;
         this.charge = 0;
@@ -53,21 +54,27 @@
      */
     update(){//Chaque fois qu'il y a un changement dans le circuit
         
-        //this.rearrangerArrayCircuit();
-        this.tensionEQ = this.circuit[0].tension;
-        this.trouverEq();
+        // this.rearrangerArrayCircuit();
+        this.trouverPile(this.circuit);
+        // this.arrangerC = true;
+        // this.trouverPile(this.circuit);
+        // this.tensionEQ = this.circuit[0].tension;
+        // this.trouverEq();
     }
 
 
     trouverPile(circuit){
         for(let i = 0; i < circuit.length; i++){
-            if(circuit[i].getTypeCalcul() == composantType.batterieType){
+            if(circuit[i].getTypeCalcul() == composantType.batterieType){ 
+                // print(circuit[i].getTypeCalcul());
+                // print(composantType.batterieType);  
                 this.contientPile = true;
-                if(i!= 0){// le place à la première place
+                if(i!= 0){
                     this.echangerComposantes(i, 0);
-                }
+                }       
             }else if (circuit[i].getTypeCalcul() == composantType.noeudType){
                 this.trouverPile(circuit[i].getCircuitNoeud());
+                
             }else if (circuit[i] instanceof Circuit){
                 this.trouverPile(circuit[i].circuit);
             }
@@ -84,13 +91,23 @@
         
         if(this.contientPile){ //Si la pile est dans c1
             nouvCircuit[0] = this.circuit[0];
+            //if(length != 1)
             for(let i = 1; i < this.circuit.length; i++){
                 nouvCircuit[i] = this.circuit[i - 1].getProchaineComposante();            
             }
         }else{
-            //c1 ne contient pas la pile
+            
         }
         this.circuit = nouvCircuit;
+    }
+
+    arrange(circuit){
+        let nouvCircuit = [];
+        nouvCircuit[0] = circuit[0];
+            for(let i = 1; i < circuit.length; i++){
+                nouvCircuit[i] = circuit[i - 1].getProchaineComposante();            
+            }
+            circuit = nouvCircuit;
     }
 
     /**
@@ -222,7 +239,14 @@
             }
         }
     }
+
+    getCircuit(){
+        return this.circuit;
+    }
+    
 }
+
+
 
 /**
  * C'est objet là ont le même rôle que des enum en java.
