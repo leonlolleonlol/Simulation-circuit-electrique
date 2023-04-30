@@ -63,6 +63,9 @@ class Resisteur extends Composant {
     getMenu(){
       return ["DeltaV: " + this.tension, "Courant: " + this.courant, "Résistance: " + this.resistance];
     }
+    getEq(sens){
+      return (sens?'-':'')+this.resistance+this.symbole;
+    }
 
     getType() {
       return Resisteur.getType();
@@ -167,6 +170,21 @@ class Condensateur extends Composant {
     getMenu(){
       return ["Position x: " + this.x, "Position y: " + this.y, "DeltaV: " + this.tension];
     }
+    getEq(sens){
+      if(sens){
+        if(this.orientation % PI ===0){
+          return -this.tension
+        }else{
+          return this.tension
+        }
+      }else {
+        if(this.orientation % PI ===0){
+          return this.tension
+        }else{
+          return -this.tension
+        }
+      }
+    }
 
     getType() {
       return Batterie.getType();
@@ -176,7 +194,7 @@ class Condensateur extends Composant {
     }
 
     getTypeCalcul() {
-      return composantType.batterieType;
+      return composantType.pileType;
     }
 }
 
@@ -329,17 +347,17 @@ class Noeuds extends Composant {
    * @param {Array} maille Maille présentement écrite
    * @param {number} index L'index du noeud dans le circuit parent
    */
-  maille(composants, mailles, maille, index){
+  maille(composants, mailles, maille, index, inverse){
     for (const element of this.circuitsEnParallele) {
       circuitMaille(element.circuit.concat(composants.slice(index+1)), mailles, 
-      [...maille]);
+      [...maille], inverse, -1);
     }
     // Trouver les mailles interne
     for (let i = 0; i < this.circuitsEnParallele.length - 1; i++) {
       const branch = this.circuitsEnParallele[i].circuit;
       for (let j = i + 1; j < this.circuitsEnParallele.length; j++) {
         const reverseBranch = this.circuitsEnParallele[j].circuit.reverse();
-        circuitMaille(branch.concat(reverseBranch), mailles, []);
+        circuitMaille(branch.concat(reverseBranch), mailles, [], !inverse, branch.length );
       }
     }
   }
