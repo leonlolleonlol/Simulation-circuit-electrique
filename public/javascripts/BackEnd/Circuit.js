@@ -212,6 +212,10 @@
         }
     }
 
+    getType(){
+        return CIRCUIT;
+    }
+
     getTypeCalcul(){
         return this.type;
     }

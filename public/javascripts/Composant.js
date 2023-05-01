@@ -13,15 +13,37 @@ class Composant {
     throw console.error();//todo préciser l'erreur
   }
   checkConnection(x, y, approximation){
+    return this.getBorne(x,y,approximation)!=null;
+  }
+  getConnections(){
+    let pos;
     if(this.orientation % PI == 0){
-    return dist(this.x + 60/2, this.y, x, y)<approximation ||
-    dist(this.x - 60/2, this.y, x, y) < approximation;
+      pos = [{x:this.x + 60/2, y:this.y},{x:this.x - 60/2, y:this.y}];
+      pos.sort(function(a, b){return a.x - b.x});
     } else if (this.orientation % HALF_PI == 0){
-     return dist(this.x, this.y + 60/2, x, y) < approximation ||
-     dist(this.x, this.y - 60/2, x, y) < approximation;
+      pos = [{x : this.x, y : this.y + 60/2},{x:this.x, y:this.y - 60/2}];
+      pos.sort(function(a, b){return a.y - b.y});
     }
-    else return false;
+    return pos;
+  }
+  getConnection(borne){
+    let connections = this.getConnection();
+    return (borne == GAUCHE || borne ==HAUT)
+    ? connections[0] : connections[1];
+  }
+  getBorne(x, y, approximation){
+    if(this.orientation % PI == 0){
+      if(dist(this.x + 60/2, this.y, x, y) < approximation)
+        return DROITE;
+      else if (dist(this.x - 60/2, this.y, x, y) < approximation)
+        return GAUCHE;
+    } else if (this.orientation % HALF_PI == 0){
+      if(dist(this.x, this.y + 60/2, x, y) < approximation)
+        return BAS;
+      else if (dist(this.x, this.y - 60/2, x, y) < approximation)
+        return HAUT;
     }
+  }
 
   rotate(inverse){
     this.orientation = (this.orientation + (inverse?-HALF_PI:HALF_PI)) % TWO_PI
@@ -53,11 +75,13 @@ class Resisteur extends Composant {
     }
 
 
-    inBounds(mouseX, mouseY, offsetX, offsetY) {
-        return (mouseX - offsetX > this.x - 60 / 2 &&
-            mouseX - offsetX < this.x + 60 / 2 &&
-            mouseY - offsetY > this.y - 25 / 2 &&
-            mouseY - offsetY < this.y + 25 / 2);
+    inBounds(x, y) {
+      if(this.orientation % PI === 0)
+        return x >= this.x - 60 / 2 && x <= this.x + 60 / 2 &&
+            y >= this.y - 25 / 2 && y <= this.y + 25 / 2;
+      else
+        return x >= this.x - 25 / 2 && x <= this.x + 25 / 2 &&
+            y >= this.y - 60 / 2 && y <= this.y + 60 / 2;
     }
 
     draw(offX, offY) {
@@ -72,10 +96,7 @@ class Resisteur extends Composant {
     }
 
     getType() {
-      return Resisteur.getType();
-    }
-    static getType() {
-      return 'resisteur';
+      return RESISTEUR;
     }
 
     //Ne pas changer cette methode, elle doit être comme ça pour les calculs
@@ -91,11 +112,13 @@ class Ampoule extends Resisteur {
         this.resistance = resistance;
         this.orientation = orientation;
     }
-    inBounds(mouseX, mouseY, offsetX, offsetY) {
-        return (mouseX - offsetX > this.x - 60 / 2 &&
-            mouseX - offsetX < this.x + 60 / 2 &&
-            mouseY - offsetY > this.y - 22 / 2 &&
-            mouseY - offsetY < this.y + 22 / 2);
+    inBounds(x, y) {
+      if(this.orientation % PI === 0)
+        return x >= this.x - 60 / 2 && x <= this.x + 60 / 2 &&
+            y >= this.y - 22 / 2 && y <= this.y + 22 / 2;
+      else
+        return x >= this.x - 22 / 2 && x <= this.x + 22 / 2 &&
+            y >= this.y - 60 / 2 && y <= this.y + 60 / 2;
     }
 
     draw(offX, offY) {
@@ -107,10 +130,7 @@ class Ampoule extends Resisteur {
     }
 
     getType() {
-        return Ampoule.getType();
-    }
-    static getType() {
-        return 'ampoule';
+        return AMPOULE;
     }
 
     //Ne pas changer cette methode, elle doit être comme ça pour les calculs
@@ -126,11 +146,13 @@ class Condensateur extends Composant {
       this.charge = 0;
       this.orientation = orientation??0;
     }
-    inBounds(mouseX, mouseY, offsetX, offsetY) {
-      return (mouseX - offsetX > this.x - 60 / 2 &&
-          mouseX - offsetX < this.x + 60 / 2 &&
-          mouseY - offsetY > this.y - 30 / 2 &&
-          mouseY - offsetY < this.y + 30 / 2);
+    inBounds(x, y) {
+      if(this.orientation % PI === 0)
+        return x >= this.x - 60 / 2 && x <= this.x + 60 / 2 &&
+          y >= this.y - 30 / 2 && y <= this.y + 30 / 2;
+      else
+        return x >= this.x - 30 / 2 && x <= this.x + 30 / 2 &&
+            y >= this.y - 60 / 2 && y <= this.y + 60 / 2;
   }
     
     // offsetX et offsetY à retirer
@@ -143,10 +165,7 @@ class Condensateur extends Composant {
     }
     
     getType() {
-        return Condensateur.getType();
-    }
-    static getType() {
-        return 'condensateur';
+        return CONDENSATEUR;
     }
     //Ne pas changer cette methode, elle doit être comme ça pour les calculs
     getTypeCalcul() {
@@ -160,11 +179,13 @@ class Condensateur extends Composant {
 	      this.tension = tension;
         this.orientation = orientation??0;
     }
-    inBounds(mouseX, mouseY, offsetX, offsetY) {
-        return (mouseX - offsetX > this.x - 60 / 2 &&
-            mouseX - offsetX < this.x + 60 / 2 &&
-            mouseY - offsetY > this.y - 30 / 2 &&
-            mouseY - offsetY < this.y + 30 / 2);
+    inBounds(x, y) {
+      if(this.orientation % PI === 0)
+        return x >= this.x - 60 / 2 && x <= this.x + 60 / 2 &&
+            y >= this.y - 30 / 2 && y <= this.y + 30 / 2;
+      else
+        return x >= this.x - 30 / 2 && x <= this.x + 30 / 2 &&
+            y >= this.y - 60 / 2 && y <= this.y + 60 / 2;
     }
 
     draw(offX, offY) {
@@ -191,10 +212,7 @@ class Condensateur extends Composant {
     }
 
     getType() {
-      return Batterie.getType();
-    }
-    static getType() {
-      return 'batterie';
+      return BATTERIE;
     }
 
     getTypeCalcul() {
@@ -208,11 +226,10 @@ class Diode extends Composant {
       this.radius = 19;
       this.orientation = orientation??0;
     }
-    inBounds(mouseX, mouseY, offsetX, offsetY) {
-      return (mouseX - offsetX > this.x - this.radius &&
-          mouseX - offsetX < this.x + this.radius &&
-          mouseY - offsetY > this.y - this.radius &&
-          mouseY - offsetY < this.y + this.radius);
+    inBounds(x, y) {
+      return x >= this.x - this.radius && x <= this.x + this.radius && 
+        y >= this.y - this.radius && y <= this.y + this.radius;
+
   }
     
     draw(offX, offY) {
@@ -371,10 +388,7 @@ class Noeuds extends Composant {
   }
 
   getType() {
-    return Noeuds.getType();
-  }
-  static getType() {
-      return 'noeud';
+    return NOEUD;
   }
 
   //Ne pas changer cette methode, elle doit être comme ça pour les calculs

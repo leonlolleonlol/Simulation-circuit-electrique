@@ -11,13 +11,14 @@ let fils;// Liste des fils du circuit
 // Variable nécessaire pour placer la grille
 let grid;
 let composants_panneau; // Le panneau de choix des composants
+let animate;//bool qui determine si on veut animation ou pas
 
 // liens vers des éléments DOM utiles
 let acceuil_button;
 let undo_button;
 let reset_button;
 let pause_button;
-let stop_button;
+let animation_button;
 let point_grid_button;
 let line_grid_button;
 let point_line_grid_button;
@@ -38,13 +39,15 @@ function setup() {
   point_line_grid_button = select('#point-line-grid');
   undo_button = select('#undo');
   reset_button = select('#redo');
+  animation_button= select('#animate');
   let positionCanvas=canvas.position();
   //----------------------------------------
   reset_button.mousePressed(refresh);
   undo_button.mousePressed(undo);
-  line_grid_button.mousePressed(function(){ grid.quadrillage='line';});
-  point_grid_button.mousePressed(function(){ grid.quadrillage='point';});
-  point_line_grid_button.mousePressed(function(){ grid.quadrillage='points&lines';});
+  animation_button.mousePressed(animation);
+  line_grid_button.mousePressed(function(){ grid.quadrillage=QUADRILLE;});
+  point_grid_button.mousePressed(function(){ grid.quadrillage=POINT;});
+  point_line_grid_button.mousePressed(function(){ grid.quadrillage=QUADRILLEPOINT;});
   c1 = new Circuit(true);
 
   //-----------------------------------------
@@ -129,6 +132,7 @@ Number.prototype.round = function(places) {
 }
 
 function initComponents(){
+  animate=false;
   fils = [];
   components = [];
   drag = null;
@@ -167,11 +171,14 @@ function draw() {
   if(undo_list.length == 0 && !undo_desactive){
 	  undo_button.attribute('disabled', '');
     reset_button.attribute('disabled', '');
+    animation_button.attribute('disabled', '');
     undo_desactive = true;
   }
   else if(undo_list.length != 0 && undo_desactive){
 	  undo_button.removeAttribute('disabled');
     reset_button.removeAttribute('disabled');
+    animation_button.removeAttribute('disabled');
+    animate=1;
     undo_desactive = false;
   }
   push();
@@ -244,7 +251,9 @@ function drawFils() {
     stroke(0,255*(1-(grad/(fils.length+1))),0);
     line(element.xi + grid.translateX, element.yi + grid.translateY, element.xf + grid.translateX, element.yf + grid.translateY);
     //temporaire avant d'avoir objet fil
-    //stroke('rgba(127, 255, 0, 0.9)');      
+    //stroke('rgba(127, 255, 0, 0.9)');
+    if(animate===1)
+    {
     strokeWeight(4);
       line(element.xi + grid.translateX, element.yi + grid.translateY,
            element.xf + grid.translateX, element.yf + grid.translateY);
@@ -256,6 +265,7 @@ function drawFils() {
         circle(pos.x,pos.y,10);
       }
       grad++;
+    }
   }
   pop();
 }
@@ -411,6 +421,7 @@ let y = mouseY/grid.scale - grid.translateY;
       return true;
     else if(filStart(x, y)!=null)
       return true;
+    else return false;
   } 
 }
 
@@ -468,12 +479,12 @@ function lengthFil(fil){
 function filOverlap(fil1,fil2){
   let pente1 = pente(fil1);
   let pente2 = pente(fil2);
-  let b1 = fil1.yi - fil1.xi * pente1;
-  let b2 = fil2.yi - fil2.xi * pente2;
+  let b1 = Math.abs(fil1.yi - fil1.xi * pente1);
+  let b2 = Math.abs(fil2.yi - fil2.xi * pente2);
   pente1 = Math.abs(pente1);
   pente2 = Math.abs(pente2);
-  if(pente1 === pente2 && Math.abs(b1) === Math.abs(b2)){
-    if((pente1 == 0 && fil1.yi===fil2.yi)|| pente1 != 0){
+  if(pente1 === pente2 && b1 === b2){
+    if((pente1 == 0 && fil1.yi===fil2.yi)|| pente1 != Infinity){
       let x1i = Math.min(fil1.xi,fil1.xf);
       let x1f = Math.max(fil1.xi,fil1.xf);
       let x2i = Math.min(fil2.xi,fil2.xf);
@@ -484,26 +495,24 @@ function filOverlap(fil1,fil2){
       let y1f = Math.max(fil1.yi,fil1.yf);
       let y2i = Math.min(fil2.yi,fil2.yf);
       let y2f = Math.max(fil2.yi,fil2.yf);
-      return ((y2i <= y1f && y2i >=y1i) || (y1i <=y2f && y1i >= y2i))
+      return ((y2i >= y1f && y2i <=y1i) || (y1i >=y2f && y1i <= y2i))
     }
   }
   else return false;
 }
 
 function simplifyNewFil(testFil){
+  let actions = [];
   let fils_remplacer =[];
   for (const fil of fils) {
     if(fil!==testFil && filOverlap(testFil,fil)){
-      fils_remplacer.push({objet:fil});
+      fils_remplacer.push(fil);
     }
   }
 
   if(fils_remplacer.length!=0){
-    let actions = [];
-    for (let index = 0; index < fils_remplacer.length; index++) {
-      let fil = fils_remplacer[index].objet;
-      let penteF = Math.abs(pente(fil));
-      if(penteF==Infinity){
+    for (const fil of fils_remplacer){
+      if(Math.abs(pente(fil))==Infinity){
         let y0 = Math.min(fil.yi, testFil.yi, fil.yf, testFil.yf);
         let y1 = Math.max(fil.yi, testFil.yi, fil.yf, testFil.yf);
         testFil.yi = y0;
@@ -537,13 +546,10 @@ function simplifyNewFil(testFil){
       circuit.connect(fils_remplacer[index].objet.begin,fils_remplacer[index].objet.end);
     }*/
     
-    let i = fils.indexOf(fil);
-    fils_remplacer[index].index = i;
-    fils.splice(i,1);
-    actions.push({type:DELETE, objet:fil, index: i})
-    
+    let index = fils.indexOf(fil);
+    fils.splice(index, 1);
+    actions.push({type:DELETE, objet:fil, index})
     }
-    return actions;
   } else{
     /*for (const composant of components) {
       if(composant.checkConnection(testFil.xi, testFil.yi, 10)){
@@ -559,10 +565,79 @@ function simplifyNewFil(testFil){
     }
     if(testFil.begin!=null && testFil.end){
       circuit.connect(testFil.begin,testFil.end);
-    }*/
-    //addActions({type:CREATE,objet:testFil})
+    }
+    addActions({type:CREATE,objet:testFil})*/
   }
-  return []; 
+  let penteFil = Math.abs(pente(testFil));
+  const index = fils.indexOf(testFil);
+  let array = [{x:testFil.xi, y:testFil.yi}, {x:testFil.xf, y:testFil.yf}];
+  if(penteFil==0)
+    array.sort(function(a, b){return a.x - b.x});
+  else array.sort(function(a, b){return a.y - b.y});
+  let pi = array[0];
+  let pf = array[1];
+  if(penteFil==Infinity || penteFil==0){
+    for (const composant of components) {
+      if((penteFil===0 && composant.orientation%PI!=0)||
+      (penteFil===Infinity && composant.orientation%PI==0)){
+        continue;
+      }
+      let fil = testFil;
+      let connections = composant.getConnections();
+      let borne1 = connections[0];
+      let borne2 = connections[1];
+      let piInBound = composant.inBounds(pi.x,pi.y);
+      let pfInBound = composant.inBounds(pf.x,pf.y);
+      if(piInBound && pfInBound){
+        fils.splice(index,1);
+        actions.push({type:DELETE,objet:fil, index});
+        break;
+      }else if(piInBound && !pfInBound){
+        actions.push({type:MODIFIER, objet:fil, changements:[
+          {attribut:'xi', ancienne_valeur:fil.xi, nouvelle_valeur:borne2.x},
+          {attribut:'yi', ancienne_valeur:fil.yi, nouvelle_valeur:borne2.y}]});
+        fil.xi = borne2.x;
+        fil.yi = borne2.y;
+        fil.xf = pf.x;
+        fil.yf = pf.y;
+      }else if(!piInBound && pfInBound){
+        actions.push({type:MODIFIER, objet:fil, changements:[
+          {attribut:'xf', ancienne_valeur:fil.xf, nouvelle_valeur:borne1.x},
+          {attribut:'yf', ancienne_valeur:fil.yf, nouvelle_valeur:borne1.y}]});
+        fil.xi = pi.x;
+        fil.yi = pi.y;
+        fil.xf = borne1.x;
+        fil.yf = borne1.y;
+      }else if(inBoxBoundFil(fil, composant.x,composant.y)){
+        let fil1 = {
+          xi: pi.x,
+          yi: pi.y,
+          xf: borne1.x,
+          yf: borne1.y,
+          courant:Math.random()*10,
+          getType: function(){return "fil"},
+        };
+        let fil2 = {
+          xi: borne2.x,
+          yi: borne2.y,
+          xf: pf.x,
+          yf: pf.y,
+          courant:Math.random()*10,
+          getType: function(){return "fil"},
+        };
+        fils.splice(index,1);
+        actions.push({type:DELETE,objet:fil,index});
+        fils.push(fil1);
+        fils.push(fil2);
+        actions.push({type:CREATE,objet:fil1});
+        actions.push({type:CREATE,objet:fil2});
+        actions.concat(simplifyNewFil(fil1));
+        actions.concat(simplifyNewFil(fil2));
+        break;
+      }
+    }
+  }
+  return actions; 
 }
 
 // --------------------------------------
@@ -577,15 +652,76 @@ function validComposantPos(composant){
   return true;
 }
 function simplifyComposant(composant){
-  for (const composantTest of components) {
-    if(composantTest!== composant && composantTest.x == composant.x &&
-       composantTest.y == composant.y){
-        let index = components.indexOf(composantTest);
+  let actions = [];
+  for (let index = 0; index < components.length; index++) {
+    const element = components[index];
+    if(element!== composant && element.x == composant.x &&
+      element.y == composant.y){
         components.splice(index,1);
-        return {type:DELETE,objet:composantTest, index};
+        actions.push({type:DELETE,objet:element, index});
+        break;
     }
   }
-  return [];
+  let horizontal = composant.orientation % PI === 0;
+  let connections = composant.getConnections();
+  let borne1 = connections[0];
+  let borne2 = connections[1];
+  for (const fil of fils) {
+    let penteFil = Math.abs(pente(fil));
+    if(penteFil!=Infinity && penteFil!=0 || (penteFil == Infinity && horizontal) || 
+    (penteFil == 0 && !horizontal)){
+      continue;
+    }
+    const index = fils.indexOf(fil);
+    let array = [{x:fil.xi, y:fil.yi}, {x:fil.xf, y:fil.yf}];
+    if(penteFil==0)
+      array.sort(function(a, b){return a.x - b.x});
+    else array.sort(function(a, b){return a.y - b.y});
+    let pi = array[0];
+    let pf = array[1];
+    let piInBound = composant.inBounds(pi.x,pi.y);
+    let pfInBound = composant.inBounds(pf.x,pf.y);
+    if(piInBound && pfInBound){
+      fils.splice(index,1);
+      actions.push({type:DELETE,objet:fil, index})
+    }else if(piInBound && !pfInBound){
+      actions.push({type:MODIFIER, objet:fil, changements:[
+        {attribut:'xi', ancienne_valeur:fil.xi, nouvelle_valeur:borne2.x},
+        {attribut:'yi', ancienne_valeur:fil.yi, nouvelle_valeur:borne2.y}]});
+      fil.xi = borne2.x;
+      fil.yi = borne2.y;
+    }else if(!piInBound && pfInBound){
+      actions.push({type:MODIFIER, objet:fil, changements:[
+        {attribut:'xf', ancienne_valeur:fil.xf, nouvelle_valeur:borne1.x},
+        {attribut:'yf', ancienne_valeur:fil.yf, nouvelle_valeur:borne1.y}]});
+      fil.xf = borne1.x;
+      fil.yf = borne1.y;
+    }else if(inBoxBoundFil(fil, composant.x, composant.y)){
+      let fil1 = {
+        xi: pi.x,
+        yi: pi.y,
+        xf: borne1.x,
+        yf: borne1.y,
+        courant:Math.random()*10,
+        getType: function(){return "fil"},
+      };
+      let fil2 = {
+        xi: borne2.x,
+        yi: borne2.y,
+        xf: pf.x,
+        yf: pf.y,
+        courant:Math.random()*10,
+        getType: function(){return "fil"},
+      };
+      fils.splice(index,1);
+      actions.push({type:DELETE,objet:fil,index});
+      fils.push(fil1);
+      fils.push(fil2);
+      actions.push({type:CREATE,objet:fil1});
+      actions.push({type:CREATE,objet:fil2});
+    }
+  }
+  return actions;
 }
 
 function initDrag(element, x, y){
@@ -600,11 +736,11 @@ function createComposant(original){
   let x = original.x/grid.scale - grid.translateX;
   let y = original.y/grid.scale - grid.translateY;
   switch (original.getType()) {
-    case Batterie.getType(): return new Batterie(x, y, 0);
-    case Resisteur.getType(): return new Resisteur(x, y, 0);
-    case Ampoule.getType(): return new Ampoule(x, y, 0);
-    case Condensateur.getType(): return new Condensateur(x, y, 0);
-    case Diode.getType(): return new Diode(x, y);
+    case BATTERIE: return new Batterie(x, y, 0);
+    case RESISTEUR: return new Resisteur(x, y, 0);
+    case AMPOULE: return new Ampoule(x, y, 0);
+    case CONDENSATEUR: return new Condensateur(x, y, 0);
+    case DIODE: return new Diode(x, y);
   }
 }
 
@@ -621,7 +757,7 @@ function mousePressed() {
   } 
   // Vérification drag parmis les composants de la grille
   for (let element of components) {
-    if (element.inBounds(mouseX/grid.scale, mouseY/grid.scale, grid.translateX, grid.translateY)) {
+    if (element.inBounds(mouseX/grid.scale - grid.translateX, mouseY/grid.scale - grid.translateY)) {
       initDrag(element, element.x, element.y);
       drag.pastX = drag.x;
       drag.pastY = drag.y;
@@ -632,6 +768,8 @@ function mousePressed() {
   let y1 = mouseY/grid.scale - grid.translateY;
   if (validFilBegin()) {
     let point = findGridLock(grid.translateX, grid.translateY)
+    //drag = new Fil(point.x,point.y)
+    
     drag = {
         xi: point.x,
         yi: point.y,
@@ -824,3 +962,5 @@ function windowResized(){
 function refresh() {
   initComponents();
 }
+function animation()
+{if(animate===0) animate=1; else animate=0;}
