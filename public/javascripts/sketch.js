@@ -139,6 +139,7 @@ function draw() {
 	  undo_button.removeAttribute('disabled');
     reset_button.removeAttribute('disabled');
     animation_button.removeAttribute('disabled');
+    animate=1;
     undo_desactive = false;
   }
   push();
