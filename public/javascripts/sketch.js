@@ -123,6 +123,11 @@ function test(){
   //c1.solveCourrantkirchhoff();
 }
 
+//Source: https://stackoverflow.com/questions/11832914/how-to-round-to-at-most-2-decimal-places-if-necessary 
+Number.prototype.round = function(places) {
+  return +(Math.round(this + "e+" + places)  + "e-" + places);
+}
+
 function initComponents(){
   fils = [];
   components = [];
