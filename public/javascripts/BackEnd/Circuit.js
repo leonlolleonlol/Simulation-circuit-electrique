@@ -65,14 +65,14 @@
 
     trouverPile(circuit){
         for(let i = 0; i < circuit.length; i++){
-            if(circuit[i].getTypeCalcul() == composantType.batterieType){ 
-                // print(circuit[i].getTypeCalcul());
-                // print(composantType.batterieType);  
+            if(circuit[i].getType() == BATTERIE){ 
+                // print(circuit[i].getType());
+                // print(BATTERIE);  
                 this.contientPile = true;
                 if(i!= 0){
                     this.echangerComposantes(i, 0);
                 }       
-            }else if (circuit[i].getTypeCalcul() == composantType.noeudType){
+            }else if (circuit[i].getType() == NOEUD){
                 this.trouverPile(circuit[i].getCircuitNoeud());
                 
             }else if (circuit[i] instanceof Circuit){
@@ -119,9 +119,9 @@
             switch (this.type){
                 case circuitType.seulementR:
                     for (let i = 0; i < this.circuit.length; i++){
-                        if(this.circuit[i].getTypeCalcul() == composantType.noeudType){
+                        if(this.circuit[i].getType() == NOEUD){
                             this.resistanceEQ += this.circuit[i].resistanceEQ;
-                        }else if (this.circuit[i].getTypeCalcul() == composantType.resisteurType){
+                        }else if (this.circuit[i].getType() == RESISTEUR){
                             this.resistanceEQ += this.circuit[i].resistance;
                         }
                     }
@@ -134,9 +134,9 @@
                 case circuitType.seulementC:
                     let capaciteTemp = 0;
                     for (let i = 0; i < this.circuit.length; i++){ 
-                        if(this.circuit[i].getTypeCalcul() == composantType.noeudType){
+                        if(this.circuit[i].getType() == NOEUD){
                             capaciteTemp += 1 / this.circuit[i].capaciteEQ;
-                        }else if (this.circuit[i].getTypeCalcul() == composantType.condensateurType){
+                        }else if (this.circuit[i].getType() == CONDENSATEUR){
                             capaciteTemp += 1 / this.circuit[i].capacite;
                         }
                     }
@@ -175,14 +175,14 @@
         let circuitC = false;
         let circuitRC = false;
         for (let i = 0; i < this.circuit.length; i++){ 
-            switch(this.circuit[i].getTypeCalcul()){
-                case composantType.resisteurType:
+            switch(this.circuit[i].getType()){
+                case RESISTEUR:
                     circuitR = true;
                     break;
-                case composantType.condensateurType:
+                case CONDENSATEUR:
                     circuitC = true;
                     break;
-                case composantType.noeudType:
+                case NOEUD:
                     this.circuit[i].trouverEq();
                     switch(this.circuit[i].type){
                         case circuitType.seulementR:
@@ -196,7 +196,7 @@
                             break;
                     }
                     break;
-                case composantType.diodeType:
+                case XXXXXXXXXXXX.diodeType:
                     if(this.circuit[i].orientation == "wrong"){
                         this.valide = false;
                     }
@@ -216,16 +216,16 @@
         return CIRCUIT;
     }
 
-    getTypeCalcul(){
+    getType(){
         return this.type;
     }
 
     remplirResisteursAvecCourant(){
         for (let i = 0; i < this.circuit.length; i++){
-            if(this.circuit[i].getTypeCalcul() == composantType.resisteurType){    
+            if(this.circuit[i].getType() == RESISTEUR){    
                 this.circuit[i].courant = this.courant;
                 this.circuit[i].tension = this.courant * this.circuit[i].resistance;
-            }else if(this.circuit[i].getTypeCalcul() == composantType.noeudType){
+            }else if(this.circuit[i].getType() == NOEUD){
                 this.circuit[i].tensionEQ = this.courant * this.circuit[i].resistanceEQ;
                 this.circuit[i].remplirResisteursAvecDifTension();
             }
@@ -234,10 +234,10 @@
 
     remplirCondensateursAvecCharge(){
         for (let i = 0; i < this.circuit.length; i++){
-            if(this.circuit[i].getTypeCalcul() == composantType.condensateurType){
+            if(this.circuit[i].getType() == CONDENSATEUR){
                 this.circuit[i].charge = this.charge;
                 this.circuit[i].tension = this.charge / this.circuit[i].capacite;
-            }else if(this.circuit[i].getTypeCalcul() == composantType.noeudType){
+            }else if(this.circuit[i].getType() == NOEUD){
                 this.circuit[i].tensionEQ = this.charge / this.capaciteEQ;
                 this.circuit[i].remplirCondensateursAvecTension();
             }
@@ -342,7 +342,7 @@ function circuitMaille(composants, mailles, maille, inverse, indexSeparate){
 /**
  * C'est objet là ont le même rôle que des enum en java.
  */
-let composantType = {
+let XXXXXXXXXXXX = {
     resisteurType: 75839,
     condensateurType: 98435,
     noeudType: 48134,
