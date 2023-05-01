@@ -62,7 +62,7 @@ function setup() {
 
   //-----------------------------------------
   initComponents();
-  test();
+  //test();
 }
 
 function test(){
