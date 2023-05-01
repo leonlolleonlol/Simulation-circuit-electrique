@@ -47,7 +47,6 @@ app.get('/acceuil', function(req, res) {
   res.sendFile(path.join(__dirname, '/acceuil.html'));
 });
 app.get('/editeur', function(req, res) {
-  app.use
   res.sendFile(path.join(__dirname, '/editeur.html'));
 });
 
