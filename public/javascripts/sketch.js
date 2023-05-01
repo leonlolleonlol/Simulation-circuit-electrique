@@ -53,19 +53,42 @@ function setup() {
 console.log(sol.toString());
   //testSympy();
 
-  //test();
+  test();
 }
 
-
 function test(){
-  c1.ajouterComposanteALaFin(new Batterie(0, 0, 10));
-  n1 = new Noeuds();
-
+  p1 = new Batterie(0, 0, 12);
+  r1 = new Resisteur(0, 0, 500)
   
-  c2 = new Circuit(false);
-  c2.ajouterComposanteALaFin(new Resisteur(0, 0, 30));
-  c2.ajouterComposanteALaFin(new Resisteur(0, 0, 40));
-  n1.ajouterComposanteALaFin(c2);
+  n1 = new Noeuds();
+  
+  c2 = new Circuit();
+  c3 = new Circuit();
+
+  r2 = new Resisteur(0, 0, 800);
+  r3 = new Resisteur(0, 0, 1100);
+  r4 = new Resisteur(0, 0, 400); 
+  
+
+  r5 = new Resisteur(0, 0, 400);
+  r6 = new Resisteur(0, 0, 250);
+  r7 = new Resisteur(0, 0, 100);
+  c4 = new Circuit();
+  c5 = new Circuit();
+  n2 = new Noeuds();
+  c4.ajouterComposante(r5);
+  c4.ajouterComposante(r6);
+  c5.ajouterComposante(r7);
+  n2.ajouterComposante(c4);
+  n2.ajouterComposante(c5);
+
+  c2.ajouterComposante(r4);
+  c2.ajouterComposante(r3);
+  c3.ajouterComposante(r2);
+  c3.ajouterComposante(n2);
+
+  n1.ajouterComposante(c2);
+  n1.ajouterComposante(c3);
 /*
   n2 = new Noeuds();
   c4 = new Circuit(false);
@@ -79,31 +102,25 @@ function test(){
   c3.ajouterComposanteALaFin(new Diode(0, 0, "wrong"));
   c3.ajouterComposanteALaFin(n2);
   n1.ajouterComposanteALaFin(c3);
-  
-  c1.ajouterComposanteALaFin(n1);
   */
-  c1.ajouterComposanteALaFin(new Resisteur(0, 0, 10))
+  c1.ajouterComposante(p1);
+  c1.ajouterComposante(n1);
+  c1.ajouterComposante(r1);
   
+
+  c1.connectComposante(p1, r1);
+  c1.connectComposante(r1, n1);
+  c1.connectComposante(n1, p1);
   c1.update();
-  print(c1.circuit[1].courant);
-  print(c1.circuit[2].courant);
-}
 
-function testSympy(){
-  let resisteur1 = {"chiffre": -1000,"var": "i1"};
-  let resisteur2 = {"chiffre": -2300,"var": "i2"};
-  let resisteur3 = {"chiffre": -1700,"var": "i3"};
-  let resisteur4 = {"chiffre": -800,"var": "i3"};
-  let batterie1 = { "chiffre": -3};
-  let batterie2 = {"chiffre": 4.40};
-  let batterie3 = {"chiffre": 5.50};
-  let n1 = [{"mul":-1, "var":"i1"}, {"mul":1, "var":"i2"}, {"mul":1, "var":"i3"}];
-
-  let eq1 = [batterie2,resisteur2,resisteur1,batterie1];
-  let eq2 = [batterie3,resisteur3,resisteur1,batterie1,resisteur4];
-  let equations = [eq1,eq2];
-  product = asyncCall(equations, [n1]);
-  print(product)
+  
+  
+  print(r1.courant.round(5) + " " + r1.tension.round(2));
+  print(r2.courant.round(5) + " " + r2.tension.round(2));
+  print(r3.courant.round(5) + " " + r3.tension.round(2));
+  print(r4.courant.round(5) + " " + r4.tension.round(2));
+  
+  //c1.solveCourrantkirchhoff();
 }
 
 function initComponents(){
