@@ -42,6 +42,12 @@ a {
     width: 120px;
     height: 50px;
 }
+#animate {
+    position: absolute;
+    top: 500px;
+    width: 120px;
+    height: 50px;
+}
   
 #line-grid {
     position:absolute;

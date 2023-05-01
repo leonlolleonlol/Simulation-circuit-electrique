@@ -11,13 +11,14 @@ let fils;// Liste des fils du circuit
 // Variable nécessaire pour placer la grille
 let grid;
 let composants_panneau; // Le panneau de choix des composants
+let animate;//bool qui determine si on veut animation ou pas
 
 // liens vers des éléments DOM utiles
 let acceuil_button;
 let undo_button;
 let reset_button;
 let pause_button;
-let stop_button;
+let animation_button;
 let point_grid_button;
 let line_grid_button;
 let point_line_grid_button;
@@ -38,10 +39,12 @@ function setup() {
   point_line_grid_button = select('#point-line-grid');
   undo_button = select('#undo');
   reset_button = select('#redo');
+  animation_button= select('#animate');
   let positionCanvas=canvas.position();
   //----------------------------------------
   reset_button.mousePressed(refresh);
   undo_button.mousePressed(undo);
+  animation_button.mousePressed(animation);
   line_grid_button.mousePressed(function(){ grid.quadrillage=QUADRILLE;});
   point_grid_button.mousePressed(function(){ grid.quadrillage=POINT;});
   point_line_grid_button.mousePressed(function(){ grid.quadrillage=QUADRILLEPOINT;});
@@ -90,6 +93,7 @@ function test(){
 }
 
 function initComponents(){
+  animate=false;
   fils = [];
   components = [];
   drag = null;
@@ -128,11 +132,13 @@ function draw() {
   if(undo_list.length == 0 && !undo_desactive){
 	  undo_button.attribute('disabled', '');
     reset_button.attribute('disabled', '');
+    animation_button.attribute('disabled', '');
     undo_desactive = true;
   }
   else if(undo_list.length != 0 && undo_desactive){
 	  undo_button.removeAttribute('disabled');
     reset_button.removeAttribute('disabled');
+    animation_button.removeAttribute('disabled');
     undo_desactive = false;
   }
   push();
@@ -205,7 +211,9 @@ function drawFils() {
     stroke(0,255*(1-(grad/(fils.length+1))),0);
     line(element.xi + grid.translateX, element.yi + grid.translateY, element.xf + grid.translateX, element.yf + grid.translateY);
     //temporaire avant d'avoir objet fil
-    //stroke('rgba(127, 255, 0, 0.9)');      
+    //stroke('rgba(127, 255, 0, 0.9)');
+    if(animate===1)
+    {
     strokeWeight(4);
       line(element.xi + grid.translateX, element.yi + grid.translateY,
            element.xf + grid.translateX, element.yf + grid.translateY);
@@ -217,6 +225,7 @@ function drawFils() {
         circle(pos.x,pos.y,10);
       }
       grad++;
+    }
   }
   pop();
 }
@@ -913,3 +922,5 @@ function windowResized(){
 function refresh() {
   initComponents();
 }
+function animation()
+{if(animate===0) animate=1; else animate=0;}
