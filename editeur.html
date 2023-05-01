@@ -1,55 +1,35 @@
 <!DOCTYPE html>
 <html>
-<style>
-.button {
-  border: none;
-  color: white;
-  text-align: center;
-  display: inline-block;
-  font-size: 16px;
-  transition-duration: 0.4s;
-  cursor: pointer;
-  height:fill-content;
-}
-.button1 {
-  background-color: white; 
-  color: black; 
-}
-.button1:hover {
-  background-color: #00ff99;
-  color: white;
-}
-a {
-  color: black;
-  text-decoration: none;
-}
-</style>
 <head>
   <!--<link rel="stylesheet" href="lib/fontawesome-free-6.4.0-web/css/fontawesome.css">
   <link rel="stylesheet" href="lib/fontawesome-free-6.4.0-web/css/brands.css">
   <link rel="stylesheet" href="lib/fontawesome-free-6.4.0-web/css/solid.css">-->
+  <link rel="stylesheet" href="editeurStyle.css">
 </head>
 <body>
-  <script src="lib/p5.min.js"></script>
+  <script src="p5.min.js"></script>
+  <script src="nerdamer.core.js"></script>
   <script src="Historique.js"></script>
-  <script src="BackEnd/Circuit.js"></script>
+  <script src="Circuit.js"></script>
   <script src="Composant.js"></script>
   <script src="Forme.js"></script>
   <script src="sketch.js"></script>
-  <a href="acceuil.html">
+  <a href="acceuil">
     <button id="acceuil">
       <i class="fa-solid fa-house"> acceuil</i>
     </button>
   </a>
+  <button id="undo">Annuler</button>
   <button id="line-grid">
-   <img id="img-line-grid" src = "images/icons/line-grid.svg" alt="Grid line choice"/>
+   <img class="img-grid" src = "images/icons/line-grid.svg" alt="Grid line choice"/>
   </button>
   <button id="point-grid">
-   <img id="img-point-grid" src = "images/icons/dot-grid.svg" alt="Grid point choice"/>
+   <img class="img-grid" src = "images/icons/dot-grid.svg" alt="Grid point choice"/>
   </button>
   <button id="point-line-grid">
-   <img id="img-point-line-grid" src = "images/icons/point-line-grid.svg" alt="Grid point line choice"/>
+   <img class="img-grid" src = "images/icons/point-line-grid.svg" alt="Grid point line choice"/>
   </button>
+  <button id="redo">Recommencer</button>
   
 </body>
 </html>
