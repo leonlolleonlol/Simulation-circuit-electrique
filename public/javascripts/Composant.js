@@ -245,10 +245,7 @@ class Diode extends Composant {
     }
 
     getType() {
-        return Diode.getType();
-    }
-    static getType() {
-        return 'diode';
+        return DIODE;
     }
 
     getTypeCalcul(){

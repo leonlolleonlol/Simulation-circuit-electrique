@@ -277,11 +277,12 @@
                 const obj = maille[index];
                 equation +=' + '+obj.element.getEq(obj.sens);
             }
+            print(equation)
             equations.push(equation);
         }
-        let reponse ={'i1':2}//temporaire
-        //nerdamer.set('SOLUTIONS_AS_OBJECT', true)
-        //let reponse = nerdamer.solveEquations(equations);
+        print(equations);
+        nerdamer.set('SOLUTIONS_AS_OBJECT', true)
+        let reponse = nerdamer.solveEquations(equations);
         for (const symbole in reponse){
             dictCourrant.get(symbole).courrant = reponse[symbole];
         }
@@ -290,7 +291,7 @@
 
     noeudEq(equations){
         for (const element of this.circuit) {
-            if(element.getType() == Noeuds.getType()){
+            if(element.getType() == NOEUD){
                 let equation = this.symbole +' = ' + element.circuitsEnParallele[0].symbole;
                 for (let index = 1; index < element.circuitsEnParallele.length; index++) {
                     const c = element.circuitsEnParallele[index];
@@ -305,7 +306,7 @@
     getCircuits(circuits){
         circuits.push(this);
         for (const element of this.circuit) {
-            if(element.getType() == Noeuds.getType()){
+            if(element.getType() == NOEUD){
                 for (const branch of element.circuitsEnParallele) {
                     branch.getCircuits(circuits);
                 }
@@ -325,7 +326,7 @@
 function circuitMaille(composants, mailles, maille, inverse, indexSeparate){
     for (let i = 0; i < composants.length; i++) {
         const element = composants[i];
-        if(element.getType()===Noeuds.getType()){
+        if(element.getType()===NOEUD){
             element.maille(composants, mailles, [...maille], i, inverse);
             return;
         }else {
