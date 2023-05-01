@@ -148,17 +148,18 @@ function draw() {
   drawFils();
   drawComposants();
   push();
+  scale(1/grid.scale);
+  push();
   noStroke();
   fill(backgroundColor);
   rect(0, 0, grid.offsetX - 5, windowHeight);
   pop();
-  push();
-  scale(1/grid.scale);
   drawComponentsChooser();
   pop();
   if (origin != null && origin instanceof Composant && drag instanceof Composant) {
     drag.draw(grid.translateX, grid.translateY);
   }
+  pop();
 }
 
 function drawComponentsChooser() {
