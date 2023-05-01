@@ -1,3 +1,5 @@
+//const e = require("express");
+
 class Composant {
 
   constructor(x, y){
@@ -6,7 +8,9 @@ class Composant {
     // on crée automatiquement une classe de tension
     this.courant = 0;
     this.tension = 0;
-    this.prochaineComposante;
+    this.prochaineComposante = [];
+    this.composantePrecedente = [];
+    this.dejaPasser = false;
   }
   
   draw(offX, offY) {
@@ -56,14 +60,14 @@ class Composant {
   getType() {
     throw console.error();//todo préciser l'erreur
   }
-  getTypeCalcul() {
+  getType() {
     this.getType();
   }
   setProchaineComposante(composante){
     this.prochaineComposante = composante;
   }
   getProchaineComposante(){
-    return this.prochaineComposante;
+    return this.prochaineComposante[0];
   }
 } 
 
@@ -98,11 +102,6 @@ class Resisteur extends Composant {
     getType() {
       return RESISTEUR;
     }
-
-    //Ne pas changer cette methode, elle doit être comme ça pour les calculs
-    getTypeCalcul() {
-      return composantType.resisteurType;
-    }
 }
 
 
@@ -131,11 +130,6 @@ class Ampoule extends Resisteur {
 
     getType() {
         return AMPOULE;
-    }
-
-    //Ne pas changer cette methode, elle doit être comme ça pour les calculs
-    getTypeCalcul() {
-      return composantType.Resisteur;
     }
 }
 
@@ -166,10 +160,6 @@ class Condensateur extends Composant {
     
     getType() {
         return CONDENSATEUR;
-    }
-    //Ne pas changer cette methode, elle doit être comme ça pour les calculs
-    getTypeCalcul() {
-      return composantType.condensateurType;
     }
   }
 
@@ -214,10 +204,6 @@ class Condensateur extends Composant {
     getType() {
       return BATTERIE;
     }
-
-    getTypeCalcul() {
-      return composantType.pileType;
-    }
 }
 
 class Diode extends Composant {
@@ -246,10 +232,6 @@ class Diode extends Composant {
 
     getType() {
         return DIODE;
-    }
-
-    getTypeCalcul(){
-      return composantType.diodeType;
     }
   }
 
@@ -295,19 +277,19 @@ class Noeuds extends Composant {
     this.trouverTypeDeCircuit();
     
     switch (this.type){
-        case circuitType.seulementR:
+        case SEULEMENTR:
           let resistanceTemp = 0;
             for (let i = 0; i < this.circuitsEnParallele.length; i++){ 
               resistanceTemp += 1 / this.circuitsEnParallele[i].resistanceEQ;
             }
             this.resistanceEQ = (1 / resistanceTemp).round(2);
             break;
-        case circuitType.seulementC:
+        case SEULEMENTC:
             for (let i = 0; i < this.circuitsEnParallele.length; i++){ 
               this.capaciteEQ += this.circuitsEnParallele[i].capaciteEQ;
             }
             break;
-        case circuitType.RC:
+        case RC:
             //C'est là que c'est difficile
             break;
     }
@@ -320,25 +302,25 @@ class Noeuds extends Composant {
     let circuitRC = false;
 
     for (let i = 0; i < this.circuitsEnParallele.length; i++){ 
-        switch(this.circuitsEnParallele[i].getTypeCalcul()){
-            case circuitType.seulementR:
+        switch(this.circuitsEnParallele[i].getType()){
+            case SEULEMENTR:
               circuitR = true;
               break;
-            case circuitType.seulementC:
+            case SEULEMENTC:
               circuitC = true;
               break;
-            case circuitType.RC:
+            case RC:
               circuitRC = true;
               break;
         }
     }
 
     if((circuitR && circuitC) || circuitRC){
-        this.type = circuitType.RC;
+        this.type = RC;
     }else if (circuitC){
-        this.type = circuitType.seulementC;
+        this.type = SEULEMENTC;
     }else{
-        this.type = circuitType.seulementR;
+        this.type = SEULEMENTR;
     }
   }
 
@@ -388,10 +370,6 @@ class Noeuds extends Composant {
     return NOEUD;
   }
 
-  //Ne pas changer cette methode, elle doit être comme ça pour les calculs
-  getTypeCalcul() {
-    return composantType.noeudType;
-  }
   getCircuitNoeud(){
     return this.circuitsEnParallele;
   }

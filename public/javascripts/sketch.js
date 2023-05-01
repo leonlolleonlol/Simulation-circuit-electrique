@@ -79,6 +79,7 @@ function test(){
   c4 = new Circuit();
   c5 = new Circuit();
   n2 = new Noeuds();
+  /*
   c4.ajouterComposante(r5);
   c4.ajouterComposante(r6);
   c5.ajouterComposante(r7);
@@ -109,12 +110,20 @@ function test(){
   c1.ajouterComposante(p1);
   c1.ajouterComposante(n1);
   c1.ajouterComposante(r1);
+  c1.ajouterComposante(r2);
+  c1.ajouterComposante(r4);
+  
   
 
-  c1.connectComposante(p1, r1);
-  c1.connectComposante(r1, n1);
-  c1.connectComposante(n1, p1);
-  //c1.update();
+  c1.connectComposante(p1, n1);
+  c1.connectComposante(n1, r2);
+  c1.connectComposante(n1, r4);
+  c1.connectComposante(r4, r1);
+  c1.connectComposante(r2, r1);
+  //c1.connectComposante(r3, r1);
+  c1.connectComposante(r1, p1);
+ 
+  c1.update();
 
   
   
@@ -123,7 +132,7 @@ function test(){
   print(r3.courant.round(5) + " " + r3.tension.round(2));
   print(r4.courant.round(5) + " " + r4.tension.round(2));
   
-  c1.solveCourrantkirchhoff();
+  //c1.solveCourrantkirchhoff();
 }
 
 //Source: https://stackoverflow.com/questions/11832914/how-to-round-to-at-most-2-decimal-places-if-necessary 

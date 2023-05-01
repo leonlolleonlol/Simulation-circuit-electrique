@@ -33,7 +33,8 @@
     }
 
     connectComposante(composanteAvant, composanteApres){
-        composanteAvant.prochaineComposante = composanteApres;
+        composanteAvant.prochaineComposante.push(composanteApres);
+        composanteApres.composantePrecedente.push(composanteAvant);
     }
     
     retirerComposante(position){
@@ -62,21 +63,16 @@
          this.trouverEq();
     }
 
-
-    trouverPile(circuit){
-        for(let i = 0; i < circuit.length; i++){
-            if(circuit[i].getType() == BATTERIE){ 
-                // print(circuit[i].getType());
-                // print(BATTERIE);  
+    /**
+     * Met la pile à la première position du circuit
+     */
+    trouverPile(){
+        for(let i = 0; i < this.circuit.length; i++){
+            if(this.circuit[i].getType() == BATTERIE){   
                 this.contientPile = true;
                 if(i!= 0){
                     this.echangerComposantes(i, 0);
                 }       
-            }else if (circuit[i].getType() == NOEUD){
-                this.trouverPile(circuit[i].getCircuitNoeud());
-                
-            }else if (circuit[i] instanceof Circuit){
-                this.trouverPile(circuit[i].circuit);
             }
         }
     }
@@ -88,15 +84,24 @@
     rearrangerArrayCircuit(){
         let nouvCircuit = [];
         this.trouverPile(this.circuit)
-        
-        if(this.contientPile){ //Si la pile est dans c1
-            nouvCircuit[0] = this.circuit[0];
-            //if(length != 1)
-            for(let i = 1; i < this.circuit.length; i++){
-                nouvCircuit[i] = this.circuit[i - 1].getProchaineComposante();            
+        nouvCircuit[0] = this.circuit[0];
+        let nextIndex = 1;
+        for(let i = 1; i < this.circuit.length; i++){
+            if(this.circuit[nextIndex].dejaPasser == false){
+                if(this.circuit[nextIndex].getType == NOEUD){
+                    for (const element in this.circuit[nextIndex].prochaineComposante) {
+                        let nouvC = new Circuit();
+                        nouvC.ajouterComposante(element);
+                        this.circuit[nextIndex].ajouterComposante(nouvC);
+                        element.dejaPasser = true;
+                    }
+                    nouvCircuit[i] = this.circuit[nextIndex];
+                }else{
+                    nouvCircuit[i] = this.circuit[nextIndex]; 
+                }
             }
-        }else{
-            
+            this.circuit[nextIndex].dejaPasser = true;  
+            print(nouvCircuit);      
         }
         this.circuit = nouvCircuit;
     }
@@ -117,7 +122,7 @@
         this.trouverTypeDeCircuit();
         if(this.valide){
             switch (this.type){
-                case circuitType.seulementR:
+                case SEULEMENTR:
                     for (let i = 0; i < this.circuit.length; i++){
                         if(this.circuit[i].getType() == NOEUD){
                             this.resistanceEQ += this.circuit[i].resistanceEQ;
@@ -131,7 +136,7 @@
                     this.remplirResisteursAvecCourant();
                 
                     break;
-                case circuitType.seulementC:
+                case SEULEMENT:
                     let capaciteTemp = 0;
                     for (let i = 0; i < this.circuit.length; i++){ 
                         if(this.circuit[i].getType() == NOEUD){
@@ -185,10 +190,10 @@
                 case NOEUD:
                     this.circuit[i].trouverEq();
                     switch(this.circuit[i].type){
-                        case circuitType.seulementR:
+                        case SEULEMENTR:
                             circuitR = true;
                             break;
-                        case circuitType.seulementC:
+                        case SEULEMENT:
                             circuitC = true;
                             break;
                         case circuitType.RC:
@@ -196,7 +201,7 @@
                             break;
                     }
                     break;
-                case XXXXXXXXXXXX.diodeType:
+                case DIODE:
                     if(this.circuit[i].orientation == "wrong"){
                         this.valide = false;
                     }
@@ -206,9 +211,9 @@
             this.type = circuitType.RC;
             //Même chose que : this.type = 09842;
         }else if (circuitC){
-            this.type = circuitType.seulementC;
+            this.type = SEULEMENTC;
         }else{
-            this.type = circuitType.seulementR;
+            this.type = SEULEMENTR;
         }
     }
 
@@ -335,24 +340,4 @@ function circuitMaille(composants, mailles, maille, inverse, indexSeparate){
         }
     }
     mailles.push(maille);
-}
-
-
-
-
-/**
- * C'est objet là ont le même rôle que des enum en java.
- */
-let XXXXXXXXXXXX = {
-    resisteurType: 75839,
-    condensateurType: 98435,
-    noeudType: 48134,
-    diodeType: 87931,
-    pileType: 45678
-}
-//ces nombres sont choisi au hasard, il faut juste que quand on compare, si le nombre est pareil, on détecte que c'est du même type
-let circuitType = {
-    seulementR: 29852,
-    seulementC: 10854,
-    RC: 90842
 }

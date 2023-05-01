@@ -10,6 +10,10 @@ BATTERIE = 'batterie'
 NOEUD = 'noeud';
 CIRCUIT = 'circuit';
 
+SEULEMENTR = "seulementR";
+SEULEMENTC = "seulementC";
+RC = "RC";
+
 CREATE = 'create';
 DELETE = 'delete';
 MODIFIER = 'modifier';
