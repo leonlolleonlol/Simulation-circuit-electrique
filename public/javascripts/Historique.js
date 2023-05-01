@@ -1,6 +1,6 @@
-const MODIFIER = 'modifier';//typeAction, objet, changements:[attribut, ancienne_valeur, nouvelle_valeur]
-const CREATE = 'créer';//typeAction, objet
-const DELETE = 'delete';//typeAction, objet , index
+//const MODIFIER = 'modifier';//typeAction, objet, changements:[attribut, ancienne_valeur, nouvelle_valeur]
+//const CREATE = 'créer';//typeAction, objet
+//const DELETE = 'delete';//typeAction, objet , index
 const RESET = 'recommencer';//typeAction,circuit
 
 
@@ -10,6 +10,11 @@ const redo_list = [];
 
 const limitActions = 100;
 
+/**
+ * Enregistrer une action utilisable pour les fonctionnalités 
+ * 'annuler' et 'refaire'
+ * @param {*} action Liste d'actions que l'on veut enregistrer pour l'historique
+ */
 function addActions(action){
   redo_list.length = 0;
   if(action instanceof Array){
@@ -20,6 +25,8 @@ function addActions(action){
   undo_list.push(action);
   applyLimitActions();
 }
+
+
 function undo(){
   if(undo_list.length > 0){
     let actions = undo_list.pop();
@@ -56,6 +63,8 @@ function undo(){
     }
   }
 }
+
+
 function redo(){
   // Enlever toute les actions qui suivent
   if(redo_list.length > 0){
@@ -93,30 +102,40 @@ function redo(){
   }
 }
 
+/**
+ * Vérifier si une action est bien construite pour ne pas enregistrer des prochaines
+ * erreurs
+ * @param {*} action L'action que l'on veut vérifier
+ * @throws Une erreur de mauvaise construcution de l'action
+ */
 function validerAction(action){
-  
   if(action.type !== CREATE && action.type !== DELETE && 
      action.type !== MODIFIER && action.type !== RESET)
-    return false;
+    throw new Error('L\'action '+action.type+' n\'est pas recconnus'+
+    'comme type d\'action');
   if(action.type === RESET || !(action.objet instanceof Composant || action.objet.getType()==='fil'))
-    return false;
+    throw new Error('La cible du changement n\'est pas préciser');
   if(action.type === MODIFIER){
     if(!action.changements instanceof Array)
-      return false;
+      throw new Error('Les changements mentionner dans l\'action devrait'
+      +'être un tableau');
     for(changement of action.changements){
-      if(!changement.attribut instanceof String ||
-          changement.ancienne_valeur==null || 
-          changement.nouvelle_valeur==null)
-        return false;
+      if(!changement.attribut instanceof String)
+        throw new Error('L\'attribut n\'est pas du bon type: type =' +typeof changement.attribut);
+      else if(changement.ancienne_valeur==null || 
+        changement.nouvelle_valeur==null)
+        throw new Error('Un des attributs pour le changement n\'est pas définis');
     }
   }
   if(action.type === RESET){
     if(!action.circuit instanceof Circuit)
       return false;
   }
-  return true;
 }
 
+/**
+ * Appliquer une limite sur la mémoire de l'historique
+ */
 function applyLimitActions(){
   if(undo_list.length > limitActions)
     undo_list.shift();
