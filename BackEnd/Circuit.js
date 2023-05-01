@@ -45,7 +45,7 @@
         var temp = this.circuit[indexA];
         this.circuit[indexA] = this.circuit[indexB];
         this.circuit[indexB] = temp;
-      }
+    }
   
     /**
      * Doit se faire appeler quand il y a une nouvelle connection entre 2 composantes, quand une connection est brisée et
@@ -54,12 +54,12 @@
      */
     update(){//Chaque fois qu'il y a un changement dans le circuit
         
-        // this.rearrangerArrayCircuit();
-        this.trouverPile(this.circuit);
+        this.rearrangerArrayCircuit();
+        //this.trouverPile(this.circuit);
         // this.arrangerC = true;
         // this.trouverPile(this.circuit);
         // this.tensionEQ = this.circuit[0].tension;
-        // this.trouverEq();
+         this.trouverEq();
     }
 
 
