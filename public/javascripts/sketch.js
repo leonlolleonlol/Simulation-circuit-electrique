@@ -11,7 +11,7 @@ let fils;// Liste des fils du circuit
 // Variable nécessaire pour placer la grille
 let grid;
 let composants_panneau; // Le panneau de choix des composants
-let animate;//bool qui determine si on veut animation ou pas
+let animate;//nombre entier qui determine avec le signe si on veut animation ou pas
 
 // liens vers des éléments DOM utiles
 let acceuil_button;
@@ -44,7 +44,7 @@ function setup() {
   //----------------------------------------
   reset_button.mousePressed(refresh);
   undo_button.mousePressed(undo);
-  animation_button.mousePressed(animation);
+  animation_button.mousePressed(function(){ animate-=-1;});
   line_grid_button.mousePressed(function(){ grid.quadrillage=QUADRILLE;});
   point_grid_button.mousePressed(function(){ grid.quadrillage=POINT;});
   point_line_grid_button.mousePressed(function(){ grid.quadrillage=QUADRILLEPOINT;});
@@ -93,7 +93,7 @@ function test(){
 }
 
 function initComponents(){
-  animate=false;
+  animate=1;
   fils = [];
   components = [];
   drag = null;
@@ -139,7 +139,6 @@ function draw() {
 	  undo_button.removeAttribute('disabled');
     reset_button.removeAttribute('disabled');
     animation_button.removeAttribute('disabled');
-    animate=1;
     undo_desactive = false;
   }
   push();
@@ -924,5 +923,3 @@ function windowResized(){
 function refresh() {
   initComponents();
 }
-function animation()
-{if(animate===0) animate=1; else animate=0;}
