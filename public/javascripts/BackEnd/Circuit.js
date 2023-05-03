@@ -58,9 +58,9 @@
         this.rearrangerArrayCircuit();
         //this.trouverPile(this.circuit);
         // this.arrangerC = true;
-        // this.trouverPile(this.circuit);
+        //this.trouverPile();
         // this.tensionEQ = this.circuit[0].tension;
-         this.trouverEq();
+        this.trouverEq();
     }
 
     /**
@@ -82,25 +82,31 @@
      * circuit devrait commencer de la pile, puis finir à la composante juste avant la pile.
      */
     rearrangerArrayCircuit(){
+        print(this.circuit);
         let nouvCircuit = [];
-        this.trouverPile(this.circuit)
+        this.trouverPile();
         nouvCircuit[0] = this.circuit[0];
-        let nextIndex = 1;
+        let nextIndex = 0;
+        print(nouvCircuit);
         for(let i = 1; i < this.circuit.length; i++){
-            if(this.circuit[nextIndex].dejaPasser == false){
-                if(this.circuit[nextIndex].getType == NOEUD){
-                    for (const element in this.circuit[nextIndex].prochaineComposante) {
-                        let nouvC = new Circuit();
-                        nouvC.ajouterComposante(element);
-                        this.circuit[nextIndex].ajouterComposante(nouvC);
-                        element.dejaPasser = true;
-                    }
+            let index = nextIndex;
+            nextIndex = this.circuit.indexOf(this.circuit[nextIndex].getProchaineComposante());
+            if(!this.circuit[nextIndex].dejaPasser){
+                if(this.circuit[index].prochaineComposante.length == 1){
                     nouvCircuit[i] = this.circuit[nextIndex];
                 }else{
-                    nouvCircuit[i] = this.circuit[nextIndex]; 
+                    for(let i = 0; i < this.circuit[index].prochaineComposante.length; i++){
+                        let nouvC = new Circuit();
+                        nouvC.ajouterComposante(this.circuit[nextIndex]);
+                        this.circuit[index].ajouterComposante(nouvC);
+                        this.circuit[nextIndex].dejaPasser = true;
+                    }
                 }
+
+                this.circuit[nextIndex].dejaPasser = true;
             }
-            this.circuit[nextIndex].dejaPasser = true;  
+            
+            
             print(nouvCircuit);      
         }
         this.circuit = nouvCircuit;
@@ -221,7 +227,7 @@
         return CIRCUIT;
     }
 
-    getType(){
+    getTypeDeCircuit(){
         return this.type;
     }
 

@@ -93,24 +93,13 @@ function test(){
 
   n1.ajouterComposante(c2);
   n1.ajouterComposante(c3);
-/*
-  n2 = new Noeuds();
-  c4 = new Circuit(false);
-  c4.ajouterComposanteALaFin(new Condensateur(0, 0, 15));
-  c4.ajouterComposanteALaFin(new Condensateur(0, 0, 25));
-  c4.ajouterComposanteALaFin(new Condensateur(0, 0, 35));
-  n2.ajouterComposanteALaFin(c4);
-
-  c3 = new Circuit(false);
-  c3.ajouterComposanteALaFin(new Condensateur(0, 0, 90));
-  c3.ajouterComposanteALaFin(new Diode(0, 0, "wrong"));
-  c3.ajouterComposanteALaFin(n2);
-  n1.ajouterComposanteALaFin(c3);
   */
-  c1.ajouterComposante(p1);
+  
+  
   c1.ajouterComposante(n1);
   c1.ajouterComposante(r1);
   c1.ajouterComposante(r2);
+  c1.ajouterComposante(p1);
   c1.ajouterComposante(r4);
   
   
@@ -122,7 +111,6 @@ function test(){
   c1.connectComposante(r2, r1);
   //c1.connectComposante(r3, r1);
   c1.connectComposante(r1, p1);
- 
   c1.update();
 
   

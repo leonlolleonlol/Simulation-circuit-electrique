@@ -302,7 +302,7 @@ class Noeuds extends Composant {
     let circuitRC = false;
 
     for (let i = 0; i < this.circuitsEnParallele.length; i++){ 
-        switch(this.circuitsEnParallele[i].getType()){
+        switch(this.circuitsEnParallele[i].getTypeDeCircuit()){
             case SEULEMENTR:
               circuitR = true;
               break;
