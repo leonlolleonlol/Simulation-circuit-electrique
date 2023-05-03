@@ -97,9 +97,7 @@
                 }else{
                     for(let i = 0; i < this.circuit[index].prochaineComposante.length; i++){
                         let nouvC = new Circuit();
-                        nouvC.ajouterComposante(this.circuit[nextIndex]);
-                        this.circuit[index].ajouterComposante(nouvC);
-                        this.circuit[nextIndex].dejaPasser = true;
+                        this.remplirAvecSuivant(nouvC, this.circuit[nextIndex])
                     }
                 }
 
@@ -110,6 +108,14 @@
             print(nouvCircuit);      
         }
         this.circuit = nouvCircuit;
+    }
+
+    remplirAvecSuivant(c, composantActuel){
+        while(!(composantActuel.getProchaineComposante().composantePrecedente.length > 1)){
+            c.ajouterComposante(composantActuel);
+            composantActuel = composantActuel.getProchaineComposante();
+            composantActuel.dejaPasser = true;
+        }
     }
 
     arrange(circuit){
