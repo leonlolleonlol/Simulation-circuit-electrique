@@ -32,13 +32,20 @@ a {
 #undo {
     position: absolute;
     top: 95px;
-    width: 120px;
+    width: 60px;
     height: 50px;
 }
   
 #redo {
     position: absolute;
-    top: 450px;
+    top: 95px;
+    left:70px;
+    width: 60px;
+    height: 50px;
+}
+#reset {
+    position: absolute;
+    top: 350px;
     width: 120px;
     height: 50px;
 }
