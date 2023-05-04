@@ -103,8 +103,8 @@ function initComponents(){
   };
   initPosition();
   // Composants dans le panneau de choix
-  composants_panneau=[new Batterie(58, 265, 12),
-    new Resisteur(58, 215, 25), new Ampoule(58, 315, 40)];
+  composants_panneau=[new Batterie(58, 215, 12),
+    new Resisteur(58, 265, 25), new Ampoule(58, 315, 40)];
 }
 function initPosition(){
   grid.offsetX = round(max(200 * width/1230,138)/grid.tailleCell)*grid.tailleCell / grid.scale;
@@ -143,11 +143,6 @@ function draw() {
   drawFils();
   drawComposants();
   push();
-  noStroke();
-  fill(backgroundColor);
-  rect(0, 0, grid.offsetX - 5, windowHeight);
-  pop();
-  push();
   scale(1/grid.scale);
   drawComponentsChooser();
   pop();
@@ -158,6 +153,9 @@ function draw() {
 
 function drawComponentsChooser() {
   push();
+  noStroke();
+  fill(backgroundColor);
+  rect(0, 0, grid.offsetX * grid.scale - 5, windowHeight);
   fill("rgba(128,128,128,0.59)");
   strokeWeight(4);
   stroke("rgba(52,52,52,0.78)");
