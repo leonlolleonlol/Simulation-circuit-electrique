@@ -1,7 +1,6 @@
 //const MODIFIER = 'modifier';//typeAction, objet, changements:[attribut, ancienne_valeur, nouvelle_valeur]
 //const CREATE = 'créer';//typeAction, objet
 //const DELETE = 'delete';//typeAction, objet , index
-const RESET = 'recommencer';//typeAction,circuit
 
 
 
@@ -57,8 +56,6 @@ function undo(){
         for(changement of action.changements){
           composant[changement.attribut] = changement.ancienne_valeur;
         }
-      } else if(action.type === RESET){
-        //circuit = action.circuit;
       }
     }
   }
@@ -95,8 +92,6 @@ function redo(){
         for(changement of action.changements){
           composant[changement.attribut] = changement.nouvelle_valeur;
         }
-      }else if(action.type === RESET){
-        initComponents();
       }
     }
   }
@@ -110,10 +105,10 @@ function redo(){
  */
 function validerAction(action){
   if(action.type !== CREATE && action.type !== DELETE && 
-     action.type !== MODIFIER && action.type !== RESET)
+     action.type !== MODIFIER)
     throw new Error('L\'action '+action.type+' n\'est pas recconnus'+
     'comme type d\'action');
-  if(action.type === RESET || !(action.objet instanceof Composant || action.objet.getType()==='fil'))
+  if(!(action.objet instanceof Composant || action.objet.getType()==='fil'))
     throw new Error('La cible du changement n\'est pas préciser');
   if(action.type === MODIFIER){
     if(!action.changements instanceof Array)
@@ -127,10 +122,6 @@ function validerAction(action){
         throw new Error('Un des attributs pour le changement n\'est pas définis');
     }
   }
-  if(action.type === RESET){
-    if(!action.circuit instanceof Circuit)
-      return false;
-  }
 }
 
 /**
@@ -139,5 +130,4 @@ function validerAction(action){
 function applyLimitActions(){
   if(undo_list.length > limitActions)
     undo_list.shift();
-
 }

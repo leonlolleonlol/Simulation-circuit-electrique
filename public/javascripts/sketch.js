@@ -2,19 +2,15 @@ let drag; // L'élement qui est déplacer
 let selection;
 let origin; // variable qui permet de savoir lorsque l'on crée un nouveau élément.
 //Lorsque l'on ajoute un composant, le composant sélectionner disparaît dans le sélectionneur
-// et pour cela, on doit savoir quel composant panneau de choix est l'orignie
+// et pour cela, on doit savoir quel composant panneau de choix est l'origine
 let components;// Liste de composants du circuit
-// Très important que cette liste soit lorsque merge avec modèle
-
 let fils;// Liste des fils du circuit
 
 // Variable nécessaire pour placer la grille
 let grid;
 let composants_panneau; // Le panneau de choix des composants
-let animate;//bool qui determine si on veut animation ou pas
 
 // liens vers des éléments DOM utiles
-let acceuil_button;
 let undo_button;
 let reset_button;
 let pause_button;
@@ -22,29 +18,30 @@ let animation_button;
 let point_grid_button;
 let line_grid_button;
 let point_line_grid_button;
-let canvas;
+
+
 let percent;
+let animate;//bool qui determine si on veut animation ou pas
 
 let undo_desactive = false;
+let animerDesactiver = false;
 let c1; //variable contenant l'instance du circuit. Sert pour les calculs
 
 let backgroundColor = 'rgb(200,200,200)';//220
 
 // Initialisation du circuit
 function setup() {
-  canvas = createCanvas(windowWidth - 50, windowHeight - 30);
-  acceuil_button = select('#acceuil');
+  createCanvas(windowWidth - 50, windowHeight - 30);
   line_grid_button = select('#line-grid');
   point_grid_button = select('#point-grid');
   point_line_grid_button = select('#point-line-grid');
   undo_button = select('#undo');
   reset_button = select('#redo');
   animation_button= select('#animate');
-  let positionCanvas=canvas.position();
   //----------------------------------------
   reset_button.mousePressed(refresh);
   undo_button.mousePressed(undo);
-  animation_button.mousePressed(animation);
+  animation_button.mousePressed(function(){ animate=!animate;});
   line_grid_button.mousePressed(function(){ grid.quadrillage=QUADRILLE;});
   point_grid_button.mousePressed(function(){ grid.quadrillage=POINT;});
   point_line_grid_button.mousePressed(function(){ grid.quadrillage=QUADRILLEPOINT;});
@@ -52,10 +49,6 @@ function setup() {
 
   //-----------------------------------------
   initComponents();
-  var sol = nerdamer.solveEquations(['x+y=1', '2*x=6', '4*z+y=6']);
-console.log(sol.toString());
-  //testSympy();
-
   //test();
 }
 
@@ -79,7 +72,6 @@ function test(){
 
   c3 = new Circuit(false);
   c3.ajouterComposanteALaFin(new Condensateur(0, 0, 90));
-  c3.ajouterComposanteALaFin(new Diode(0, 0, "wrong"));
   c3.ajouterComposanteALaFin(n2);
   n1.ajouterComposanteALaFin(c3);
   
@@ -106,15 +98,13 @@ function initComponents(){
     translateX: 0,
     translateY: 0,
     scale:1,
-    quadrillage: 'point',
+    quadrillage: POINT,
+    getType: function(){return "grille"},
   };
   initPosition();
   // Composants dans le panneau de choix
-  composants_panneau=[new Resisteur(58, 215, 25),
-                      new Batterie(58, 265, 12),
-                      new Ampoule(58, 315, 40),
-                      new Diode(58, 365),
-                      new Condensateur(60, 415, 0)];
+  composants_panneau=[new Batterie(58, 265, 12),
+    new Resisteur(58, 215, 25), new Ampoule(58, 315, 40)];
 }
 function initPosition(){
   grid.offsetX = round(max(200 * width/1230,138)/grid.tailleCell)*grid.tailleCell / grid.scale;
@@ -132,14 +122,20 @@ function draw() {
   if(undo_list.length == 0 && !undo_desactive){
 	  undo_button.attribute('disabled', '');
     reset_button.attribute('disabled', '');
-    animation_button.attribute('disabled', '');
     undo_desactive = true;
   }
   else if(undo_list.length != 0 && undo_desactive){
 	  undo_button.removeAttribute('disabled');
     reset_button.removeAttribute('disabled');
-    animation_button.removeAttribute('disabled');
     undo_desactive = false;
+  }
+  if(components.length==0 && !animerDesactiver){
+    animation_button.attribute('disabled', '');
+    animerDesactiver = true;
+  }
+  else if(components.length!=0 && animerDesactiver){
+    animation_button.removeAttribute('disabled');
+    animerDesactiver =  false;
   }
   push();
   scale(grid.scale);
@@ -176,11 +172,11 @@ function drawComponentsChooser() {
 function drawGrid(){
   stroke(backgroundColor);
   strokeWeight(2);
-  if (grid.quadrillage == 'point')
+  if (grid.quadrillage == POINT)
     drawPointGrid();
-  else if (grid.quadrillage == 'line')
+  else if (grid.quadrillage == QUADRILLE)
     drawLineGrid();
-  else if(grid.quadrillage == 'points&lines')
+  else if(grid.quadrillage == QUADRILLEPOINT)
     drawPointLineGrid();
 }
 
@@ -212,7 +208,7 @@ function drawFils() {
     line(element.xi + grid.translateX, element.yi + grid.translateY, element.xf + grid.translateX, element.yf + grid.translateY);
     //temporaire avant d'avoir objet fil
     //stroke('rgba(127, 255, 0, 0.9)');
-    if(animate===1)
+    if(animate)
     {
     strokeWeight(4);
       line(element.xi + grid.translateX, element.yi + grid.translateY,
@@ -796,8 +792,6 @@ function mouseReleased() {
         //circuit.ajouterComposante(drag);
       }
     origin = null;
-    } else if(drag===grid){
-      // Juste pour empêcher une erreure
     } else if (drag.getType()=='fil') {
       if(lengthFil(drag)>0){
         let action = [{type:CREATE, objet:drag}]
@@ -853,62 +847,65 @@ function keyPressed() {
   * Pour trouver les codes des combinaisons,
   * aller voir https://www.toptal.com/developers/keycode
   */
-  if (keyIsDown(CONTROL) && keyIsDown(SHIFT) && keyCode === 90) {
-    redo();
-  } else if (keyIsDown(CONTROL) && keyCode === 90) {
-    undo();
-  } else if (keyCode === 8 && selection!=null) {
-    let index;
-    if(selection.getType()!=='fil'){
-      index = components.indexOf(selection)
-      components.splice(index, 1);
-      //circuit.retirerComposant(selection);
-    } else{
-      index = fils.indexOf(selection)
-      fils.splice(index, 1);
-      //circuit.removeConnection(selection)
-    } 
-    addActions({type:DELETE,objet:selection,index});
-    selection = null;
-  } else if(!keyIsDown(CONTROL) && keyCode === 84 && selection!=null){
-    if(selection instanceof Composant){
-      let pRotate = selection.orientation;
-      selection.rotate(keyIsDown(SHIFT));
-      if(validComposantPos(selection)){
-        addActions({type:MODIFIER, objet:selection, changements:[
+  if (keyIsDown(CONTROL)) {
+    if(keyIsDown(SHIFT)){
+      if(keyCode === 90){
+        redo();
+      }
+    }else if(keyCode === 90){
+      undo();
+    }
+  } else {
+    if(keyCode === 8 && selection!=null){
+      let index;
+      if(selection.getType()!=='fil'){
+        index = components.indexOf(selection)
+        components.splice(index, 1);
+        //circuit.retirerComposant(selection);
+      } else{
+        index = fils.indexOf(selection)
+        fils.splice(index, 1);
+        //circuit.removeConnection(selection)
+      } 
+      addActions({type:DELETE,objet:selection,index});
+      selection = null;
+    } else if(keyCode === 84 && selection!=null){
+      if(selection instanceof Composant){
+        let pRotate = selection.orientation;
+        selection.rotate(keyIsDown(SHIFT));
+        if(validComposantPos(selection)){
+          addActions({type:MODIFIER, objet:selection, changements:[
           {attribut:'orientation', ancienne_valeur:pRotate, nouvelle_valeur:selection.orientation}]});
-      }else{
-        selection.orientation = pRotate;
+        } else{
+          selection.orientation = pRotate;
+        }
+      }
+    } else if(keyCode === 82 || keyCode === 83 || keyCode === 65
+        /*|| keyCode === 67 || keyCode === 68*/){
+        let newC;
+        let point = findGridLock(grid.translateX, grid.translateY);
+        let x = point.x;
+        let y = point.y;
+        if (keyCode === 82) {
+          newC = new Resisteur(x, y);
+        } else if (keyCode === 83) {
+          newC = new Batterie(x, y);
+        } else if (keyCode === 65) {
+          newC = new Ampoule(x, y);
+        } else if (keyCode === 67) {
+          newC = new Condensateur(x, y);
+        } else if (keyCode === 68) {
+          newC = new Diode(x, y);
+        }
+      if(validComposantPos(newC)){
+        action = simplifyComposant(newC);
+        selection = newC;
+        components.push(newC);
+        //circuit.ajouterComposante(newC);
+        addActions([{type:CREATE,objet:newC}].concat(action));
       }
     }
-  } else if(!keyIsDown(CONTROL) && (keyCode === 82 || keyCode === 83 ||
-        keyCode === 67 || keyCode === 65 || keyCode === 68)){
-      let newC;
-      let point = findGridLock(grid.translateX, grid.translateY);
-      let x = point.x;
-      let y = point.y;
-      if (keyCode === 82) {
-        newC = new Resisteur(x, y);
-      } else if (keyCode === 83) {
-        newC = new Batterie(x, y);
-      } else if (keyCode === 65) {
-        newC = new Ampoule(x, y);
-      } else if (keyCode === 67) {
-        newC = new Condensateur(x, y);
-      } else if (keyCode === 68) {
-        newC = new Diode(x, y);
-      }
-    if(validComposantPos(newC)){
-      action = simplifyComposant(newC);
-      selection = newC;
-      components.push(newC);
-      //circuit.ajouterComposante(newC);
-      addActions([{type:CREATE,objet:newC}].concat(action));
-    }
-    
-  } //else if (keyIsDown(CONTROL) && keyIsDown(SHIFT) && keyCode === 80) {
-  //  print('parameters')
-  //}
+  }
 }
 function windowResized(){
   resizeCanvas(windowWidth - 50, windowHeight - 30);
@@ -922,5 +919,3 @@ function windowResized(){
 function refresh() {
   initComponents();
 }
-function animation()
-{if(animate===0) animate=1; else animate=0;}
