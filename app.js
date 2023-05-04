@@ -15,8 +15,8 @@ app.listen(port, () => {
 })
 app.set("view engine", "ejs");
 app.get('/', function(req, res) {
-  //res.sendFile(path.join(__dirname, '/acceuil.html'));
-  res.render("index");
+  res.sendFile(path.join(__dirname, '/acceuil.html'));
+  //res.render("index");
 });
 app.get('/users/register', function(req, res) {
   res.render("register");
