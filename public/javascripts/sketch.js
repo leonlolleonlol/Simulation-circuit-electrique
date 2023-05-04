@@ -12,18 +12,16 @@ let composants_panneau; // Le panneau de choix des composants
 
 // liens vers des éléments DOM utiles
 let undo_button;
+let redo_button;
 let reset_button;
-let pause_button;
 let animation_button;
-let point_grid_button;
-let line_grid_button;
-let point_line_grid_button;
 
 
 let percent;
 let animate;//bool qui determine si on veut animation ou pas
 
 let undo_desactive = false;
+let redo_desactive = false;
 let animerDesactiver = false;
 let c1; //variable contenant l'instance du circuit. Sert pour les calculs
 
@@ -31,24 +29,24 @@ let backgroundColor = 'rgb(200,200,200)';//220
 
 // Initialisation du circuit
 function setup() {
+  initComponents();
   createCanvas(windowWidth - 50, windowHeight - 30);
-  line_grid_button = select('#line-grid');
-  point_grid_button = select('#point-grid');
-  point_line_grid_button = select('#point-line-grid');
+  let line_grid_button = select('#line-grid');
+  let point_grid_button = select('#point-grid');
+  let point_line_grid_button = select('#point-line-grid');
   undo_button = select('#undo');
-  reset_button = select('#redo');
+  redo_button = select('#redo')
+  reset_button = select('#reset');
   animation_button= select('#animate');
   //----------------------------------------
   reset_button.mousePressed(refresh);
   undo_button.mousePressed(undo);
-  animation_button.mousePressed(function(){ animate=!animate;});
-  line_grid_button.mousePressed(function(){ grid.quadrillage=QUADRILLE;});
-  point_grid_button.mousePressed(function(){ grid.quadrillage=POINT;});
-  point_line_grid_button.mousePressed(function(){ grid.quadrillage=QUADRILLEPOINT;});
+  redo_button.mousePressed(redo);
+  animation_button.mousePressed(() => {animate=!animate;});
+  line_grid_button.mousePressed(()=>{ grid.quadrillage=QUADRILLE;});
+  point_grid_button.mousePressed(()=>{ grid.quadrillage=POINT;});
+  point_line_grid_button.mousePressed(()=>{ grid.quadrillage=QUADRILLEPOINT;});
   c1 = new Circuit(true);
-
-  //-----------------------------------------
-  initComponents();
   //test();
 }
 
@@ -129,6 +127,14 @@ function draw() {
     reset_button.removeAttribute('disabled');
     undo_desactive = false;
   }
+  if(redo_list.length == 0 && !redo_desactive){
+	  redo_button.attribute('disabled', '');
+    redo_desactive = true;
+  }
+  else if(redo_list.length != 0 && redo_desactive){
+	  redo_button.removeAttribute('disabled');
+    redo_desactive = false;
+  }
   if(components.length==0 && !animerDesactiver){
     animation_button.attribute('disabled', '');
     animerDesactiver = true;
@@ -146,7 +152,7 @@ function draw() {
   scale(1/grid.scale);
   drawComponentsChooser();
   pop();
-  if (origin != null && origin instanceof Composant && drag instanceof Composant) {
+  if (origin != null) {
     drag.draw(grid.translateX, grid.translateY);
   }
 }
@@ -156,26 +162,31 @@ function drawComponentsChooser() {
   noStroke();
   fill(backgroundColor);
   rect(0, 0, grid.offsetX * grid.scale - 5, windowHeight);
+  rectMode(CENTER);
   fill("rgba(128,128,128,0.59)");
   strokeWeight(4);
   stroke("rgba(52,52,52,0.78)");
-  for (let i = 0; i <composants_panneau.length ; i++) {
-    rect(0, 190 + 50 * i, 120, 50);
-    if (composants_panneau[i] != origin)
-      composants_panneau[i].draw(0, 0);
+  for (const composant of composants_panneau) {
+    rect(composant.x, composant.y, 120, 50);
+    if (composant != origin)
+      composant.draw(0, 0);
   }
   pop();
 }
 
 function drawGrid(){
-  stroke(backgroundColor);
-  strokeWeight(2);
-  if (grid.quadrillage == POINT)
-    drawPointGrid();
-  else if (grid.quadrillage == QUADRILLE)
-    drawLineGrid();
-  else if(grid.quadrillage == QUADRILLEPOINT)
-    drawPointLineGrid();
+  switch (grid.quadrillage) {
+    case POINT: 
+      drawPointGrid(color('black'));
+      break;
+    case QUADRILLE:
+      drawLineGrid(color('black'));
+      break;
+    case QUADRILLEPOINT:
+      drawLineGrid(color('black'));
+      drawPointGrid(color('gray'));
+      break;
+  }
 }
 
 function drawFils() {
@@ -201,25 +212,23 @@ function drawFils() {
            element.xf + grid.translateX - decalageX, element.yf + grid.translateY - decalageY);
       pop();
     }
-    fill(0,255*(1-(grad/(fils.length+1))),0);
-    stroke(0,255*(1-(grad/(fils.length+1))),0);
+    /*fill(0,255*(1-(grad/(fils.length+1))),0);
+    stroke(0,255*(1-(grad/(fils.length+1))),0);*/
     line(element.xi + grid.translateX, element.yi + grid.translateY, element.xf + grid.translateX, element.yf + grid.translateY);
     //temporaire avant d'avoir objet fil
     //stroke('rgba(127, 255, 0, 0.9)');
-    if(animate)
-    {
-    strokeWeight(4);
+    if(animate){
       line(element.xi + grid.translateX, element.yi + grid.translateY,
            element.xf + grid.translateX, element.yf + grid.translateY);
-      let florRes = Math.floor(Math.sqrt(Math.pow(element.xf-element.xi,2)+Math.pow(element.yf-element.yi,2))/30);
-      for(let i = 0;i < florRes;i++){
-        let percentCharge = (percent*(1+Math.floor(element.courant))/florRes) % 1+ i/florRes;
-        percentCharge = percentCharge % 1;
-        let pos = getLineXYatPercent(element, percentCharge);
+      let nbCharge = Math.floor(lengthFil(element)/30);
+      for(let i = 0;i < nbCharge;i++){
+        let percentCharge = ((percent*(1+Math.floor(element.courant))/nbCharge) % 1+ i/nbCharge)% 1;
+        let pos = posAtPercent(element, percentCharge);
         circle(pos.x,pos.y,10);
       }
-      grad++;
+      
     }
+    grad++;
   }
   pop();
 }
@@ -248,7 +257,7 @@ function drawFils() {
   pop();
 }
 */
-function getLineXYatPercent(fil, percent) {
+function posAtPercent(fil, percent) {
   var dx = fil.xf - fil.xi;
   var dy = fil.yf - fil.yi;
   var X = fil.xi+ grid.translateX + dx * percent;
@@ -266,62 +275,37 @@ function drawComposants(){
 
 // GRILLE ------------------------------------------
 
-
-
-function drawPointGrid() {
-  stroke("black");
-  setGrid();
-}
-function setGrid() {
+function drawPointGrid(color) {
   push();
+  stroke(color);
   strokeWeight(6);
+  let offsetX = grid.offsetX + (grid.translateX-grid.offsetX) % grid.tailleCell;
+  let offsetY = grid.offsetY + (grid.translateY-grid.offsetY) % grid.tailleCell;
   for (let i = 0; i < width/grid.scale - grid.offsetX; i+=grid.tailleCell) {
     for (let j = 0; j < height/grid.scale - grid.offsetY ; j+=grid.tailleCell) {
       if (
         !((grid.translateX % grid.tailleCell) < 0 && i == 0) &&
         !((grid.translateY % grid.tailleCell) < 0 && j == 0)
       )
-        point(
-          grid.offsetX + i + ((grid.translateX-grid.offsetX) % grid.tailleCell),
-          grid.offsetY + j + ((grid.translateY-grid.offsetY) % grid.tailleCell)
-        );
+        point(offsetX + i, offsetY + j);
     }
   }
   pop();
 }
-function drawPointLineGrid() {
-  push();
-  drawLineGrid();
-  stroke("gray");
-  setGrid();
-  pop();
-}
 
-function drawLineGrid() {
+function drawLineGrid(color) {
   push();
-  var borne = 0;
-  stroke("black");
+  stroke(color);
   strokeWeight(2);
-  while (borne  < windowWidth/grid.scale - grid.offsetX) {
+  let offsetX = grid.offsetX + (grid.translateX-grid.offsetX) % grid.tailleCell;
+  for (let i = 0; i < windowWidth/grid.scale - grid.offsetX; i+=grid.tailleCell) {
     if (!(grid.translateX % grid.tailleCell < 0 && borne == 0))
-      line(
-        grid.offsetX + borne + ((grid.translateX-grid.offsetX) % grid.tailleCell),
-        grid.offsetY,
-        grid.offsetX + borne + ((grid.translateX-grid.offsetX) % grid.tailleCell),
-        windowHeight/grid.scale
-      );
-    borne+= grid.tailleCell;
+      line(offsetX + i, grid.offsetY, offsetX + i , windowHeight/grid.scale);
   }
-  borne = 0;
-  while (borne < windowHeight/grid.scale - grid.offsetY) {
+  let offsetY = grid.offsetY + (grid.translateY-grid.offsetY) % grid.tailleCell;
+  for (let j = 0; j < windowHeight/grid.scale - grid.offsetY; j+=grid.tailleCell) {
     if (!(grid.translateY % grid.tailleCell < 0 && borne == 0))
-      line(
-        grid.offsetX,
-        grid.offsetY + borne + ((grid.translateY-grid.offsetY) % grid.tailleCell),
-        windowWidth/grid.scale,
-        grid.offsetY + borne + ((grid.translateY-grid.offsetY) % grid.tailleCell)
-      );
-    borne+= grid.tailleCell;
+      line(grid.offsetX, offsetY + j, windowWidth/grid.scale, offsetY + j);
   }
   pop();
 }
@@ -360,23 +344,15 @@ function inGrid(x, y){
 function validFilBegin(){
 let x = mouseX/grid.scale - grid.translateX;
 let y = mouseY/grid.scale - grid.translateY;
-  if (!inGrid(mouseX/grid.scale, mouseY/grid.scale)){
+let point = findGridLock(grid.translateX,grid.translateY)
+  if (!inGrid(mouseX/grid.scale, mouseY/grid.scale) || dist(point.x, point.y, x, y)>10){
     return false;
   }
-  else if (!((x % (grid.tailleCell*grid.scale) < 20*grid.scale ||
-            (x + 20*grid.scale) % (grid.tailleCell*grid.scale) < 20*grid.scale) &&
-          (y % (grid.tailleCell*grid.scale) < 20*grid.scale ||
-            (y + 20*grid.scale) % (grid.tailleCell*grid.scale) < 20*grid.scale))){
-              return false;
-            }
-    
   else {
-    if(getConnectingComposant(x,y) != null)
-      return true;
-    else if(filStart(x, y)!=null)
+    if(getConnectingComposant(x,y) != null || filStart(x, y)!=null)
       return true;
     else return false;
-  } 
+  }
 }
 
 function getConnectingComposant(x, y){
@@ -455,33 +431,32 @@ function filOverlap(fil1,fil2){
   else return false;
 }
 
-function simplifyNewFil(testFil){
-  let actions = [];
+function simplifyNewFil(fil, actions){
   let fils_remplacer =[];
-  for (const fil of fils) {
-    if(fil!==testFil && filOverlap(testFil,fil)){
-      fils_remplacer.push(fil);
+  for (const testFil of fils) {
+    if(testFil!==fil && filOverlap(fil,testFil)){
+      fils_remplacer.push(testFil);
     }
   }
 
   if(fils_remplacer.length!=0){
-    for (const fil of fils_remplacer){
-      if(Math.abs(pente(fil))==Infinity){
-        let y0 = Math.min(fil.yi, testFil.yi, fil.yf, testFil.yf);
-        let y1 = Math.max(fil.yi, testFil.yi, fil.yf, testFil.yf);
-        testFil.yi = y0;
-        testFil.yf = y1;
+    for (const element of fils_remplacer){
+      if(Math.abs(pente(element))==Infinity){
+        let y0 = Math.min(element.yi, fil.yi, element.yf, fil.yf);
+        let y1 = Math.max(element.yi, fil.yi, element.yf, fil.yf);
+        fil.yi = y0;
+        fil.yf = y1;
       }else {
-        let p1i = {x:fil.xi, y:fil.yi};
-        let p1f = {x:fil.xf, y:fil.yf};
-        let p2i = {x:testFil.xi, y:testFil.yi};
-        let p2f = {x:testFil.xf, y:testFil.yf};
+        let p1i = {x:element.xi, y:element.yi};
+        let p1f = {x:element.xf, y:element.yf};
+        let p2i = {x:fil.xi, y:fil.yi};
+        let p2f = {x:fil.xf, y:fil.yf};
         let array = [p1i, p2i, p1f, p2f];
         array.sort(function(a, b){return a.x - b.x});
-        testFil.xi = array[0].x;
-        testFil.yi = array[0].y;
-        testFil.xf = array[array.length - 1].x;
-        testFil.yf = array[array.length - 1].y;
+        fil.xi = array[0].x;
+        fil.yi = array[0].y;
+        fil.xf = array[array.length - 1].x;
+        fil.yf = array[array.length - 1].y;
       }
       
     /*for (const composant of components) {
@@ -500,31 +475,31 @@ function simplifyNewFil(testFil){
       circuit.connect(fils_remplacer[index].objet.begin,fils_remplacer[index].objet.end);
     }*/
     
-    let index = fils.indexOf(fil);
+    let index = fils.indexOf(element);
     fils.splice(index, 1);
-    actions.push({type:DELETE, objet:fil, index})
+    actions.push({type:DELETE, objet:element, index})
     }
   } else{
     /*for (const composant of components) {
-      if(composant.checkConnection(testFil.xi, testFil.yi, 10)){
-        testFil.begin = composant;
+      if(composant.checkConnection(fil.xi, fil.yi, 10)){
+        fil.begin = composant;
         break;
       }
     }
     for (const composant of components) {
-      if(composant.checkConnection(testFil.xf, testFil.yf, 10)){
-        testFil.end = composant;
+      if(composant.checkConnection(fil.xf, fil.yf, 10)){
+        fil.end = composant;
         break;
       }
     }
-    if(testFil.begin!=null && testFil.end){
-      circuit.connect(testFil.begin,testFil.end);
+    if(fil.begin!=null && fil.end){
+      circuit.connect(fil.begin,fil.end);
     }
-    addActions({type:CREATE,objet:testFil})*/
+    addActions({type:CREATE,objet:fil})*/
   }
-  let penteFil = Math.abs(pente(testFil));
-  const index = fils.indexOf(testFil);
-  let array = [{x:testFil.xi, y:testFil.yi}, {x:testFil.xf, y:testFil.yf}];
+  let penteFil = Math.abs(pente(fil));
+  const index = fils.indexOf(fil);
+  let array = [{x:fil.xi, y:fil.yi}, {x:fil.xf, y:fil.yf}];
   if(penteFil==0)
     array.sort(function(a, b){return a.x - b.x});
   else array.sort(function(a, b){return a.y - b.y});
@@ -536,7 +511,6 @@ function simplifyNewFil(testFil){
       (penteFil===Infinity && composant.orientation%PI==0)){
         continue;
       }
-      let fil = testFil;
       let connections = composant.getConnections();
       let borne1 = connections[0];
       let borne2 = connections[1];
@@ -585,13 +559,12 @@ function simplifyNewFil(testFil){
         fils.push(fil2);
         actions.push({type:CREATE,objet:fil1});
         actions.push({type:CREATE,objet:fil2});
-        actions.concat(simplifyNewFil(fil1));
-        actions.concat(simplifyNewFil(fil2));
+        simplifyNewFil(fil1, actions);
+        simplifyNewFil(fil2, actions);
         break;
       }
     }
   }
-  return actions; 
 }
 
 // --------------------------------------
@@ -605,8 +578,7 @@ function validComposantPos(composant){
   }
   return true;
 }
-function simplifyComposant(composant){
-  let actions = [];
+function simplifyComposant(composant, actions){
   for (let index = 0; index < components.length; index++) {
     const element = components[index];
     if(element!== composant && element.x == composant.x &&
@@ -675,7 +647,6 @@ function simplifyComposant(composant){
       actions.push({type:CREATE,objet:fil2});
     }
   }
-  return actions;
 }
 
 function initDrag(element, x, y){
@@ -685,7 +656,7 @@ function initDrag(element, x, y){
   drag.yOffsetDrag = mouseY/grid.scale - y;
 }
 
-function createComposant(original){
+function copyComposant(original){
   // Création d'un nouveau composants selon le composant sélectionner
   let x = original.x/grid.scale - grid.translateX;
   let y = original.y/grid.scale - grid.translateY;
@@ -701,25 +672,24 @@ function createComposant(original){
 function mousePressed() {
   selection = null;
   // Vérification drag panneau de choix
+  let x = mouseX/grid.scale - grid.translateX;
+  let y = mouseY/grid.scale - grid.translateY;
   for (const element of composants_panneau) {
     if (element.inBounds(mouseX, mouseY, 0, 0)){
       origin = element;
-      let new_element = createComposant(element);
+      let new_element = copyComposant(element);
       initDrag(new_element, new_element.x+grid.translateX, new_element.y + grid.translateY);
       return;
     }
-  } 
+  }
   // Vérification drag parmis les composants de la grille
   for (let element of components) {
-    if (element.inBounds(mouseX/grid.scale - grid.translateX, mouseY/grid.scale - grid.translateY)) {
+    if (element.inBounds(x, y)) {
       initDrag(element, element.x, element.y);
-      drag.pastX = drag.x;
-      drag.pastY = drag.y;
+      drag.pastPos = {x:drag.x, y:drag.y};
       return;
     }
   }
-  let x1 = mouseX/grid.scale - grid.translateX;
-  let y1 = mouseY/grid.scale - grid.translateY;
   if (validFilBegin()) {
     let point = findGridLock(grid.translateX, grid.translateY)
     //drag = new Fil(point.x,point.y)
@@ -732,9 +702,9 @@ function mousePressed() {
         courant:Math.random()*10,
         getType: function(){return "fil"},
     };
-    const nfil = filStart(x1,y1);
+    const nfil = filStart(x,y);
     if(nfil!=null){
-      origin = nfil;
+      drag.origin = nfil;
     }
     selection = drag;
     fils.push(drag);
@@ -742,7 +712,7 @@ function mousePressed() {
   }
 
   for (const nfil of fils) {
-    if(filInBounds(nfil, x1, y1)){
+    if(filInBounds(nfil, x, y)){
       selection = nfil;
       return;
     }
@@ -753,7 +723,7 @@ function mousePressed() {
 
 function mouseDragged() {
   if(drag != null){
-    if (origin != null && origin.getType()!='fil') {
+    if (origin != null) {
       //cursor('grabbing');
       let point = findGridLock(drag.xOffsetDrag + grid.translateX,
          drag.yOffsetDrag + grid.translateY);
@@ -781,39 +751,38 @@ function mouseReleased() {
   // Arrète le drag si il y en avait un en cours
   //cursor(ARROW);
   if (drag != null){
-    if(origin !=null && origin.getType()!='fil') {
+    if(origin !=null) {
       if(validComposantPos(drag)){
         components.push(drag);
-        let action = [{type: CREATE, objet: drag}];
-        let actionSup = simplifyComposant(drag);
-        addActions(action.concat(actionSup));
+        let actions = [{type: CREATE, objet: drag}];
+        simplifyComposant(drag, actions);
+        addActions(actions);
         //circuit.ajouterComposante(drag);
       }
     origin = null;
     } else if (drag.getType()=='fil') {
       if(lengthFil(drag)>0){
-        let action = [{type:CREATE, objet:drag}]
-        let actionsSup = simplifyNewFil(drag);
-        addActions(action.concat(actionsSup));
+        let actions = [{type:CREATE, objet:drag}]
+        let actionsSup = simplifyNewFil(drag, actions);
+        addActions(actions);
       }else {
-        fils.pop();
-        if(origin!=null){
-          selection = origin;
-          origin = null;
+        let fil = fils.pop();
+        if(fil.origin!=null){
+          selection = fil.origin;
         }
       }
-    } else {
-        if(validComposantPos(drag) && dist(drag.pastX, drag.pastY, drag.x, drag.y) > 0){
-          let action = [{type:MODIFIER, objet:drag, changements:[
-            	{attribut:'x', ancienne_valeur:drag.pastX, nouvelle_valeur:drag.x},
-              {attribut:'y', ancienne_valeur:drag.pastY, nouvelle_valeur:drag.y}]}];
-          let actionSup = simplifyComposant(drag);
-          addActions(action.concat(actionSup));
-          //circuit.composantPosChange(drag,drag.pastX,drag.pastY);
+    } else if(drag instanceof Composant) {
+        if(validComposantPos(drag) && dist(drag.pastPos.x, drag.pastPos.x, drag.x, drag.y) > 0){
+          let actions = [{type:MODIFIER, objet:drag, changements:[
+            	{attribut:'x', ancienne_valeur:drag.pastPos.x, nouvelle_valeur:drag.x},
+              {attribut:'y', ancienne_valeur:drag.pastPos.y, nouvelle_valeur:drag.y}]}];
+          simplifyComposant(drag, actions);
+          addActions(actions);
+          //circuit.composantPosChange(drag,drag.pastPos.x,drag.pastPos.y);
         } else{
           // Annuler le mouvement
-          drag.x = drag.pastX;
-          drag.y = drag.pastY;
+          drag.x = drag.pastPos.x;
+          drag.y = drag.pastPos.y;
         }
     }
     drag = null;
@@ -880,27 +849,23 @@ function keyPressed() {
       }
     } else if(keyCode === 82 || keyCode === 83 || keyCode === 65
         /*|| keyCode === 67 || keyCode === 68*/){
-        let newC;
-        let point = findGridLock(grid.translateX, grid.translateY);
-        let x = point.x;
-        let y = point.y;
-        if (keyCode === 82) {
-          newC = new Resisteur(x, y);
-        } else if (keyCode === 83) {
-          newC = new Batterie(x, y);
-        } else if (keyCode === 65) {
-          newC = new Ampoule(x, y);
-        } else if (keyCode === 67) {
-          newC = new Condensateur(x, y);
-        } else if (keyCode === 68) {
-          newC = new Diode(x, y);
-        }
+      let point = findGridLock(grid.translateX, grid.translateY);
+      let newC = function shortcutComposant(x, y) {
+          switch (keyCode) {
+            case 83: return new Batterie(x, y, 0);//b
+            case 82: return new Resisteur(x, y, 0);//r
+            case 65: return new Ampoule(x, y, 0);//a
+            case 67: return new Condensateur(x, y, 0);//c
+            case 68 : return new Diode(x, y);//d
+          };
+        }(point.x,point.y);
       if(validComposantPos(newC)){
-        action = simplifyComposant(newC);
+        let actions = [{type:CREATE,objet:newC}];
+        action = simplifyComposant(newC, actions);
         selection = newC;
         components.push(newC);
         //circuit.ajouterComposante(newC);
-        addActions([{type:CREATE,objet:newC}].concat(action));
+        addActions(actions);
       }
     }
   }
