@@ -44,7 +44,7 @@ function setup() {
   //----------------------------------------
   reset_button.mousePressed(refresh);
   undo_button.mousePressed(undo);
-  animation_button.mousePressed(function(){ animate-=-1;});
+  animation_button.mousePressed(function(){ animate*=-1;});
   line_grid_button.mousePressed(function(){ grid.quadrillage=QUADRILLE;});
   point_grid_button.mousePressed(function(){ grid.quadrillage=POINT;});
   point_line_grid_button.mousePressed(function(){ grid.quadrillage=QUADRILLEPOINT;});
