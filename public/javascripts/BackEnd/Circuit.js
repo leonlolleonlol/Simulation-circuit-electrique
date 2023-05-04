@@ -26,6 +26,9 @@
         
         //Sert stocker le type de circuit. AKA -> seulement des résistances, seulement des condensateurs ou RC.
         this.type;
+
+        //Utile pour réarranger le circuit en un format calculable
+        this.compteurDeNoeuds = 0;
     }
 
     ajouterComposante(composant){
@@ -55,10 +58,10 @@
      */
     update(){//Chaque fois qu'il y a un changement dans le circuit
 
-        
         this.trouverPile();
         print(this.circuit);
-        this.circuit = this.rearrangerArrayCircuit(this.circuit[0]);
+        this.circuit = this.rearrangerArrayCircuit(this.circuit[0]).circuit;
+        print(this.circuit);
         //this.trouverPile(this.circuit);
         // this.arrangerC = true;
         
@@ -86,28 +89,25 @@
      */
     rearrangerArrayCircuit(debutComposant){
         let nouvC = new Circuit();
-        let cpt = 0;
-        /* ESSAIS ACTUEL
+    
         do{
-            if(debutComposant.getProchaineComposante().composantePrecedente.length < 2){
-                cpt++;
-                if(debutComposant.prochaineComposante.length < 2){
-                    print(debutComposant);
-                    nouvC.ajouterComposante(debutComposant);
-                    debutComposant = debutComposant.getProchaineComposante();
-                    debutComposant.dejaPasser = true;
-                }else{ 
+            if(debutComposant.dejaPasser == false){
+                if(!(debutComposant.prochaineComposante.length < 2)){
+                    nouvC.compteurDeNoeuds++;
                     for(let i = 0; i < debutComposant.prochaineComposante.length; i++){
                         debutComposant.ajouterComposante(this.rearrangerArrayCircuit(debutComposant.prochaineComposante[i]));
-                    }
+                        debutComposant.circuitsEnParallele[i].circuit.pop();
+                    } 
                 }
+                nouvC.ajouterComposante(debutComposant); 
+                debutComposant.dejaPasser = true;
             }
-            
-        }while(debutComposant.getProchaineComposante().composantePrecedente.length < 2 
-        && !(debutComposant.getProchaineComposante().getType() == BATTERIE));
-        
+            debutComposant = debutComposant.getProchaineComposante(); 
+        }while((debutComposant.composantePrecedente.length < 2 || nouvC.compteurDeNoeuds != 0) 
+            && !(debutComposant.getProchaineComposante().getType() == BATTERIE));
+        nouvC.ajouterComposante(debutComposant);
         return nouvC;
-        */
+        
 
         /*SUREMENT INUTILE
         print(this.circuit);
