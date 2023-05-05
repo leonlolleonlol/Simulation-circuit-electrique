@@ -8,7 +8,8 @@ let fils;// Liste des fils du circuit
 
 // Variable nécessaire pour placer la grille
 let grid;
-let composants_panneau; // Le panneau de choix des composants
+const composants_panneau = [new Batterie(58, 215, 12),
+  new Resisteur(58, 265, 25), new Ampoule(58, 315, 40)]; // Le panneau de choix des composants
 
 // liens vers des éléments DOM utiles
 let undo_button;
@@ -20,9 +21,6 @@ let animation_button;
 let percent;
 let animate;//bool qui determine si on veut animation ou pas
 
-let undo_desactive = false;
-let redo_desactive = false;
-let animerDesactiver = false;
 let c1; //variable contenant l'instance du circuit. Sert pour les calculs
 
 let backgroundColor = 'rgb(200,200,200)';//220
@@ -100,13 +98,31 @@ function initComponents(){
     getType: function(){return "grille"},
   };
   initPosition();
-  // Composants dans le panneau de choix
-  composants_panneau=[new Batterie(58, 215, 12),
-    new Resisteur(58, 265, 25), new Ampoule(58, 315, 40)];
 }
 function initPosition(){
   grid.offsetX = round(max(200 * width/1230,138)/grid.tailleCell)*grid.tailleCell / grid.scale;
 }
+
+//DOM -------------------------------
+
+function validBoutonActif(button, verfication) {
+  if(verification && undo_button.attribute('disabled')==null){
+    button.attribute('disabled', '');
+  }
+  else if(!verification && undo_button.attribute('disabled')!=null){
+    button.removeAttribute('disabled');
+  }
+}
+
+function updateBouton(){
+  validBoutonActif(undo_button, undo_list.length == 0);
+  validBoutonActif(reset_button, undo_list.length == 0);
+  validBoutonActif(redo_button, redo_list.length == 0);
+  validBoutonActif(animation_button, components.length==0);
+}
+
+
+// ------------------------------------
 
 /**
  * Effectue les éléments suivant:
@@ -117,32 +133,7 @@ function initPosition(){
  */
 function draw() {
   background(backgroundColor);// Mettre le choix de couleur pour le background
-  if(undo_list.length == 0 && !undo_desactive){
-	  undo_button.attribute('disabled', '');
-    reset_button.attribute('disabled', '');
-    undo_desactive = true;
-  }
-  else if(undo_list.length != 0 && undo_desactive){
-	  undo_button.removeAttribute('disabled');
-    reset_button.removeAttribute('disabled');
-    undo_desactive = false;
-  }
-  if(redo_list.length == 0 && !redo_desactive){
-	  redo_button.attribute('disabled', '');
-    redo_desactive = true;
-  }
-  else if(redo_list.length != 0 && redo_desactive){
-	  redo_button.removeAttribute('disabled');
-    redo_desactive = false;
-  }
-  if(components.length==0 && !animerDesactiver){
-    animation_button.attribute('disabled', '');
-    animerDesactiver = true;
-  }
-  else if(components.length!=0 && animerDesactiver){
-    animation_button.removeAttribute('disabled');
-    animerDesactiver =  false;
-  }
+  updateBouton();
   push();
   scale(grid.scale);
   drawGrid();
