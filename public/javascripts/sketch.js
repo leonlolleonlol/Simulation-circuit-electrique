@@ -386,10 +386,11 @@ function filInBounds(fil, x, y){
   if(!inBoxBoundFil(fil,x,y)){
     return false;
   }
-  let f1 = getFilFunction(fil)
-  let xTest = (y - f1.b)/f1.pente;
-  let yTest = x * f1.pente + f1.b;
-  return dist(xTest, y, x, y) < 15 || dist(x, yTest, x, y) < 15
+  let fx = getFilFunction(fil);
+  let fy = {pente:1/pente(fil), b: fil.xi - fil.yi * 1/pente(fil)}
+  let xTest = y * fy.pente + fy.b;
+  let yTest = x * fx.pente + fx.b;
+  return dist(xTest, y, x, y) < 15 || dist(x, yTest, x, y) < 15;
 }
 
 function pente(fil){
