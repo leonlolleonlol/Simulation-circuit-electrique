@@ -2,7 +2,6 @@ const express = require('express')
 const app = express()
 const port = 3000;
 const path = require('path')
-const { pool } = require("./dbConfig");
 var nerdamer = require('nerdamer'); 
 // Load additional modules. These are not required.  
 require('nerdamer/Solve');
