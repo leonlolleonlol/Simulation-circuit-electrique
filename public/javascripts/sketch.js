@@ -220,7 +220,7 @@ function drawFils() {
     if(animate){
       line(element.xi + grid.translateX, element.yi + grid.translateY,
            element.xf + grid.translateX, element.yf + grid.translateY);
-      let nbCharge = Math.floor(lengthFil(element)/30);
+      let nbCharge = Math.floor(longueurFil(element)/30);
       for(let i = 0;i < nbCharge;i++){
         let percentCharge = ((percent*(1+Math.floor(element.courant))/nbCharge) % 1+ i/nbCharge)% 1;
         let pos = posAtPercent(element, percentCharge);
@@ -341,9 +341,7 @@ function inGrid(x, y){
 }
 
 // Fonction fil -----------------------------
-function validFilBegin(){
-let x = mouseX/grid.scale - grid.translateX;
-let y = mouseY/grid.scale - grid.translateY;
+function validFilBegin(x, y){
 let point = findGridLock(grid.translateX,grid.translateY)
   if (!inGrid(mouseX/grid.scale, mouseY/grid.scale) || dist(point.x, point.y, x, y)>10){
     return false;
@@ -373,6 +371,7 @@ function filStart(x, y){
       return fil;
     }
   }
+  return null;
 }
 
 function inBoxBoundFil(fil, x, y){
@@ -387,10 +386,9 @@ function filInBounds(fil, x, y){
   if(!inBoxBoundFil(fil,x,y)){
     return false;
   }
-  let penteF = pente(fil);
-  let b = fil.yi - fil.xi * penteF;
-  let xTest = (y - b)/penteF;
-  let yTest = x * penteF + b;
+  let f1 = getFilFunction(fil)
+  let xTest = (y - f1.b)/f1.pente;
+  let yTest = x * f1.pente + f1.b;
   return dist(xTest, y, x, y) < 15 || dist(x, yTest, x, y) < 15
 }
 
@@ -402,30 +400,31 @@ function angle(fil){
   return Math.atan(1/pente(fil));
 }
 
-function lengthFil(fil){
+function longueurFil(fil){
   return dist(fil.xi, fil.yi, fil.xf, fil.yf);
 }
 
+function getFilFunction(fil){
+  let penteFil = pente(fil)
+  return {pente:penteFil, b: fil.yi - fil.xi * penteFil};
+}
+
 function filOverlap(fil1,fil2){
-  let pente1 = pente(fil1);
-  let pente2 = pente(fil2);
-  let b1 = Math.abs(fil1.yi - fil1.xi * pente1);
-  let b2 = Math.abs(fil2.yi - fil2.xi * pente2);
-  pente1 = Math.abs(pente1);
-  pente2 = Math.abs(pente2);
-  if(pente1 === pente2 && b1 === b2){
-    if((pente1 == 0 && fil1.yi===fil2.yi)|| pente1 != Infinity){
+  let f1 = getFilFunction(fil1);
+  let f2 = getFilFunction(fil2);
+  if(Math.abs(f1.pente) === Math.abs(f2.pente) && Math.abs(f1.b) === Math.abs(f2.b)){
+    if((f1.pente == 0 && fil1.yi===fil2.yi)|| Math.abs(f1.pente) != Infinity){
       let x1i = Math.min(fil1.xi,fil1.xf);
       let x1f = Math.max(fil1.xi,fil1.xf);
       let x2i = Math.min(fil2.xi,fil2.xf);
       let x2f = Math.max(fil2.xi,fil2.xf);
       return ((x2i >=x1i && x2i <= x1f) || (x1i >= x2i && x1i <=x2f))
-    }else if (pente1 == Infinity && fil1.xi===fil2.xi){
+    }else if (Math.abs(f1.pente) == Infinity && fil1.xi===fil2.xi){
       let y1i = Math.min(fil1.yi,fil1.yf);
       let y1f = Math.max(fil1.yi,fil1.yf);
       let y2i = Math.min(fil2.yi,fil2.yf);
       let y2f = Math.max(fil2.yi,fil2.yf);
-      return ((y2i >= y1f && y2i <=y1i) || (y1i >=y2f && y1i <= y2i))
+      return ((y2i >= y1i && y2i <=y1f) || (y1i >=y2i && y1i <= y2f))
     }
   }
   else return false;
@@ -542,7 +541,7 @@ function simplifyNewFil(fil, actions){
           yi: pi.y,
           xf: borne1.x,
           yf: borne1.y,
-          courant:Math.random()*10,
+          courant:0,
           getType: function(){return "fil"},
         };
         let fil2 = {
@@ -550,7 +549,7 @@ function simplifyNewFil(fil, actions){
           yi: borne2.y,
           xf: pf.x,
           yf: pf.y,
-          courant:Math.random()*10,
+          courant:0,
           getType: function(){return "fil"},
         };
         fils.splice(index,1);
@@ -628,7 +627,7 @@ function simplifyComposant(composant, actions){
         yi: pi.y,
         xf: borne1.x,
         yf: borne1.y,
-        courant:Math.random()*10,
+        courant:0,
         getType: function(){return "fil"},
       };
       let fil2 = {
@@ -636,7 +635,7 @@ function simplifyComposant(composant, actions){
         yi: borne2.y,
         xf: pf.x,
         yf: pf.y,
-        courant:Math.random()*10,
+        courant:0,
         getType: function(){return "fil"},
       };
       fils.splice(index,1);
@@ -690,7 +689,7 @@ function mousePressed() {
       return;
     }
   }
-  if (validFilBegin()) {
+  if (validFilBegin(x, y)) {
     let point = findGridLock(grid.translateX, grid.translateY)
     //drag = new Fil(point.x,point.y)
     
@@ -699,13 +698,10 @@ function mousePressed() {
         yi: point.y,
         xf: point.x,
         yf: point.y,
-        courant:Math.random()*10,
+        courant:0,
         getType: function(){return "fil"},
     };
-    const nfil = filStart(x,y);
-    if(nfil!=null){
-      drag.origin = nfil;
-    }
+    drag.origin = filStart(x,y);
     selection = drag;
     fils.push(drag);
     return;
@@ -761,7 +757,7 @@ function mouseReleased() {
       }
     origin = null;
     } else if (drag.getType()=='fil') {
-      if(lengthFil(drag)>0){
+      if(longueurFil(drag)>0){
         let actions = [{type:CREATE, objet:drag}]
         let actionsSup = simplifyNewFil(drag, actions);
         addActions(actions);
@@ -790,7 +786,7 @@ function mouseReleased() {
 }
 
 function mouseWheel(event){
-  if(event.delta < 0 && grid.scale * 1.1 < 13.5){
+  if(event.delta < 0 && grid.scale * 1.1 < 9){
     zoom();
   }
   else if(event.delta > 0 && grid.scale * 0.9 > 0.2){
@@ -850,7 +846,7 @@ function keyPressed() {
     } else if(keyCode === 82 || keyCode === 83 || keyCode === 65
         /*|| keyCode === 67 || keyCode === 68*/){
       let point = findGridLock(grid.translateX, grid.translateY);
-      let newC = function shortcutComposant(x, y) {
+      let newC = function(x, y) {
           switch (keyCode) {
             case 83: return new Batterie(x, y, 0);//b
             case 82: return new Resisteur(x, y, 0);//r
