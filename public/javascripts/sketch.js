@@ -105,11 +105,11 @@ function initPosition(){
 
 //DOM -------------------------------
 
-function validBoutonActif(button, verfication) {
-  if(verification && undo_button.attribute('disabled')==null){
+function validBoutonActif(button, verification) {
+  if(verification && button.attribute('disabled')==null){
     button.attribute('disabled', '');
   }
-  else if(!verification && undo_button.attribute('disabled')!=null){
+  else if(!verification && button.attribute('disabled')!=null){
     button.removeAttribute('disabled');
   }
 }
@@ -134,7 +134,6 @@ function updateBouton(){
 function draw() {
   background(backgroundColor);// Mettre le choix de couleur pour le background
   updateBouton();
-  push();
   scale(grid.scale);
   drawGrid();
   drawFils();
@@ -152,7 +151,8 @@ function drawComponentsChooser() {
   push();
   noStroke();
   fill(backgroundColor);
-  rect(0, 0, grid.offsetX * grid.scale - 5, windowHeight);
+  rect(0, 0, grid.offsetX * grid.scale, height);
+  rect(0, 0, width, grid.offsetY * grid.scale);
   rectMode(CENTER);
   fill("rgba(128,128,128,0.59)");
   strokeWeight(4);
@@ -181,81 +181,45 @@ function drawGrid(){
 }
 
 function drawFils() {
-  push();
-  stroke("orange");
-  strokeWeight(4);
-  const addition = 0.01;
-  let vitesse = 2;
-  percent += addition * vitesse;
-  let grad=1;
+  
+  percent += 0.01;
   for (let element of fils){
+    push();
+    translate(grid.translateX, grid.translateY);
     if(isElementSelectionner(element) && !isElementSelectionner(drag)){
       push();
       strokeWeight(30);
       stroke('rgba(255, 165, 0, 0.2)');
-      let decalageX = 9 * Math.sin(angle(element));
-      let decalageY = 9 * Math.cos(angle(element));
-      if(element.yi >element.yf){
-       decalageX *= -1;
-       decalageY *= -1;
-      }
-      line(element.xi + grid.translateX + decalageX, element.yi + grid.translateY + decalageY, 
-           element.xf + grid.translateX - decalageX, element.yf + grid.translateY - decalageY);
+      let mul = element.yi >element.yf? -1 : 1;
+      let decalageX = 9 * Math.sin(angle(element)) * mul;
+      let decalageY = 9 * Math.cos(angle(element)) * mul;
+      line(element.xi + decalageX, element.yi + decalageY, 
+           element.xf - decalageX, element.yf - decalageY);
       pop();
     }
-    /*fill(0,255*(1-(grad/(fils.length+1))),0);
-    stroke(0,255*(1-(grad/(fils.length+1))),0);*/
-    line(element.xi + grid.translateX, element.yi + grid.translateY, element.xf + grid.translateX, element.yf + grid.translateY);
-    //temporaire avant d'avoir objet fil
-    //stroke('rgba(127, 255, 0, 0.9)');
+    stroke('orange');
+    fill('red')
+    strokeWeight(4);
+    line(element.xi, element.yi, element.xf, element.yf);
     if(animate){
-      line(element.xi + grid.translateX, element.yi + grid.translateY,
-           element.xf + grid.translateX, element.yf + grid.translateY);
-      let nbCharge = Math.floor(longueurFil(element)/30);
+      let nbCharge = Math.floor(longueurFil(element)/grid.tailleCell);
+      let decalageCharge = (percent*(1+Math.floor(element.courant))/nbCharge) % 1
       for(let i = 0;i < nbCharge;i++){
-        let percentCharge = ((percent*(1+Math.floor(element.courant))/nbCharge) % 1+ i/nbCharge)% 1;
+        let percentCharge = (decalageCharge + i/nbCharge)% 1;
         let pos = posAtPercent(element, percentCharge);
         circle(pos.x,pos.y,10);
       }
-      
     }
-    grad++;
+    pop();
   }
-  pop();
 }
-/*
-function drawFils() {
-  push();
-  const addition = 0.01;
-  let vitesse = 2;
-  percent += addition * vitesse;
-  for (let element of fils){
-    if (element != null){
-      stroke("orange");
-      strokeWeight(4);
-      line(element.xi + grid.translateX, element.yi + grid.translateY,
-           element.xf + grid.translateX, element.yf + grid.translateY);
-      fill('red');
-      for(let i = 0;i < Math.floor(Math.sqrt(Math.pow(element.xf-element.xi,2)+Math.pow(element.yf-element.yi,2))/30);i++){
-        let distance=Math.floor(Math.sqrt(Math.pow(element.xf-element.xi,2)+Math.pow(element.yf-element.yi,2))/30)*30;
-        let percentCharge = (30*percent/distance) % 1+ i/distance*30;
-        percentCharge = percentCharge % 1;
-        let pos = getLineXYatPercent(element, percentCharge);
-        circle(pos.x,pos.y,10);
-      }
-    }
-  }
-  pop();
-}
-*/
+
 function posAtPercent(fil, percent) {
-  var dx = fil.xf - fil.xi;
-  var dy = fil.yf - fil.yi;
-  var X = fil.xi+ grid.translateX + dx * percent;
-  var Y = fil.yi+ grid.translateY + dy * percent;
+  let dx = fil.xf - fil.xi;
+  let dy = fil.yf - fil.yi;
   return ({
-      x: X,
-      y: Y
+      x: fil.xi + dx * percent,
+      y: fil.yi + dy * percent
   });
 }
 function drawComposants(){
@@ -270,15 +234,13 @@ function drawPointGrid(color) {
   push();
   stroke(color);
   strokeWeight(6);
+  let count = 0;
   let offsetX = grid.offsetX + (grid.translateX-grid.offsetX) % grid.tailleCell;
   let offsetY = grid.offsetY + (grid.translateY-grid.offsetY) % grid.tailleCell;
-  for (let i = 0; i < width/grid.scale - grid.offsetX; i+=grid.tailleCell) {
-    for (let j = 0; j < height/grid.scale - grid.offsetY ; j+=grid.tailleCell) {
-      if (
-        !((grid.translateX % grid.tailleCell) < 0 && i == 0) &&
-        !((grid.translateY % grid.tailleCell) < 0 && j == 0)
-      )
-        point(offsetX + i, offsetY + j);
+  for (let i = 0; i < windowWidth/grid.scale + grid.offsetX; i+=grid.tailleCell) {
+    for (let j = 0; j < windowHeight/grid.scale + grid.offsetY; j+=grid.tailleCell) {
+      point(offsetX + i, offsetY + j);
+      count++;
     }
   }
   pop();
@@ -289,14 +251,12 @@ function drawLineGrid(color) {
   stroke(color);
   strokeWeight(2);
   let offsetX = grid.offsetX + (grid.translateX-grid.offsetX) % grid.tailleCell;
-  for (let i = 0; i < windowWidth/grid.scale - grid.offsetX; i+=grid.tailleCell) {
-    if (!(grid.translateX % grid.tailleCell < 0 && borne == 0))
-      line(offsetX + i, grid.offsetY, offsetX + i , windowHeight/grid.scale);
+  for (let i = 0; i < windowWidth/grid.scale + grid.offsetX; i+=grid.tailleCell) {
+    line(offsetX + i, grid.offsetY, offsetX + i , height/grid.scale);
   }
   let offsetY = grid.offsetY + (grid.translateY-grid.offsetY) % grid.tailleCell;
-  for (let j = 0; j < windowHeight/grid.scale - grid.offsetY; j+=grid.tailleCell) {
-    if (!(grid.translateY % grid.tailleCell < 0 && borne == 0))
-      line(grid.offsetX, offsetY + j, windowWidth/grid.scale, offsetY + j);
+  for (let j = 0; j < windowHeight/grid.scale + grid.offsetY; j+=grid.tailleCell) {
+    line(grid.offsetX, offsetY + j, width/grid.scale, offsetY + j);
   }
   pop();
 }
@@ -312,9 +272,9 @@ function drawLineGrid(color) {
  * @returns Le point le plus proche sur la grille
  */
 function findGridLock(offsetX, offsetY) {
-  let lockX = round((mouseX/grid.scale - offsetX) / grid.tailleCell) *
+  let lockX = Math.round((mouseX/grid.scale - offsetX) / grid.tailleCell) *
     grid.tailleCell;
-  let lockY = round((mouseY/grid.scale  - offsetY) / grid.tailleCell) * 
+  let lockY = Math.round((mouseY/grid.scale  - offsetY) / grid.tailleCell) * 
     grid.tailleCell
   return {x:lockX, y: lockY};
 }
@@ -338,9 +298,7 @@ let point = findGridLock(grid.translateX,grid.translateY)
     return false;
   }
   else {
-    if(getConnectingComposant(x,y) != null || filStart(x, y)!=null)
-      return true;
-    else return false;
+    return getConnectingComposant(x,y) != null || filStart(x, y)!=null;
   }
 }
 
@@ -378,10 +336,21 @@ function filInBounds(fil, x, y){
     return false;
   }
   let fx = getFilFunction(fil);
-  let fy = {pente:1/pente(fil), b: fil.xi - fil.yi * 1/pente(fil)}
-  let xTest = y * fy.pente + fy.b;
-  let yTest = x * fx.pente + fx.b;
+  let xTest = y * 1/fx.pente + fx.ordonneY;
+  let yTest = x * fx.pente + fx.ordonneX;
   return dist(xTest, y, x, y) < 15 || dist(x, yTest, x, y) < 15;
+}
+
+function trierPointFil(fil){
+  let sortArray = [{x:fil.xi, y:fil.yi}, {x:fil.xf, y:fil.yf}];
+  if(Math.abs(pente(fil))==Infinity){
+    sortArray.sort((a, b) => a.y - b.y);
+  }else sortArray.sort((a, b) => a.x - b.x);
+  fil.xi = sortArray[0].x;
+  fil.yi = sortArray[0].y;
+  fil.xf = sortArray[1].x;
+  fil.yf = sortArray[1].y;
+
 }
 
 function pente(fil){
@@ -398,167 +367,113 @@ function longueurFil(fil){
 
 function getFilFunction(fil){
   let penteFil = pente(fil)
-  return {pente:penteFil, b: fil.yi - fil.xi * penteFil};
+  return {pente:penteFil, ordonneX: fil.yi - fil.xi * penteFil,
+     ordonneY: fil.xi - fil.yi * 1/penteFil};
 }
 
 function filOverlap(fil1,fil2){
   let f1 = getFilFunction(fil1);
   let f2 = getFilFunction(fil2);
-  if(Math.abs(f1.pente) === Math.abs(f2.pente) && Math.abs(f1.b) === Math.abs(f2.b)){
+  if(Math.abs(f1.pente) === Math.abs(f2.pente) &&
+   Math.abs(f1.ordonneX) === Math.abs(f2.ordonneX)){
     if((f1.pente == 0 && fil1.yi===fil2.yi)|| Math.abs(f1.pente) != Infinity){
-      let x1i = Math.min(fil1.xi,fil1.xf);
-      let x1f = Math.max(fil1.xi,fil1.xf);
-      let x2i = Math.min(fil2.xi,fil2.xf);
-      let x2f = Math.max(fil2.xi,fil2.xf);
-      return ((x2i >=x1i && x2i <= x1f) || (x1i >= x2i && x1i <=x2f))
+      return (fil2.xi >= fil1.xi && fil2.xi <= fil1.xf) || (fil1.xi >= fil2.xi && fil1.xi <=fil2.xf);
     }else if (Math.abs(f1.pente) == Infinity && fil1.xi===fil2.xi){
-      let y1i = Math.min(fil1.yi,fil1.yf);
-      let y1f = Math.max(fil1.yi,fil1.yf);
-      let y2i = Math.min(fil2.yi,fil2.yf);
-      let y2f = Math.max(fil2.yi,fil2.yf);
-      return ((y2i >= y1i && y2i <=y1f) || (y1i >=y2i && y1i <= y2f))
+      return (fil2.yi >= fil1.yi && fil2.xi <= fil1.yf) || (fil1.yi >=fil2.yi && fil1.yi <= fil2.yf);
     }
   }
   else return false;
 }
 
 function simplifyNewFil(fil, actions){
-  let fils_remplacer =[];
-  for (const testFil of fils) {
+  trierPointFil(fil);
+  for (let index = 0; index < fils.length; index++) {
+    const testFil = fils[index];
     if(testFil!==fil && filOverlap(fil,testFil)){
-      fils_remplacer.push(testFil);
+      let array = [{x:testFil.xi, y:testFil.yi}, {x:testFil.xf, y:testFil.yf},
+        {x:fil.xi, y:fil.yi}, {x:fil.xf, y:fil.yf}];
+      if(Math.abs(pente(testFil))==Infinity)
+        array.sort(function(a, b){return a.y - b.y});
+      else array.sort(function(a, b){return a.x - b.x});
+      fil.xi = array[0].x;
+      fil.yi = array[0].y;
+      fil.xf = array[array.length - 1].x;
+      fil.yf = array[array.length - 1].y;
+      fils.splice(index, 1);
+      actions.push({type:DELETE, objet:testFil, index});
+      index--;
     }
   }
+  verifierCouperFil(fil,actions);
+}
 
-  if(fils_remplacer.length!=0){
-    for (const element of fils_remplacer){
-      if(Math.abs(pente(element))==Infinity){
-        let y0 = Math.min(element.yi, fil.yi, element.yf, fil.yf);
-        let y1 = Math.max(element.yi, fil.yi, element.yf, fil.yf);
-        fil.yi = y0;
-        fil.yf = y1;
-      }else {
-        let p1i = {x:element.xi, y:element.yi};
-        let p1f = {x:element.xf, y:element.yf};
-        let p2i = {x:fil.xi, y:fil.yi};
-        let p2f = {x:fil.xf, y:fil.yf};
-        let array = [p1i, p2i, p1f, p2f];
-        array.sort(function(a, b){return a.x - b.x});
-        fil.xi = array[0].x;
-        fil.yi = array[0].y;
-        fil.xf = array[array.length - 1].x;
-        fil.yf = array[array.length - 1].y;
-      }
-      
-    /*for (const composant of components) {
-      if(composant.checkConnection(fils_remplacer[index].objet.xi, fils_remplacer[index].objet.yi, 10)){
-        fils_remplacer[index].objet.begin = composant;
-        break;
-      }
-    }
-    for (const composant of components) {
-      if(composant.checkConnection(fils_remplacer[index].objet.xf, fils_remplacer[index].objet.yf, 10)){
-        fils_remplacer[index].objet.end = composant;
-        break;
-      }
-    }
-    if(fils_remplacer[index].objet.begin!=null && fils_remplacer[index].objet.end){
-      circuit.connect(fils_remplacer[index].objet.begin,fils_remplacer[index].objet.end);
-    }*/
-    
-    let index = fils.indexOf(element);
-    fils.splice(index, 1);
-    actions.push({type:DELETE, objet:element, index})
-    }
-  } else{
-    /*for (const composant of components) {
-      if(composant.checkConnection(fil.xi, fil.yi, 10)){
-        fil.begin = composant;
-        break;
-      }
-    }
-    for (const composant of components) {
-      if(composant.checkConnection(fil.xf, fil.yf, 10)){
-        fil.end = composant;
-        break;
-      }
-    }
-    if(fil.begin!=null && fil.end){
-      circuit.connect(fil.begin,fil.end);
-    }
-    addActions({type:CREATE,objet:fil})*/
-  }
+function verifierCouperFil(fil, actions){
   let penteFil = Math.abs(pente(fil));
-  const index = fils.indexOf(fil);
-  let array = [{x:fil.xi, y:fil.yi}, {x:fil.xf, y:fil.yf}];
-  if(penteFil==0)
-    array.sort(function(a, b){return a.x - b.x});
-  else array.sort(function(a, b){return a.y - b.y});
-  let pi = array[0];
-  let pf = array[1];
   if(penteFil==Infinity || penteFil==0){
     for (const composant of components) {
-      if((penteFil===0 && composant.orientation%PI!=0)||
-      (penteFil===Infinity && composant.orientation%PI==0)){
-        continue;
-      }
-      let connections = composant.getConnections();
-      let borne1 = connections[0];
-      let borne2 = connections[1];
-      let piInBound = composant.inBounds(pi.x,pi.y);
-      let pfInBound = composant.inBounds(pf.x,pf.y);
-      if(piInBound && pfInBound){
-        fils.splice(index,1);
-        actions.push({type:DELETE,objet:fil, index});
-        break;
-      }else if(piInBound && !pfInBound){
-        actions.push({type:MODIFIER, objet:fil, changements:[
-          {attribut:'xi', ancienne_valeur:fil.xi, nouvelle_valeur:borne2.x},
-          {attribut:'yi', ancienne_valeur:fil.yi, nouvelle_valeur:borne2.y}]});
-        fil.xi = borne2.x;
-        fil.yi = borne2.y;
-        fil.xf = pf.x;
-        fil.yf = pf.y;
-      }else if(!piInBound && pfInBound){
-        actions.push({type:MODIFIER, objet:fil, changements:[
-          {attribut:'xf', ancienne_valeur:fil.xf, nouvelle_valeur:borne1.x},
-          {attribut:'yf', ancienne_valeur:fil.yf, nouvelle_valeur:borne1.y}]});
-        fil.xi = pi.x;
-        fil.yi = pi.y;
-        fil.xf = borne1.x;
-        fil.yf = borne1.y;
-      }else if(inBoxBoundFil(fil, composant.x,composant.y)){
-        let fil1 = {
-          xi: pi.x,
-          yi: pi.y,
-          xf: borne1.x,
-          yf: borne1.y,
-          courant:0,
-          getType: function(){return "fil"},
-        };
-        let fil2 = {
-          xi: borne2.x,
-          yi: borne2.y,
-          xf: pf.x,
-          yf: pf.y,
-          courant:0,
-          getType: function(){return "fil"},
-        };
-        fils.splice(index,1);
-        actions.push({type:DELETE,objet:fil,index});
-        fils.push(fil1);
-        fils.push(fil2);
-        actions.push({type:CREATE,objet:fil1});
-        actions.push({type:CREATE,objet:fil2});
-        simplifyNewFil(fil1, actions);
-        simplifyNewFil(fil2, actions);
-        break;
-      }
+      let continuer = couperFil(fil, composant, actions);
+      if(!continuer)
+        return;
     }
   }
 }
 
 // --------------------------------------
+
+function couperFil(fil, composant, actions){
+  let penteFil = Math.abs(pente(fil));
+  let horizontal = composant.orientation % PI === 0;
+  if((penteFil == Infinity && !horizontal) || (penteFil == 0 && horizontal)){
+    const index = fils.indexOf(fil);
+    let piInBound = composant.inBounds(fil.xi, fil.yi);
+    let pfInBound = composant.inBounds(fil.xf, fil.yf);
+    let connections = composant.getConnections();
+    let borne1 = connections[0];
+    let borne2 = connections[1];
+    if(piInBound && pfInBound){
+      fils.splice(index,1);
+      actions.push({type:DELETE,objet:fil, index});
+      return false;
+    }else if(piInBound && !pfInBound){
+      actions.push({type:MODIFIER, objet:fil, changements:[
+        {attribut:'xi', ancienne_valeur:fil.xi, nouvelle_valeur:borne2.x},
+        {attribut:'yi', ancienne_valeur:fil.yi, nouvelle_valeur:borne2.y}]});
+      fil.xi = borne2.x;
+      fil.yi = borne2.y;
+    }else if(!piInBound && pfInBound){
+      actions.push({type:MODIFIER, objet:fil, changements:[
+        {attribut:'xf', ancienne_valeur:fil.xf, nouvelle_valeur:borne1.x},
+        {attribut:'yf', ancienne_valeur:fil.yf, nouvelle_valeur:borne1.y}]});
+      fil.xf = borne1.x;
+      fil.yf = borne1.y;
+    }else if(inBoxBoundFil(fil, composant.x,composant.y)){
+      let fil1 = {
+        xi: fil.xi,
+        yi: fil.yi,
+        xf: borne1.x,
+        yf: borne1.y,
+        courant:0,
+        getType: function(){return "fil"},
+      };
+      let fil2 = {
+        xi: borne2.x,
+        yi: borne2.y,
+        xf: fil.xf,
+        yf: fil.yf,
+        courant:0,
+        getType: function(){return "fil"},
+      };
+      fils.splice(index,1);
+      fils.push(fil1, fil2);
+      actions.push({type:DELETE,objet:fil,index},
+        {type:CREATE,objet:fil1}, {type:CREATE,objet:fil2});
+      verifierCouperFil(fil1, actions);
+      verifierCouperFil(fil2, actions);
+      return false;
+    }
+  }
+  return true;
+}
 
 function validComposantPos(composant){
   if (!inGrid(composant.x + grid.translateX, composant.y + grid.translateY))
@@ -579,64 +494,10 @@ function simplifyComposant(composant, actions){
         break;
     }
   }
-  let horizontal = composant.orientation % PI === 0;
-  let connections = composant.getConnections();
-  let borne1 = connections[0];
-  let borne2 = connections[1];
   for (const fil of fils) {
     let penteFil = Math.abs(pente(fil));
-    if(penteFil!=Infinity && penteFil!=0 || (penteFil == Infinity && horizontal) || 
-    (penteFil == 0 && !horizontal)){
-      continue;
-    }
-    const index = fils.indexOf(fil);
-    let array = [{x:fil.xi, y:fil.yi}, {x:fil.xf, y:fil.yf}];
-    if(penteFil==0)
-      array.sort(function(a, b){return a.x - b.x});
-    else array.sort(function(a, b){return a.y - b.y});
-    let pi = array[0];
-    let pf = array[1];
-    let piInBound = composant.inBounds(pi.x,pi.y);
-    let pfInBound = composant.inBounds(pf.x,pf.y);
-    if(piInBound && pfInBound){
-      fils.splice(index,1);
-      actions.push({type:DELETE,objet:fil, index})
-    }else if(piInBound && !pfInBound){
-      actions.push({type:MODIFIER, objet:fil, changements:[
-        {attribut:'xi', ancienne_valeur:fil.xi, nouvelle_valeur:borne2.x},
-        {attribut:'yi', ancienne_valeur:fil.yi, nouvelle_valeur:borne2.y}]});
-      fil.xi = borne2.x;
-      fil.yi = borne2.y;
-    }else if(!piInBound && pfInBound){
-      actions.push({type:MODIFIER, objet:fil, changements:[
-        {attribut:'xf', ancienne_valeur:fil.xf, nouvelle_valeur:borne1.x},
-        {attribut:'yf', ancienne_valeur:fil.yf, nouvelle_valeur:borne1.y}]});
-      fil.xf = borne1.x;
-      fil.yf = borne1.y;
-    }else if(inBoxBoundFil(fil, composant.x, composant.y)){
-      let fil1 = {
-        xi: pi.x,
-        yi: pi.y,
-        xf: borne1.x,
-        yf: borne1.y,
-        courant:0,
-        getType: function(){return "fil"},
-      };
-      let fil2 = {
-        xi: borne2.x,
-        yi: borne2.y,
-        xf: pf.x,
-        yf: pf.y,
-        courant:0,
-        getType: function(){return "fil"},
-      };
-      fils.splice(index,1);
-      actions.push({type:DELETE,objet:fil,index});
-      fils.push(fil1);
-      fils.push(fil2);
-      actions.push({type:CREATE,objet:fil1});
-      actions.push({type:CREATE,objet:fil2});
-    }
+    if(penteFil==Infinity || penteFil==0)
+      couperFil(fil,composant, actions)
   }
 }
 
@@ -712,13 +573,13 @@ function mousePressed() {
 function mouseDragged() {
   if(drag != null){
     if (origin != null) {
-      //cursor('grabbing');
+      cursor('grabbing');
       let point = findGridLock(drag.xOffsetDrag + grid.translateX,
          drag.yOffsetDrag + grid.translateY);
       drag.x = point.x;
       drag.y = point.y
     } else if(drag === grid){
-      //cursor(MOVE);
+      cursor(MOVE);
       grid.translateX += (mouseX - pmouseX)/grid.scale;
       grid.translateY += (mouseY - pmouseY)/grid.scale;
     } else if (drag.getType()=='fil') {
@@ -726,7 +587,7 @@ function mouseDragged() {
       drag.xf = point.x;
       drag.yf = point.y;
     } else{
-      //cursor('grabbing');
+      cursor('grabbing');
       let point = findGridLock(drag.xOffsetDrag, drag.yOffsetDrag)
       drag.x = point.x;
       drag.y = point.y
@@ -737,15 +598,14 @@ function mouseDragged() {
 
 function mouseReleased() {
   // Arrète le drag si il y en avait un en cours
-  //cursor(ARROW);
   if (drag != null){
+    cursor(ARROW);
     if(origin !=null) {
       if(validComposantPos(drag)){
         components.push(drag);
         let actions = [{type: CREATE, objet: drag}];
         simplifyComposant(drag, actions);
         addActions(actions);
-        //circuit.ajouterComposante(drag);
       }
     origin = null;
     } else if (drag.getType()=='fil') {
@@ -760,13 +620,12 @@ function mouseReleased() {
         }
       }
     } else if(drag instanceof Composant) {
-        if(validComposantPos(drag) && dist(drag.pastPos.x, drag.pastPos.x, drag.x, drag.y) > 0){
+        if(validComposantPos(drag) && dist(drag.pastPos.x, drag.pastPos.y, drag.x, drag.y) > 0){
           let actions = [{type:MODIFIER, objet:drag, changements:[
             	{attribut:'x', ancienne_valeur:drag.pastPos.x, nouvelle_valeur:drag.x},
               {attribut:'y', ancienne_valeur:drag.pastPos.y, nouvelle_valeur:drag.y}]}];
           simplifyComposant(drag, actions);
           addActions(actions);
-          //circuit.composantPosChange(drag,drag.pastPos.x,drag.pastPos.y);
         } else{
           // Annuler le mouvement
           drag.x = drag.pastPos.x;
@@ -779,15 +638,14 @@ function mouseReleased() {
 
 function mouseWheel(event){
   if(event.delta < 0 && grid.scale * 1.1 < 9){
-    zoom();
+    zoom(0.1);
   }
   else if(event.delta > 0 && grid.scale * 0.9 > 0.2){
-    zoom(true);
+    zoom(-0.1);
   }
 }
 
-function zoom(inverse){
-  let factor = inverse ? -0.1 : 0.1;
+function zoom(factor){
   let pastScale = grid.scale;
   grid.scale = grid.scale * (1+factor);
   grid.translateX = (grid.translateX*pastScale - (mouseX - grid.translateX*pastScale) * factor)/grid.scale;
@@ -803,12 +661,8 @@ function keyPressed() {
   * aller voir https://www.toptal.com/developers/keycode
   */
   if (keyIsDown(CONTROL)) {
-    if(keyIsDown(SHIFT)){
-      if(keyCode === 90){
-        redo();
-      }
-    }else if(keyCode === 90){
-      undo();
+    if(keyCode === 90){
+      keyIsDown(SHIFT)?redo():undo();
     }
   } else {
     if(keyCode === 8 && selection!=null){
@@ -816,11 +670,9 @@ function keyPressed() {
       if(selection.getType()!=='fil'){
         index = components.indexOf(selection)
         components.splice(index, 1);
-        //circuit.retirerComposant(selection);
       } else{
         index = fils.indexOf(selection)
         fils.splice(index, 1);
-        //circuit.removeConnection(selection)
       } 
       addActions({type:DELETE,objet:selection,index});
       selection = null;
@@ -840,7 +692,7 @@ function keyPressed() {
       let point = findGridLock(grid.translateX, grid.translateY);
       let newC = function(x, y) {
           switch (keyCode) {
-            case 83: return new Batterie(x, y, 0);//b
+            case 83: return new Batterie(x, y, 0);//s
             case 82: return new Resisteur(x, y, 0);//r
             case 65: return new Ampoule(x, y, 0);//a
             case 67: return new Condensateur(x, y, 0);//c
@@ -869,4 +721,5 @@ function windowResized(){
  */
 function refresh() {
   initComponents();
+  resetHistorique();
 }

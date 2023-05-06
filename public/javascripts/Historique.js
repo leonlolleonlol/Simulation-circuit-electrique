@@ -131,3 +131,8 @@ function applyLimitActions(){
   if(undo_list.length > limitActions)
     undo_list.shift();
 }
+
+function resetHistorique() {
+  undo_list.length = 0;
+  redo_list.length = 0;
+}
