@@ -234,13 +234,11 @@ function drawPointGrid(color) {
   push();
   stroke(color);
   strokeWeight(6);
-  let count = 0;
   let offsetX = grid.offsetX + (grid.translateX-grid.offsetX) % grid.tailleCell;
   let offsetY = grid.offsetY + (grid.translateY-grid.offsetY) % grid.tailleCell;
   for (let i = 0; i < windowWidth/grid.scale + grid.offsetX; i+=grid.tailleCell) {
     for (let j = 0; j < windowHeight/grid.scale + grid.offsetY; j+=grid.tailleCell) {
       point(offsetX + i, offsetY + j);
-      count++;
     }
   }
   pop();
@@ -303,11 +301,7 @@ let point = findGridLock(grid.translateX,grid.translateY)
 }
 
 function getConnectingComposant(x, y){
-  for (const composant of components) {
-    if(composant.checkConnection(x, y, 10)){
-      return composant;
-    }
-  }
+  return components.find(element => element.checkConnection(x, y, 10))
 }
 
 function filStart(x, y){
@@ -478,11 +472,7 @@ function couperFil(fil, composant, actions){
 function validComposantPos(composant){
   if (!inGrid(composant.x + grid.translateX, composant.y + grid.translateY))
     return false;
-  for (const composantTest of components) {
-    if(composantTest.checkConnection(composant.x,composant.y,1) || composant.checkConnection(composantTest.x,composantTest.y,1))
-      return false;
-  }
-  return true;
+  return !components.some(element =>composantTest.checkConnection(composant.x,composant.y,1) || composant.checkConnection(composantTest.x,composantTest.y,1));
 }
 function simplifyComposant(composant, actions){
   for (let index = 0; index < components.length; index++) {
@@ -544,13 +534,9 @@ function mousePressed() {
   }
   if (validFilBegin(x, y)) {
     let point = findGridLock(grid.translateX, grid.translateY)
-    //drag = new Fil(point.x,point.y)
-    
     drag = {
-        xi: point.x,
-        yi: point.y,
-        xf: point.x,
-        yf: point.y,
+        xi: point.x, yi: point.y,
+        xf: point.x, yf: point.y,
         courant:0,
         getType: function(){return "fil"},
     };
