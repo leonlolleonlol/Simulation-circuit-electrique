@@ -26,9 +26,6 @@
         
         //Sert stocker le type de circuit. AKA -> seulement des résistances, seulement des condensateurs ou RC.
         this.type;
-
-        //Utile pour réarranger le circuit en un format calculable
-        this.compteurDeNoeuds = 0;
     }
 
     ajouterComposante(composant){
@@ -57,15 +54,9 @@
      * branche principale.
      */
     update(){//Chaque fois qu'il y a un changement dans le circuit
-
         this.trouverPile();
-        print(this.circuit);
         this.circuit = this.rearrangerArrayCircuit(this.circuit[0], false).circuit;
-        print(this.circuit);
-        //this.trouverPile(this.circuit);
-        // this.arrangerC = true;
-        
-        // this.tensionEQ = this.circuit[0].tension;
+        this.tensionEQ = this.circuit[0].tension;
         this.trouverEq();
     }
 
@@ -97,7 +88,6 @@
         do{
             if(debutComposant.dejaPasser == false){
                 if(!(debutComposant.prochaineComposante.length < 2)){
-                    nouvC.compteurDeNoeuds++;
                     for(let i = 0; i < debutComposant.prochaineComposante.length; i++){
                         debutComposant.ajouterComposante(this.rearrangerArrayCircuit(debutComposant.prochaineComposante[i], true));
                     } 
@@ -238,7 +228,7 @@
 
     remplirResisteursAvecCourant(){
         for (let i = 0; i < this.circuit.length; i++){
-            if(this.circuit[i].getType() == RESISTEUR){    
+            if(this.circuit[i].getType() == RESISTEUR){   
                 this.circuit[i].courant = this.courant;
                 this.circuit[i].tension = this.courant * this.circuit[i].resistance;
             }else if(this.circuit[i].getType() == NOEUD){
