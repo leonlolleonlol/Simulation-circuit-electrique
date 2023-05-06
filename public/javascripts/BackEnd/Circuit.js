@@ -64,13 +64,10 @@
      * Met la pile à la première position du circuit
      */
     trouverPile(){
-        for(let i = 0; i < this.circuit.length; i++){
-            if(this.circuit[i].getType() == BATTERIE){   
-                this.contientPile = true;
-                if(i!= 0){
-                    this.echangerComposantes(i, 0);
-                }       
-            }
+        let index = this.circuit.findIndex(element => element.getType() == BATTERIE);
+        if(index!=-1){
+            this.contientPile = true;
+            this.echangerComposantes(index, 0);
         }
     }
 
@@ -88,9 +85,9 @@
         do{
             if(debutComposant.dejaPasser == false){
                 if(!(debutComposant.prochaineComposante.length < 2)){
-                    for(let i = 0; i < debutComposant.prochaineComposante.length; i++){
-                        debutComposant.ajouterComposante(this.rearrangerArrayCircuit(debutComposant.prochaineComposante[i], true));
-                    } 
+                    for (const pComposant of debutComposant.prochaineComposante) {
+                        debutComposant.ajouterComposante(this.rearrangerArrayCircuit(pComposant, true));
+                    }
                 }
                 nouvC.ajouterComposante(debutComposant); 
                 debutComposant.dejaPasser = true;
@@ -108,12 +105,11 @@
     
 
     arrange(circuit){
-        let nouvCircuit = [];
-        nouvCircuit[0] = circuit[0];
-            for(let i = 1; i < circuit.length; i++){
-                nouvCircuit[i] = circuit[i - 1].getProchaineComposante();            
+        let nouvCircuit = [circuit[0]];
+            for(let i = 0; i < circuit.length-1; i++){
+                nouvCircuit.push(circuit[i].getProchaineComposante());            
             }
-            circuit = nouvCircuit;
+        return nouvCircuit;
     }
 
     /**
@@ -124,27 +120,18 @@
         if(this.valide){
             switch (this.type){
                 case SEULEMENTR:
-                    for (let i = 0; i < this.circuit.length; i++){
-                        if(this.circuit[i].getType() == NOEUD){
-                            this.resistanceEQ += this.circuit[i].resistanceEQ;
-                        }else if (this.circuit[i].getType() == RESISTEUR){
-                            this.resistanceEQ += this.circuit[i].resistance;
-                        }
+                    for (const element of this.circuit) {
+                       this.resistanceEQ += element.getType() == NOEUD?element.resistanceEQ:element.resistance;
                     }
                     if(this.contientPile){
                         this.courant = this.tensionEQ / this.resistanceEQ;
                     }
                     this.remplirResisteursAvecCourant();
-                
                     break;
-                case SEULEMENT:
+                case SEULEMENTC:
                     let capaciteTemp = 0;
-                    for (let i = 0; i < this.circuit.length; i++){ 
-                        if(this.circuit[i].getType() == NOEUD){
-                            capaciteTemp += 1 / this.circuit[i].capaciteEQ;
-                        }else if (this.circuit[i].getType() == CONDENSATEUR){
-                            capaciteTemp += 1 / this.circuit[i].capacite;
-                        }
+                    for (const element of this.circuit) {
+                        capaciteTemp += 1 / (element.getType() == NOEUD ? element.capaciteEQ : element.capacite);
                     }
                     this.capaciteEQ = (1/capaciteTemp).round(2);
                     if(this.contientPile){
@@ -153,7 +140,7 @@
                     }
                     this.remplirCondensateursAvecCharge();
                     break;
-                case circuitType.RC:
+                case RC:
                     //C'est là que c'est difficile
                     //On peut aussi juste dire que le circuit est invalide.
                     print("Circuit RC détecté"); //(rip)
@@ -177,45 +164,24 @@
      * changer la variable "type" en le type du circuit.
      */
     trouverTypeDeCircuit(){
-        let circuitR = false;
-        let circuitC = false;
-        let circuitRC = false;
-        for (let i = 0; i < this.circuit.length; i++){ 
-            switch(this.circuit[i].getType()){
-                case RESISTEUR:
-                    circuitR = true;
-                    break;
-                case CONDENSATEUR:
-                    circuitC = true;
-                    break;
-                case NOEUD:
-                    this.circuit[i].trouverEq();
-                    switch(this.circuit[i].type){
-                        case SEULEMENTR:
-                            circuitR = true;
-                            break;
-                        case SEULEMENT:
-                            circuitC = true;
-                            break;
-                        case circuitType.RC:
-                            circuitRC = true;
-                            break;
-                    }
-                    break;
-                case DIODE:
-                    if(this.circuit[i].orientation == "wrong"){
-                        this.valide = false;
-                    }
-            }
+        let getType = function(element, type ,secondType) {
+            if(element.getType()==NOEUD){
+                element.trouverEq();
+                return element.type === secondType;
+            }else return element.getType() === type;
         }
+        let circuitR = this.circuit.some(element => getType(element, RESISTEUR, SEULEMENTR));
+        let circuitC = this.circuit.some(element => getType(element, CONDENSATEUR, SEULEMENTR));
+        let circuitRC = this.circuit.some(element => getType(element, NOEUD, RC));
+
         if((circuitR && circuitC) || circuitRC){
-            this.type = circuitType.RC;
-            //Même chose que : this.type = 09842;
+            this.type = RC;
         }else if (circuitC){
             this.type = SEULEMENTC;
         }else{
             this.type = SEULEMENTR;
         }
+        return this.type;
     }
 
     getType(){
@@ -227,27 +193,27 @@
     }
 
     remplirResisteursAvecCourant(){
-        for (let i = 0; i < this.circuit.length; i++){
-            if(this.circuit[i].getType() == RESISTEUR){   
-                this.circuit[i].courant = this.courant;
-                this.circuit[i].tension = this.courant * this.circuit[i].resistance;
-            }else if(this.circuit[i].getType() == NOEUD){
-                this.circuit[i].tensionEQ = this.courant * this.circuit[i].resistanceEQ;
-                this.circuit[i].remplirResisteursAvecDifTension();
+        for (const element of this.circuit){
+            if(element.getType() == RESISTEUR){   
+                element.courant = this.courant;
+                element.tension = this.courant * element.resistance;
+            }else if(element.getType() == NOEUD){
+                element.tensionEQ = this.courant * element.resistanceEQ;
+                element.remplirResisteursAvecDifTension();
             }
         }
     }
 
     remplirCondensateursAvecCharge(){
-        for (let i = 0; i < this.circuit.length; i++){
-            if(this.circuit[i].getType() == CONDENSATEUR){
-                this.circuit[i].charge = this.charge;
-                this.circuit[i].tension = this.charge / this.circuit[i].capacite;
-            }else if(this.circuit[i].getType() == NOEUD){
-                this.circuit[i].tensionEQ = this.charge / this.capaciteEQ;
-                this.circuit[i].remplirCondensateursAvecTension();
+        for (const element of this.circuit) {
+            if(element.getType() == CONDENSATEUR){
+                element.charge = this.charge;
+                element.tension = this.charge / element.capacite;
+            }else if(element.getType() == NOEUD){
+                element.tensionEQ = this.charge / this.capaciteEQ;
+                element.remplirCondensateursAvecTension();
             }
-        }
+        }  
     }
 
     getCircuit(){
