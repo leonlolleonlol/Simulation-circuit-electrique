@@ -1,7 +1,6 @@
 //const MODIFIER = 'modifier';//typeAction, objet, changements:[attribut, ancienne_valeur, nouvelle_valeur]
 //const CREATE = 'créer';//typeAction, objet
 //const DELETE = 'delete';//typeAction, objet , index
-const RESET = 'recommencer';//typeAction,circuit
 
 
 
@@ -35,7 +34,7 @@ function undo(){
       actions = [actions];
     for(const action of actions){
       if(action.type===CREATE){
-        if(action.objet.getType()!='fil'){
+        if(action.objet.getType()!=FIL){
           components.splice(components.indexOf(action.objet),1);
           //circuit.retirerComposant(action.objet);
         }  
@@ -45,7 +44,7 @@ function undo(){
           selection = null;
         }
       }else if(action.type===DELETE){
-        if(action.objet.getType()!='fil'){
+        if(action.objet.getType()!=FIL){
           components.splice(action.index, 0, action.objet);
           //circuit.ajouterComposant(action.objet);
         }
@@ -57,8 +56,6 @@ function undo(){
         for(changement of action.changements){
           composant[changement.attribut] = changement.ancienne_valeur;
         }
-      } else if(action.type === RESET){
-        //circuit = action.circuit;
       }
     }
   }
@@ -74,14 +71,14 @@ function redo(){
       actions = [actions];
     for (const action of actions) {
       if(action.type===CREATE){
-        if(action.objet.getType()!='fil'){
+        if(action.objet.getType()!=FIL){
           components.push(action.objet);
           //circuit.ajouterComposant(action.objet);
         }
         else
           fils.push(action.objet);
       }else if(action.type===DELETE){
-        if(action.objet.getType()!='fil'){
+        if(action.objet.getType()!=FIL){
           components.splice(action.index, 1);
           //circuit.ajouterComposant(action.objet);
         }
@@ -95,8 +92,6 @@ function redo(){
         for(changement of action.changements){
           composant[changement.attribut] = changement.nouvelle_valeur;
         }
-      }else if(action.type === RESET){
-        initComponents();
       }
     }
   }
@@ -110,10 +105,10 @@ function redo(){
  */
 function validerAction(action){
   if(action.type !== CREATE && action.type !== DELETE && 
-     action.type !== MODIFIER && action.type !== RESET)
+     action.type !== MODIFIER)
     throw new Error('L\'action '+action.type+' n\'est pas recconnus'+
     'comme type d\'action');
-  if(action.type === RESET || !(action.objet instanceof Composant || action.objet.getType()==='fil'))
+  if(!(action.objet instanceof Composant || action.objet.getType()===FIL))
     throw new Error('La cible du changement n\'est pas préciser');
   if(action.type === MODIFIER){
     if(!action.changements instanceof Array)
@@ -127,10 +122,6 @@ function validerAction(action){
         throw new Error('Un des attributs pour le changement n\'est pas définis');
     }
   }
-  if(action.type === RESET){
-    if(!action.circuit instanceof Circuit)
-      return false;
-  }
 }
 
 /**
@@ -139,5 +130,9 @@ function validerAction(action){
 function applyLimitActions(){
   if(undo_list.length > limitActions)
     undo_list.shift();
+}
 
+function resetHistorique() {
+  undo_list.length = 0;
+  redo_list.length = 0;
 }
