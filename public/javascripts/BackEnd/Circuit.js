@@ -4,13 +4,12 @@
  */
  class Circuit{
     /**
-     * Initialise toute ce qu'on aura besoin pour les calculs. Si c'est une branche, la variable circuit devient "children" 
-     * @param {boolean} premierCircuit cette variable sert à indiquer si c'est cet objet qui contient le circuit au complet.
-     * Donc c'est true si ce n'est pas une branche du circuit construit par l'utilisateur.
+     * Initialise toute ce qu'on aura besoin pour les calculs. Si c'est une branche, la variable circuit devient un "children" 
+     * de du noeud où qui le contiendra.
      */
     constructor(){
-        this.contientPile;
-        this.circuit = []; //Array de composantes qui sont en série
+        this.contientPile; 
+        this.circuit = []; //Array de composantes qui sont en série dans cet instance(ceux en parallèle sont dans Noeud())
         this.valide = true;
         this.presenceBatterie = false;
         this.index = 0;
@@ -56,19 +55,19 @@
     update(){//Chaque fois qu'il y a un changement dans le circuit
         this.trouverPile();
         this.circuit = this.rearrangerArrayCircuit(this.circuit[0], false).circuit;
-        this.tensionEQ = this.circuit[0].tension;
         print(this.circuit);
         this.trouverEq();
     }
 
     /**
-     * Met la pile à la première position du circuit
+     * Met la pile à la première position du circuit pour être prêt à réarranger l'array.
      */
     trouverPile(){
         let index = this.circuit.findIndex(element => element.getType() == BATTERIE);
         if(index!=-1){
             this.contientPile = true;
             this.echangerComposantes(index, 0);
+            this.tensionEQ = this.circuit[0].tension;
         }
     }
 
