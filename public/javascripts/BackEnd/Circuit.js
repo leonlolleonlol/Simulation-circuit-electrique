@@ -121,7 +121,9 @@
             switch (this.type){
                 case SEULEMENTR:
                     for (const element of this.circuit) {
-                       this.resistanceEQ += element.getType() == NOEUD?element.resistanceEQ:element.resistance;
+                        if(element.getType() == RESISTEUR || element.getType() == NOEUD){
+                            this.resistanceEQ += element.getType() == NOEUD?element.resistanceEQ:element.resistance;
+                        }
                     }
                     if(this.contientPile){
                         this.courant = this.tensionEQ / this.resistanceEQ;
@@ -131,7 +133,9 @@
                 case SEULEMENTC:
                     let capaciteTemp = 0;
                     for (const element of this.circuit) {
-                        capaciteTemp += 1 / (element.getType() == NOEUD ? element.capaciteEQ : element.capacite);
+                        if(element.getType() == CONDENSATEUR || element.getType() == NOEUD){
+                            capaciteTemp += 1 / (element.getType() == NOEUD ? element.capaciteEQ : element.capacite);
+                        }
                     }
                     this.capaciteEQ = (1/capaciteTemp).round(2);
                     if(this.contientPile){
@@ -171,7 +175,7 @@
             }else return element.getType() === type;
         }
         let circuitR = this.circuit.some(element => getType(element, RESISTEUR, SEULEMENTR));
-        let circuitC = this.circuit.some(element => getType(element, CONDENSATEUR, SEULEMENTR));
+        let circuitC = this.circuit.some(element => getType(element, CONDENSATEUR, SEULEMENTC));
         let circuitRC = this.circuit.some(element => getType(element, NOEUD, RC));
 
         if((circuitR && circuitC) || circuitRC){
