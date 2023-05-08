@@ -1,16 +1,14 @@
 /**
- * Contient une suite de composantes en série. S'il y a un noeud, 
- * c'est dans le noeud qu'on retrouvera les circuits en parallèle.
+ * Cette class contient les méthodes et la liste de composante pour faire les calculs.
  */
  class Circuit{
     /**
-     * Initialise toute ce qu'on aura besoin pour les calculs. Si c'est une branche, la variable circuit devient "children" 
-     * @param {boolean} premierCircuit cette variable sert à indiquer si c'est cet objet qui contient le circuit au complet.
-     * Donc c'est true si ce n'est pas une branche du circuit construit par l'utilisateur.
+     * Initialise toute ce qu'on aura besoin pour les calculs. Si c'est une branche, la variable circuit devient un "children" 
+     * de du noeud où qui le contiendra.
      */
     constructor(){
-        this.contientPile;
-        this.circuit = []; //Array de composantes qui sont en série
+        this.contientPile; 
+        this.circuit = []; //Array de composantes qui sont en série dans cet instance(ceux en parallèle sont dans Noeud())
         this.valide = true;
         this.presenceBatterie = false;
         this.index = 0;
@@ -28,20 +26,40 @@
         this.type;
     }
 
+    /**
+     * Ajoute une composante dans l'Array du circuit. Initialement, la méthode doit être appelé avec la pile en paramètre, sinon il n'aura
+     * pas de pile dans le circuit.
+     * @param {*} composant 
+     */
     ajouterComposante(composant){
         this.circuit.push(composant);
     }
 
+    /**
+     * Connecte deux composantes. L'ordre est important, donc un fil qui passe de la composante1 à la composante2 n'est pas
+     * pareil à un fil qui passe de la composante2 à la composante1.
+     * @param {*} composanteAvant 
+     * @param {*} composanteApres 
+     */
     connectComposante(composanteAvant, composanteApres){
         composanteAvant.prochaineComposante.push(composanteApres);
         composanteApres.composantePrecedente.push(composanteAvant);
     }
     
+    /**
+     * Retire une composante à une certaine position dans l'array
+     * @param {*} position 
+     */
     retirerComposante(position){
         this.circuit.splice(position, 1);
     }
     
-    // https://stackoverflow.com/questions/4011629/swapping-two-items-in-a-javascript-array  
+    // https://stackoverflow.com/questions/4011629/swapping-two-items-in-a-javascript-array
+    /**
+     * Échange la composante à l'index A avec celle de l'index B
+     * @param {*} indexA Position de la composante A dans l'array circuit
+     * @param {*} indexB Position de la composante B dans l'array circuit
+     */  
     echangerComposantes (indexA, indexB) {
         var temp = this.circuit[indexA];
         this.circuit[indexA] = this.circuit[indexB];
@@ -49,37 +67,35 @@
     }
   
     /**
-     * Doit se faire appeler quand il y a une nouvelle connection entre 2 composantes, quand une connection est brisée et
-     * quand une valeur dans une composante est modifiée. Elle doit aussi seulement être appellé une fois au début sur la
-     * branche principale.
+     * La méthode dirige l'ordre d'appelle des méthodes pour que les calculs se passent bien.
+     * Elle doit seulement être appelé une fois sur la branche principale quand l'utilisateur pèse sur le bouton Animation.
      */
-    update(){//Chaque fois qu'il y a un changement dans le circuit
+    update(){
         this.trouverPile();
         this.circuit = this.rearrangerArrayCircuit(this.circuit[0], false).circuit;
-        this.tensionEQ = this.circuit[0].tension;
-        print(this.circuit);
         this.trouverEq();
     }
 
     /**
-     * Met la pile à la première position du circuit
+     * Met la pile à la première position du circuit pour être prêt à réarranger l'array et prépare les calculs reliés à la pile.
      */
     trouverPile(){
         let index = this.circuit.findIndex(element => element.getType() == BATTERIE);
         if(index!=-1){
             this.contientPile = true;
             this.echangerComposantes(index, 0);
+            this.tensionEQ = this.circuit[0].tension;
         }
     }
 
     /**
      * La méthode regarde les connections entre les composantes et les assemblent correctement pour les calculs.
      * @param {*} debutComposant 
-     * C'est la composant ou le réassemblage va commencer. Si c'est la première fois que la méthode est appelé, la pile doit être mise ici.
+     * C'est la composant où le réassemblage va commencer. Si c'est la première fois que la méthode est appelé, la pile doit être mise ici.
      * @param {*} insideNoeud 
-     * Indique si la méthode est appellé dans un noeud. Si c'est la première fois que la méthode est appelé, ça doit être false.
+     * Indique si la méthode est appelé dans un noeud. Si c'est la première fois que la méthode est appelé, ça doit être false.
      * @returns
-     * Retourn une instance de la class Circuit qui contient le circuit réarrangé.
+     * Retourne une instance de la class Circuit qui contient le circuit réarrangé.
      */
     rearrangerArrayCircuit(debutComposant, insideNoeud){
         let nouvC = new Circuit();
@@ -105,18 +121,10 @@
         return nouvC;
     }
 
-    
-
-    arrange(circuit){
-        let nouvCircuit = [circuit[0]];
-            for(let i = 0; i < circuit.length-1; i++){
-                nouvCircuit.push(circuit[i].getProchaineComposante());            
-            }
-        return nouvCircuit;
-    }
-
     /**
-     * Sert à trouver le circuit équivalent en série
+     * Les calculs se font ici. La méthode trouve un circuit équivalent à celui de l'utilisateur, trouve les valeurs de 
+     * la tension et du courant du circuit équivalent et revient avec les bonnes valeurs au circuit de l'utilisateur. La méthode
+     * assume que l'array circuit est bien construite et que les valeurs écritent par l'utilisateur sont réalistes.
      */
     trouverEq(){
         this.trouverTypeDeCircuit();
@@ -168,7 +176,7 @@
 
     /**
      * Sert à trouver si le circuit contient seulement des Résistances, seulement des Condensateurs ou contient les deux. Devrait
-     * changer la variable "type" en le type du circuit.
+     * changer la variable "type" en la réponse trouvée.
      */
     trouverTypeDeCircuit(){
         let getType = function(element, type ,secondType) {
@@ -191,14 +199,26 @@
         return this.type;
     }
 
+    /**
+     * Retourne le type de l'objet Circuit
+     * @returns 
+     */
     getType(){
         return CIRCUIT;
     }
 
+    /**
+     * Retourne la valeur de la variable "type" du circuit.
+     * @returns 
+     */
     getTypeDeCircuit(){
         return this.type;
     }
 
+    /**
+     * Trouve chaque résisteur et les remplis avec le courant et le deltaV. S'il tombe sur un noeud, il continue les calculs
+     * pour les résisteurs dans le noeud.
+     */
     remplirResisteursAvecCourant(){
         for (const element of this.circuit){
             if(element.getType() == RESISTEUR){   
@@ -211,6 +231,10 @@
         }
     }
 
+     /**
+     * Trouve chaque condensateur et les remplis avec la charge et le deltaV. S'il tombe sur un noeud, il continue les calculs
+     * pour les condensateurs dans le noeud.
+     */
     remplirCondensateursAvecCharge(){
         for (const element of this.circuit) {
             if(element.getType() == CONDENSATEUR){
@@ -222,10 +246,22 @@
             }
         }  
     }
-
+    /**
+     * Retourn l'array contenant chaque composante dans l'array du circuit
+     * @returns 
+     */
     getCircuit(){
         return this.circuit;
     }
+
+/****************************************************************************************************************************/
+/********************************************* Autre façon de faire les calculs *********************************************/
+/****************************************************************************************************************************/
+
+    /**
+     * Change le symbole de l'instance de la class
+     * @param {*} symbole 
+     */
     setSymbol(symbole){
         this.symbole = symbole;
         for (const enfant of this.circuit) {
@@ -234,7 +270,7 @@
     }
 
     /**
-     * Permet de trouver le courrant de chaque circuit selon les lois
+     * Permet de trouver le courant de chaque circuit selon les lois
      * de kirchhoff
      */
     solveCourrantkirchhoff(){
@@ -267,7 +303,10 @@
         }
 
     }
-
+    /**
+     * Trouve l'équivalent d'un noeud et continue à construire le string pour les calculs
+     * @param {*} equations 
+     */
     noeudEq(equations){
         for (const element of this.circuit) {
             if(element.getType() == NOEUD){
@@ -282,6 +321,10 @@
         }
     }
 
+    /**
+     * Construit le circuit avec les différents circuits
+     * @param {*} circuits 
+     */
     getCircuits(circuits){
         circuits.push(this);
         for (const element of this.circuit) {
