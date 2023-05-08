@@ -47,7 +47,7 @@ function setup() {
   point_grid_button.mousePressed(()=>{ grid.quadrillage=POINT;});
   point_line_grid_button.mousePressed(()=>{ grid.quadrillage=QUADRILLEPOINT;});
   c1 = new Circuit(true);
-  //test();
+  test();
 }
 
 function test(){
@@ -199,7 +199,6 @@ function draw() {
   if (origin != null) {
     drag.draw(grid.translateX, grid.translateY);
   }
-  pop();
 }
 
 function drawComponentsChooser() {
