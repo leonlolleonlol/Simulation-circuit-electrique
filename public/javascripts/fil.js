@@ -98,6 +98,9 @@ class Fil{
     this.xf = sortArray[1].x;
     this.yf = sortArray[1].y;
   }
+  UsePrint(){
+    print("trying new thing");
+  }
 
   getType(){
     return FIL;

@@ -199,7 +199,6 @@ function draw() {
   if (origin != null) {
     drag.draw(grid.translateX, grid.translateY);
   }
-  pop();
 }
 
 function drawComponentsChooser() {
@@ -502,8 +501,21 @@ function mousePressed() {
   if(inGrid(mouseX/grid.scale,mouseY/grid.scale))
     drag = grid;
 }
-function creatNoeud(){
+function creatNoeud(fil, action){
+  fil.trierPoint();
+  f1 = new Fil(fil.xi, fil.yi,fil.xf,fil.yf)
+  f1.UsePrint();
   // étape 1 : vérifier les deux cas de présence de noeud 
+  for(let i = 0; i < fils.length - 1; i++){
+    if(fils[i].xi === fils[i+1].xi && fils[i].yi === fils[i+1].yi){
+
+    }
+  }
+  if (drag.getType()==FIL) {
+    let point = findGridLock(grid.translateX, grid.translateY);
+    drag.xf = point.x;
+    drag.yf = point.y;
+  } 
 }
 
 function mouseDragged() {
@@ -555,6 +567,7 @@ function mouseReleased() {
           selection = fil.origin;
         }
       }
+      creatNoeud(drag,action);
     } else if(drag instanceof Composant) {
         if(validComposantPos(drag) && dist(drag.pastPos.x, drag.pastPos.y, drag.x, drag.y) > 0){
           let actions = [{type:MODIFIER, objet:drag, changements:[
