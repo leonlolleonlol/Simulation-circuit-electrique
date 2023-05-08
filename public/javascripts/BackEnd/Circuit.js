@@ -54,14 +54,11 @@
      * branche principale.
      */
     update(){//Chaque fois qu'il y a un changement dans le circuit
-
         
-        this.trouverPile();
-        print(this.circuit);
-        this.circuit = this.rearrangerArrayCircuit(this.circuit[0]);
+        this.rearrangerArrayCircuit();
         //this.trouverPile(this.circuit);
         // this.arrangerC = true;
-        
+        //this.trouverPile();
         // this.tensionEQ = this.circuit[0].tension;
         this.trouverEq();
     }
@@ -84,32 +81,7 @@
      * Change l'array pour que le circuit soit en série grâce à l'historique. Après cette méthode, le
      * circuit devrait commencer de la pile, puis finir à la composante juste avant la pile.
      */
-    rearrangerArrayCircuit(debutComposant){
-        let nouvC = new Circuit();
-        let cpt = 0;
-        /* ESSAIS ACTUEL
-        do{
-            if(debutComposant.getProchaineComposante().composantePrecedente.length < 2){
-                cpt++;
-                if(debutComposant.prochaineComposante.length < 2){
-                    print(debutComposant);
-                    nouvC.ajouterComposante(debutComposant);
-                    debutComposant = debutComposant.getProchaineComposante();
-                    debutComposant.dejaPasser = true;
-                }else{ 
-                    for(let i = 0; i < debutComposant.prochaineComposante.length; i++){
-                        debutComposant.ajouterComposante(this.rearrangerArrayCircuit(debutComposant.prochaineComposante[i]));
-                    }
-                }
-            }
-            
-        }while(debutComposant.getProchaineComposante().composantePrecedente.length < 2 
-        && !(debutComposant.getProchaineComposante().getType() == BATTERIE));
-        
-        return nouvC;
-        */
-
-        /*SUREMENT INUTILE
+    rearrangerArrayCircuit(){
         print(this.circuit);
         let nouvCircuit = [];
         this.trouverPile();
@@ -136,10 +108,15 @@
             print(nouvCircuit);      
         }
         this.circuit = nouvCircuit;
-        */
     }
 
-    
+    remplirAvecSuivant(c, composantActuel){
+        while(!(composantActuel.getProchaineComposante().composantePrecedente.length > 1)){
+            c.ajouterComposante(composantActuel);
+            composantActuel = composantActuel.getProchaineComposante();
+            composantActuel.dejaPasser = true;
+        }
+    }
 
     arrange(circuit){
         let nouvCircuit = [];
