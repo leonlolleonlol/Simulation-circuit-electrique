@@ -55,11 +55,9 @@ class Composant {
   rotate(inverse){
     this.orientation = (this.orientation + (inverse?-HALF_PI:HALF_PI)) % TWO_PI
   }
+
   getType() {
     throw console.error();//todo préciser l'erreur
-  }
-  getTypeCalcul() {
-    this.getType();
   }
 } 
 
@@ -88,9 +86,8 @@ class Resisteur extends Composant {
       return RESISTEUR;
     }
 
-    //Ne pas changer cette methode, elle doit être comme ça pour les calculs
-    getTypeCalcul() {
-      return composantType.resisteurType;
+    getTitle(){
+      return 'Résisteur';
     }
 }
 
@@ -116,9 +113,8 @@ class Ampoule extends Resisteur {
         return AMPOULE;
     }
 
-    //Ne pas changer cette methode, elle doit être comme ça pour les calculs
-    getTypeCalcul() {
-      return composantType.Resisteur;
+    getTitle(){
+      return 'Ampoule';
     }
 }
 
@@ -146,9 +142,9 @@ class Condensateur extends Composant {
     getType() {
         return CONDENSATEUR;
     }
-    //Ne pas changer cette methode, elle doit être comme ça pour les calculs
-    getTypeCalcul() {
-      return composantType.condensateurType;
+
+    getTitle(){
+      return 'Condensateur';
     }
   }
 
@@ -174,6 +170,10 @@ class Condensateur extends Composant {
     getType() {
       return BATTERIE;
     }
+
+    getTitle(){
+      return 'Batterie';
+    }
 }
 
 class Diode extends Composant {
@@ -193,14 +193,11 @@ class Diode extends Composant {
     }
     
     getType() {
-        return Diode.getType();
-    }
-    static getType() {
-        return 'diode';
+      return DIODE;
     }
 
-    getTypeCalcul(){
-      return composantType.diodeType;
+    getTitle(){
+      return 'Diode';
     }
   }
 
@@ -306,11 +303,6 @@ class Noeuds extends Composant {
 
   getType() {
     return NOEUD;
-  }
-
-  //Ne pas changer cette methode, elle doit être comme ça pour les calculs
-  getTypeCalcul() {
-    return composantType.noeudType;
   }
 }
   

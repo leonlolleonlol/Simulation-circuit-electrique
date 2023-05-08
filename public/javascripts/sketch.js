@@ -9,7 +9,7 @@ let fils;// Liste des fils du circuit
 // Variable nécessaire pour placer la grille
 let grid;
 const composants_panneau = [new Batterie(58, 215, 12),
-  new Resisteur(58, 265, 25), new Ampoule(58, 315, 40)]; // Le panneau de choix des composants
+  new Resisteur(58, 275, 25), new Ampoule(58, 335, 40)]; // Le panneau de choix des composants
 
 
 // liens vers des éléments DOM utiles
@@ -107,6 +107,11 @@ function initPosition(){
 
 //DOM -------------------------------
 
+/**
+ * Met à jour un bouton si la vérification de l'activation 
+ * @param {*} button La référence du bouton p5
+ * @param {boolean} verification le résultat de la vérification à faire
+ */
 function validBoutonActif(button, verification) {
   if(verification && button.attribute('disabled')==null){
     button.attribute('disabled', '');
@@ -116,6 +121,9 @@ function validBoutonActif(button, verification) {
   }
 }
 
+/**
+ * Validation de l'activation d'un bouton
+ */
 function updateBouton(){
   validBoutonActif(undo_button, undo_list.length == 0);
   validBoutonActif(reset_button, undo_list.length == 0);
@@ -147,27 +155,39 @@ function draw() {
   if (origin != null) {
     drag.draw(grid.translateX, grid.translateY);
   }
-  pop();
 }
 
+/**
+ * Dessine le menu déroulant pour choisir les composants de l'interface
+ */
 function drawComponentsChooser() {
   push();
   noStroke();
+  textAlign(CENTER);
   fill(backgroundColor);
   rect(0, 0, grid.offsetX * grid.scale, height);
   rect(0, 0, width, grid.offsetY * grid.scale);
   rectMode(CENTER);
-  fill("rgba(128,128,128,0.59)");
-  strokeWeight(4);
-  stroke("rgba(52,52,52,0.78)");
   for (const composant of composants_panneau) {
-    rect(composant.x, composant.y, 120, 50);
+    fill("rgba(128,128,128,0.59)");
+    strokeWeight(4);
+    stroke("rgba(52,52,52,0.78)");
+    rect(composant.x, composant.y + 10, 120, 60);
     if (composant != origin)
       composant.draw(0, 0);
+    noStroke();
+    fill('black');
+    textSize(16);
+    textStyle(BOLD)
+    text(composant.getTitle(), composant.x,composant.y + 30);
   }
   pop();
 }
 
+
+/**
+ * Redirige vers la la fonction pour dessiner la grille dépendant du type de quadrillage sélectionner
+ */
 function drawGrid(){
   switch (grid.quadrillage) {
     case POINT: 
@@ -183,6 +203,10 @@ function drawGrid(){
   }
 }
 
+
+/**
+ * Dessine tout les composants de la liste de fils avec p5
+ */
 function drawFils() {
   percent += 0.01;
   for (let element of fils){
@@ -190,6 +214,21 @@ function drawFils() {
   }
 }
 
+/**
+ * Dessine tout les composants dans la liste avec p5
+ */
+function drawComposants(){
+  for (let element of components) {
+    element.draw(grid.translateX, grid.translateY);
+  }
+}
+
+/**
+ * 
+ * @param {Fil} fil Le fil concerner par le calcul
+ * @param {number} percent Le pourcentage entre 0 et 1 pour sélectionner la position du fil
+ * @returns L'objet contenant la position (x, y)
+ */
 function posAtPercent(fil, percent) {
   let dx = fil.xf - fil.xi;
   let dy = fil.yf - fil.yi;
@@ -198,11 +237,7 @@ function posAtPercent(fil, percent) {
       y: fil.yi + dy * percent
   });
 }
-function drawComposants(){
-  for (let element of components) {
-    element.draw(grid.translateX, grid.translateY);
-  }
-}
+
 
 // GRILLE ------------------------------------------
 
@@ -241,8 +276,8 @@ function drawLineGrid(color) {
 /**
  * Permet de trouver la position idéal en x et y à partir de la 
  * position de la souris
- * @param {*} offsetX Le décalage en x
- * @param {*} offsetY Le décalage en y
+ * @param {number} offsetX Le décalage en x
+ * @param {number} offsetY Le décalage en y
  * @returns Le point le plus proche sur la grille
  */
 function findGridLock(offsetX, offsetY) {
@@ -261,6 +296,12 @@ function isElementSelectionner(element){
   return selection!=null && selection === element;
 }
 
+/**
+ * 
+ * @param {number} x la position en y
+ * @param {number} y la position en x
+ * @returns boolean si notre point se situe dans la grille
+ */
 function inGrid(x, y){
   return x > grid.offsetX && y > grid.offsetY
 }
@@ -276,10 +317,22 @@ let point = findGridLock(grid.translateX,grid.translateY)
   }
 }
 
+/**
+ * 
+ * @param {number} x la position en x
+ * @param {number} y la position en y
+ * @returns Le composant trouvé ou null
+ */
 function getConnectingComposant(x, y){
   return components.find(element => element.checkConnection(x, y, 10))
 }
 
+/**
+ * 
+ * @param {number} x la position en x
+ * @param {number} y la position en y
+ * @returns Le fil trouvé qui connecte ou null
+ */
 function filStart(x, y){
   for (const fil of fils) {
     if(fil.yi!=fil.yf && fil.xi!=fil.xf){
@@ -293,6 +346,12 @@ function filStart(x, y){
   return null;
 }
 
+
+/**
+ * 
+ * @param {Fil} fil Le nouveau fil à simplifier
+ * @param {Array} actions La liste d'actions ou l'on va enregistrer les actions interne effectuer dans la fonction
+ */
 function simplifyNewFil(fil, actions){
   fil.trierPoint();
   for (let index = 0; index < fils.length; index++) {
@@ -315,6 +374,12 @@ function simplifyNewFil(fil, actions){
   verifierCouperFil(fil,actions);
 }
 
+/**
+ * 
+ * @param {Fil} fil Le fil à vérifier
+ * @param {Array} actions La liste d'actions ou l'on va enregistrer les actions interne effectuer dans la fonction
+ * @returns 
+ */
 function verifierCouperFil(fil, actions){
   let penteFil = Math.abs(fil.pente());
   if(penteFil==Infinity || penteFil==0){
@@ -328,6 +393,13 @@ function verifierCouperFil(fil, actions){
 
 // --------------------------------------
 
+/**
+ * 
+ * @param {Fil} fil Le fil à valider
+ * @param {Composant} composant Le composant à valider
+ * @param {Array} actions La liste d'actions ou l'on va enregistrer les actions interne effectuer dans la fonction
+ * @returns 
+ */
 function couperFil(fil, composant, actions){
   let penteFil = Math.abs(fil.pente());
   let horizontal = composant.orientation % PI === 0;
@@ -369,11 +441,23 @@ function couperFil(fil, composant, actions){
   return true;
 }
 
+/**
+ * Vérifie si un nouveau composant ou un composant que l'on a modifier a une position valide. Les critères sont que le composant se situe dans la grille
+ * 
+ * @param {Composant} composant Le composant que l'on veut valider la position
+ * @returns Si la position du composant est valide
+ */
 function validComposantPos(composant){
   if (!inGrid(composant.x + grid.translateX, composant.y + grid.translateY))
     return false;
   return !components.some(element =>element.checkConnection(composant.x,composant.y,1) || composant.checkConnection(element.x,element.y,1));
 }
+
+/**
+ * 
+ * @param {Composant} composant Le nouveau composant à valider
+ * @param {Array} actions La liste d'actions ou l'on va enregistrer les actions interne effectuer dans la fonction
+ */
 function simplifyComposant(composant, actions){
   for (let index = 0; index < components.length; index++) {
     const element = components[index];
@@ -391,6 +475,12 @@ function simplifyComposant(composant, actions){
   }
 }
 
+/**
+ * 
+ * @param {Composant|Fil} element L'élement que l'on veut drag
+ * @param {number} x La position en x relative
+ * @param {number} y La position en y relative
+ */
 function initDrag(element, x, y){
   drag = element;
   selection = element;
@@ -398,6 +488,11 @@ function initDrag(element, x, y){
   drag.yOffsetDrag = mouseY/grid.scale - y;
 }
 
+/**
+ * 
+ * @param {Composant} original Le composant du menu déroulant que l'on veut copier
+ * @returns Le composant copier
+ */
 function copyComposant(original){
   // Création d'un nouveau composants selon le composant sélectionner
   let x = original.x/grid.scale - grid.translateX;
@@ -526,6 +621,10 @@ function mouseWheel(event){
   }
 }
 
+/**
+ * Modifie le zoom qui est appliquer sur notre grille et ces composants
+ * @param {number} factor Le facteur de zoom. présentement 0.1 ou -0.1
+ */
 function zoom(factor){
   let pastScale = grid.scale;
   grid.scale = grid.scale * (1+factor);
@@ -604,3 +703,41 @@ function refresh() {
   initComponents();
   resetHistorique();
 }
+
+async function save() {
+  const response = await fetch(url, {
+    method: "POST",
+    mode: "cors", // no-cors, *cors, same-origin
+    cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+    credentials: "same-origin", // include, *same-origin, omit
+    headers: {
+      "Content-Type": "application/json",
+      // 'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    redirect: "follow", // manual, *follow, error
+    referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+    body: getDataSave(), // body data type must match "Content-Type" header
+  });
+  if(response.error){
+    alert('Votre sauvegarde a échouer')
+  }
+  return response.json();
+}
+
+function getDataSave(){
+  for (const composant of components) {
+    composant.type = composant.getType();
+  }
+  for (const fil of fils) {
+    fil.type = fil.getType();
+  }
+  array = [components, fils];
+  let composants = JSON.stringify(array, function(key, value){
+    if(key === 'origin' && value != null){
+      return null;
+    }
+    return value;
+  });
+  return composants;
+}
+

@@ -1,7 +1,11 @@
 const express = require('express')
 const app = express()
 var bodyParser = require('body-parser');
-app.use(bodyParser.urlencoded())
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
+
+app.use(bodyParser.json());
 const port = 3000;
 const path = require('path')
 var nerdamer = require('nerdamer'); 
@@ -22,9 +26,9 @@ app.get('/', function(req, res) {
 app.get('/users/register', function(req, res) {
   res.render('register');
 });
-app.use(express.json());
 app.post('/users/register', function(req, res){
-  
+  console.log(req.body);
+  res.end();
 })
 
 app.get('/users/login', function(req, res) {
