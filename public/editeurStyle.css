@@ -1,0 +1,79 @@
+.button {
+    border: none;
+    color: white;
+    text-align: center;
+    display: inline-block;
+    font-size: 16px;
+    transition-duration: 0.4s;
+    cursor: pointer;
+    height:fill-content;
+}
+.button1 {
+    background-color: white; 
+    color: black; 
+}
+.button1:hover {
+    background-color: #00ff99;
+    color: white;
+}
+a {
+    color: black;
+    text-decoration: none;
+}
+
+#acceuil {
+    position:absolute;
+    top: 10px;
+    left: 10px;
+    width: 120px;
+    height: 80px;
+}
+
+#undo {
+    position: absolute;
+    top: 95px;
+    width: 60px;
+    height: 50px;
+}
+  
+#redo {
+    position: absolute;
+    top: 95px;
+    left:70px;
+    width: 60px;
+    height: 50px;
+}
+#reset {
+    position: absolute;
+    top: 350px;
+    width: 120px;
+    height: 50px;
+}
+#animate {
+    position: absolute;
+    top: 400px;
+    width: 120px;
+    height: 50px;
+}
+  
+#line-grid {
+    position:absolute;
+    top:150px;
+}
+  
+#point-grid{
+    position:absolute;
+    top:150px;
+    left: 48px;
+}
+  
+#point-line-grid {
+    position:absolute;
+    top:150px;
+    left: 88px;
+}
+  
+.img-grid {
+    width: 24px;
+    height: 24px;
+}
