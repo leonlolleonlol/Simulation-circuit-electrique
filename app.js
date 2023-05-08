@@ -1,12 +1,13 @@
 const express = require('express')
 const app = express()
+var bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded())
 const port = 3000;
 const path = require('path')
 var nerdamer = require('nerdamer'); 
 // Load additional modules. These are not required.  
 require('nerdamer/Solve');
-
-app.use(express.static('public'))
+app.use(express.static('public'));
 app.listen(port, () => {
   var url = `http://localhost:${port}`
   console.log('Server listen on '+url);
@@ -19,9 +20,18 @@ app.get('/', function(req, res) {
   //res.render("index");
 });
 app.get('/users/register', function(req, res) {
-  res.render("register");
+  res.render('register');
 });
+app.use(express.json());
+app.post('/users/register', function(req, res){
+  
+})
+
 app.get('/users/login', function(req, res) {
+  res.render("login");
+});
+
+app.get('/users/logout', function(req, res) {
   res.render("login");
 });
 app.get('/users/dashboard', function(req, res) {
