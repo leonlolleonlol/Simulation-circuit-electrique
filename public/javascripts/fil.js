@@ -1,116 +1,105 @@
 class Fil{
   
-  constructor(x,y){
-    composant = getConnectingComposant(x,y)
-    fil = filStart(x, y)
-    if(composant!=null){
-      this.begin = composant;
-      //this.borne = composant.getConnectionSens();
-    }
-    else this.begin = fil;
-    this.borne = borne;//droite ou gauche
-    
-    this.end = {x:begin.x, y:begin.y};
+  constructor(xi, yi, xf, yf){
+    this.xi = xi;
+    this.yi = yi;
+    this.xf = xf;
+    this.yf = yf;
+    this.courant = 0;
     
   }
 
-  disconnect(){
-    circuit.disconnect(this.begin,this.end);
-  }
-
-  connect(){
-    circuit.connect(this.begin,this.end);
-  }
-
-  updateConnection(composantSupprimer){
-    if(this.begin === composantSupprimer){
-      this.begin = {x:begin.x, y:begin.y};
-      this.disconnect(this.begin,this.end)
-    }else if (this.end === composantSupprimer){
-      this.end = {x:end.x, y:end.y};
-      circuit.disconnect(this.begin,this.end)
+  draw(offX, offY){
+    push();
+    translate(offX, offY);
+    if(isElementSelectionner(this) && !isElementSelectionner(drag)){
+      push();
+      strokeWeight(30);
+      stroke('rgba(255, 165, 0, 0.2)');
+      let mul = this.yi >this.yf? -1 : 1;
+      let decalageX = 9 * Math.sin(this.angle()) * mul;
+      let decalageY = 9 * Math.cos(this.angle()) * mul;
+      line(this.xi + decalageX, this.yi + decalageY, 
+           this.xf - decalageX, this.yf - decalageY);
+      pop();
     }
+    stroke('orange');
+    fill('red')
+    strokeWeight(4);
+    line(this.xi, this.yi, this.xf, this.yf);
+    if(animate){
+      let nbCharge = Math.floor(this.longueur()/grid.tailleCell);
+      let decalageCharge = (percent*(1+Math.floor(this.courant))/nbCharge) % 1
+      for(let i = 0;i < nbCharge;i++){
+        let percentCharge = (decalageCharge + i/nbCharge)% 1;
+        let pos = posAtPercent(this, percentCharge);
+        circle(pos.x,pos.y,10);
+      }
+    }
+    pop();
   }
 
-  updateEnd(x,y){
-    this.end.x = x;
-    this.end.y = y;
-  }
   inBounds(x, y){
-    if(!inBoxBoundFil(this,x,y)){
+    if(!this.inBoxBounds(x,y)){
       return false;
     }
-    let penteF = this.pente();
-    let b = this.yi - this.xi * penteF;
-    let xTest = (y - b)/penteF;
-    let yTest = x * penteF + b;
-    return dist(xTest, y, x, y) < 15 || dist(x, yTest, x, y) < 15
+    let fx = this.getFunction();
+    let xTest = y * 1/fx.pente + fx.ordonneY;
+    let yTest = x * fx.pente + fx.ordonneX;
+    return dist(xTest, y, x, y) < 15 || dist(x, yTest, x, y) < 15;
   }
+
+  inBoxBounds(x, y){
+    let x1 = Math.min(this.xi-10, this.xf-10);
+    let x2 = Math.max(this.xi+10, this.xf+ 10);
+    let y1 = Math.min(this.yi-10, this.yf-10);
+    let y2 = Math.max(this.yi+10, this.yf+10);
+    return x > x1 && x < x2 && y > y1 && y < y2;
+  }
+
   pente(){
     return (this.yf-this.yi)/(this.xf-this.xi);
   }
+  
+  getFunction(){
+    let penteFil = this.pente();
+    return {pente:penteFil, ordonneX: this.yi - this.xi * penteFil, 
+      ordonneY: this.xi - this.yi * 1/penteFil};
+  }
+
   angle(){
     return Math.atan(1/this.pente());
   }
-  length(){
-    return dist(fil.xi, fil.yi, fil.xf, fil.yf);
+  longueur(){
+    return dist(this.xi, this.yi, this.xf, this.yf);
   }
 
   overlap(fil2){
-    let pente1 = this.pente();
-    let pente2 = fil2.pente();
-    let b1 = this.yi - this.xi * pente1;
-    let b2 = fil2.yi - fil2.xi * pente2;
-    pente1 = Math.abs(pente1);
-    pente2 = Math.abs(pente2);
-    if(pente1 === pente2 && Math.abs(b1) === Math.abs(b2)){
-      if((pente1 == 0 && this.yi===fil2.yi)|| pente1 != 0){
-        let x1i = Math.min(this.xi,this.xf);
-        let x1f = Math.max(this.xi,this.xf);
-        let x2i = Math.min(fil2.xi,fil2.xf);
-        let x2f = Math.max(fil2.xi,fil2.xf);
-        return ((x2i >=x1i && x2i <= x1f) || (x1i >= x2i && x1i <=x2f))
-      }else if (pente1 == Infinity && this.xi===fil2.xi){
-        let y1i = Math.min(this.yi,this.yf);
-        let y1f = Math.max(this.yi,this.yf);
-        let y2i = Math.min(fil2.yi,fil2.yf);
-        let y2f = Math.max(fil2.yi,fil2.yf);
-        return ((y2i <= y1f && y2i >=y1i) || (y1i <=y2f && y1i >= y2i))
+    let f1 = this.getFunction();
+    let f2 = fil2.getFunction();
+    if(Math.abs(f1.pente) === Math.abs(f2.pente) &&
+      Math.abs(f1.ordonneX) === Math.abs(f2.ordonneX)){
+      if((f1.pente == 0 && this.yi===fil2.yi)|| Math.abs(f1.pente) != Infinity){
+        return (fil2.xi >= this.xi && fil2.xi <= this.xf) || (this.xi >= fil2.xi && this.xi <=fil2.xf);
+      }else if (Math.abs(f1.pente) == Infinity && this.xi===fil2.xi){
+        return (fil2.yi >= this.yi && fil2.xi <= this.yf) || (this.yi >=fil2.yi && this.yi <= fil2.yf);
       }
     }
     else return false;
   }
 
-  get xi(){
-    if(this.begin instanceof Composant){
-      return (this.begin.getConnection(this.borneA)??this.begin).x;
-    }
-    else if(this.begin instanceof Fil){
-      return this.begin.xf;
-    }
+  trierPoint(){
+    let sortArray = [{x:this.xi, y:this.yi}, {x:this.xf, y:this.yf}];
+    if(Math.abs(this.pente())==Infinity){
+      sortArray.sort((a, b) => a.y - b.y);
+    }else sortArray.sort((a, b) => a.x - b.x);
+    this.xi = sortArray[0].x;
+    this.yi = sortArray[0].y;
+    this.xf = sortArray[1].x;
+    this.yf = sortArray[1].y;
   }
-  get yi(){
-    if(this.begin instanceof Composant){
-      return (this.begin.getConnection(this.borneA)??this.begin).y;
-    }
-    else if(this.begin instanceof Fil){
-      return this.begin.yf;
-    }else return this.begin.y;
-  }
-  get xf(){
-    if(this.end instanceof Composant){
-      return (this.end.getConnection(this.borneB)??this.end).x;
-    }
-    else if(this.end instanceof Fil){
-      return this.end.xi;
-    }
-  }
-  get yf(){
-    if(this.end instanceof Composant){
-      return (this.end.getConnection(this.borneB)??this.end).y;
-    }
-    else if(this.end instanceof Fil){
-      return this.end.yi;
-    }else return this.end.y;
+
+  getType(){
+    return FIL;
   }
 }

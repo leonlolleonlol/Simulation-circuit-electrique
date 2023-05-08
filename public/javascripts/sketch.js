@@ -181,36 +181,9 @@ function drawGrid(){
 }
 
 function drawFils() {
-  
   percent += 0.01;
   for (let element of fils){
-    push();
-    translate(grid.translateX, grid.translateY);
-    if(isElementSelectionner(element) && !isElementSelectionner(drag)){
-      push();
-      strokeWeight(30);
-      stroke('rgba(255, 165, 0, 0.2)');
-      let mul = element.yi >element.yf? -1 : 1;
-      let decalageX = 9 * Math.sin(angle(element)) * mul;
-      let decalageY = 9 * Math.cos(angle(element)) * mul;
-      line(element.xi + decalageX, element.yi + decalageY, 
-           element.xf - decalageX, element.yf - decalageY);
-      pop();
-    }
-    stroke('orange');
-    fill('red')
-    strokeWeight(4);
-    line(element.xi, element.yi, element.xf, element.yf);
-    if(animate){
-      let nbCharge = Math.floor(longueurFil(element)/grid.tailleCell);
-      let decalageCharge = (percent*(1+Math.floor(element.courant))/nbCharge) % 1
-      for(let i = 0;i < nbCharge;i++){
-        let percentCharge = (decalageCharge + i/nbCharge)% 1;
-        let pos = posAtPercent(element, percentCharge);
-        circle(pos.x,pos.y,10);
-      }
-    }
-    pop();
+    element.draw(grid.translateX, grid.translateY);
   }
 }
 
@@ -310,83 +283,21 @@ function filStart(x, y){
       if(dist(fil.xi, fil.yi, x, y)<10 ||
          dist(fil.xf, fil.yf, x, y)<10)
         return fil;
-    } else if(inBoxBoundFil(fil, x, y)){
+    } else if(fil.inBoxBounds(x, y)){
       return fil;
     }
   }
   return null;
 }
 
-function inBoxBoundFil(fil, x, y){
-  let x1 = Math.min(fil.xi-10, fil.xf-10);
-  let x2 = Math.max(fil.xi+10, fil.xf+ 10);
-  let y1 = Math.min(fil.yi-10, fil.yf-10);
-  let y2 = Math.max(fil.yi+10, fil.yf+10);
-  return x > x1 && x < x2 && y > y1 && y < y2;
-}
-
-function filInBounds(fil, x, y){
-  if(!inBoxBoundFil(fil,x,y)){
-    return false;
-  }
-  let fx = getFilFunction(fil);
-  let xTest = y * 1/fx.pente + fx.ordonneY;
-  let yTest = x * fx.pente + fx.ordonneX;
-  return dist(xTest, y, x, y) < 15 || dist(x, yTest, x, y) < 15;
-}
-
-function trierPointFil(fil){
-  let sortArray = [{x:fil.xi, y:fil.yi}, {x:fil.xf, y:fil.yf}];
-  if(Math.abs(pente(fil))==Infinity){
-    sortArray.sort((a, b) => a.y - b.y);
-  }else sortArray.sort((a, b) => a.x - b.x);
-  fil.xi = sortArray[0].x;
-  fil.yi = sortArray[0].y;
-  fil.xf = sortArray[1].x;
-  fil.yf = sortArray[1].y;
-
-}
-
-function pente(fil){
-  return (fil.yf-fil.yi)/(fil.xf-fil.xi);
-}
-
-function angle(fil){
-  return Math.atan(1/pente(fil));
-}
-
-function longueurFil(fil){
-  return dist(fil.xi, fil.yi, fil.xf, fil.yf);
-}
-
-function getFilFunction(fil){
-  let penteFil = pente(fil)
-  return {pente:penteFil, ordonneX: fil.yi - fil.xi * penteFil,
-     ordonneY: fil.xi - fil.yi * 1/penteFil};
-}
-
-function filOverlap(fil1,fil2){
-  let f1 = getFilFunction(fil1);
-  let f2 = getFilFunction(fil2);
-  if(Math.abs(f1.pente) === Math.abs(f2.pente) &&
-   Math.abs(f1.ordonneX) === Math.abs(f2.ordonneX)){
-    if((f1.pente == 0 && fil1.yi===fil2.yi)|| Math.abs(f1.pente) != Infinity){
-      return (fil2.xi >= fil1.xi && fil2.xi <= fil1.xf) || (fil1.xi >= fil2.xi && fil1.xi <=fil2.xf);
-    }else if (Math.abs(f1.pente) == Infinity && fil1.xi===fil2.xi){
-      return (fil2.yi >= fil1.yi && fil2.xi <= fil1.yf) || (fil1.yi >=fil2.yi && fil1.yi <= fil2.yf);
-    }
-  }
-  else return false;
-}
-
 function simplifyNewFil(fil, actions){
-  trierPointFil(fil);
+  fil.trierPoint();
   for (let index = 0; index < fils.length; index++) {
     const testFil = fils[index];
-    if(testFil!==fil && filOverlap(fil,testFil)){
+    if(testFil!==fil && fil.overlap(testFil)){
       let array = [{x:testFil.xi, y:testFil.yi}, {x:testFil.xf, y:testFil.yf},
         {x:fil.xi, y:fil.yi}, {x:fil.xf, y:fil.yf}];
-      if(Math.abs(pente(testFil))==Infinity)
+      if(Math.abs(testFil.pente())==Infinity)
         array.sort(function(a, b){return a.y - b.y});
       else array.sort(function(a, b){return a.x - b.x});
       fil.xi = array[0].x;
@@ -402,7 +313,7 @@ function simplifyNewFil(fil, actions){
 }
 
 function verifierCouperFil(fil, actions){
-  let penteFil = Math.abs(pente(fil));
+  let penteFil = Math.abs(fil.pente());
   if(penteFil==Infinity || penteFil==0){
     for (const composant of components) {
       let continuer = couperFil(fil, composant, actions);
@@ -415,7 +326,7 @@ function verifierCouperFil(fil, actions){
 // --------------------------------------
 
 function couperFil(fil, composant, actions){
-  let penteFil = Math.abs(pente(fil));
+  let penteFil = Math.abs(fil.pente());
   let horizontal = composant.orientation % PI === 0;
   if((penteFil == Infinity && !horizontal) || (penteFil == 0 && horizontal)){
     const index = fils.indexOf(fil);
@@ -440,23 +351,9 @@ function couperFil(fil, composant, actions){
         {attribut:'yf', ancienne_valeur:fil.yf, nouvelle_valeur:borne1.y}]});
       fil.xf = borne1.x;
       fil.yf = borne1.y;
-    }else if(inBoxBoundFil(fil, composant.x,composant.y)){
-      let fil1 = {
-        xi: fil.xi,
-        yi: fil.yi,
-        xf: borne1.x,
-        yf: borne1.y,
-        courant:0,
-        getType: function(){return "fil"},
-      };
-      let fil2 = {
-        xi: borne2.x,
-        yi: borne2.y,
-        xf: fil.xf,
-        yf: fil.yf,
-        courant:0,
-        getType: function(){return "fil"},
-      };
+    }else if(fil.inBoxBounds(composant.x,composant.y)){
+      let fil1 = new Fil(fil.xi, fil.yi, borne1.x, borne1.y);
+      let fil2 = new Fil(borne2.x,borne2.y, fil.xf, fil.yf);
       fils.splice(index,1);
       fils.push(fil1, fil2);
       actions.push({type:DELETE,objet:fil,index},
@@ -472,7 +369,7 @@ function couperFil(fil, composant, actions){
 function validComposantPos(composant){
   if (!inGrid(composant.x + grid.translateX, composant.y + grid.translateY))
     return false;
-  return !components.some(element =>composantTest.checkConnection(composant.x,composant.y,1) || composant.checkConnection(composantTest.x,composantTest.y,1));
+  return !components.some(element =>element.checkConnection(composant.x,composant.y,1) || composant.checkConnection(element.x,element.y,1));
 }
 function simplifyComposant(composant, actions){
   for (let index = 0; index < components.length; index++) {
@@ -485,7 +382,7 @@ function simplifyComposant(composant, actions){
     }
   }
   for (const fil of fils) {
-    let penteFil = Math.abs(pente(fil));
+    let penteFil = Math.abs(fil.pente());
     if(penteFil==Infinity || penteFil==0)
       couperFil(fil,composant, actions)
   }
@@ -533,13 +430,8 @@ function mousePressed() {
     }
   }
   if (validFilBegin(x, y)) {
-    let point = findGridLock(grid.translateX, grid.translateY)
-    drag = {
-        xi: point.x, yi: point.y,
-        xf: point.x, yf: point.y,
-        courant:0,
-        getType: function(){return "fil"},
-    };
+    let point = findGridLock(grid.translateX, grid.translateY);
+    drag = new Fil(point.x, point.y, point.x, point.y);
     drag.origin = filStart(x,y);
     selection = drag;
     fils.push(drag);
@@ -547,7 +439,7 @@ function mousePressed() {
   }
 
   for (const nfil of fils) {
-    if(filInBounds(nfil, x, y)){
+    if(nfil.inBounds(x, y)){
       selection = nfil;
       return;
     }
@@ -568,7 +460,7 @@ function mouseDragged() {
       cursor(MOVE);
       grid.translateX += (mouseX - pmouseX)/grid.scale;
       grid.translateY += (mouseY - pmouseY)/grid.scale;
-    } else if (drag.getType()=='fil') {
+    } else if (drag.getType()==FIL) {
       let point = findGridLock(grid.translateX, grid.translateY);
       drag.xf = point.x;
       drag.yf = point.y;
@@ -594,8 +486,8 @@ function mouseReleased() {
         addActions(actions);
       }
     origin = null;
-    } else if (drag.getType()=='fil') {
-      if(longueurFil(drag)>0){
+    } else if (drag.getType()==FIL) {
+      if(drag.longueur()>0){
         let actions = [{type:CREATE, objet:drag}]
         let actionsSup = simplifyNewFil(drag, actions);
         addActions(actions);
@@ -653,7 +545,7 @@ function keyPressed() {
   } else {
     if(keyCode === 8 && selection!=null){
       let index;
-      if(selection.getType()!=='fil'){
+      if(selection.getType()!==FIL){
         index = components.indexOf(selection)
         components.splice(index, 1);
       } else{

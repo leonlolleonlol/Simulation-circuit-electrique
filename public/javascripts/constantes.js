@@ -8,6 +8,7 @@ AMPOULE = 'ampoule';
 DIODE = 'diode';
 BATTERIE = 'batterie'
 NOEUD = 'noeud';
+FIL = 'fil';
 CIRCUIT = 'circuit';
 
 CREATE = 'create';

@@ -41,8 +41,8 @@ app.get('/Circuit.js', function(req, res) {
 app.get('/p5.min.js', function(req, res) {
   res.sendFile(path.join(__dirname, 'public/javascripts/lib/p5.min.js'));
 });
-app.get('/fils.js', function(req, res){
-  res.sendFile(path.join(__dirname, 'public/javascripts/fils.js'));
+app.get('/fil.js', function(req, res){
+  res.sendFile(path.join(__dirname, 'public/javascripts/fil.js'));
 })
 app.get('/Composant.js', function(req, res) {
   res.sendFile(path.join(__dirname, 'public/javascripts/Composant.js'));

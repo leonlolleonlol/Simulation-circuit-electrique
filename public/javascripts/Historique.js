@@ -34,7 +34,7 @@ function undo(){
       actions = [actions];
     for(const action of actions){
       if(action.type===CREATE){
-        if(action.objet.getType()!='fil'){
+        if(action.objet.getType()!=FIL){
           components.splice(components.indexOf(action.objet),1);
           //circuit.retirerComposant(action.objet);
         }  
@@ -44,7 +44,7 @@ function undo(){
           selection = null;
         }
       }else if(action.type===DELETE){
-        if(action.objet.getType()!='fil'){
+        if(action.objet.getType()!=FIL){
           components.splice(action.index, 0, action.objet);
           //circuit.ajouterComposant(action.objet);
         }
@@ -71,14 +71,14 @@ function redo(){
       actions = [actions];
     for (const action of actions) {
       if(action.type===CREATE){
-        if(action.objet.getType()!='fil'){
+        if(action.objet.getType()!=FIL){
           components.push(action.objet);
           //circuit.ajouterComposant(action.objet);
         }
         else
           fils.push(action.objet);
       }else if(action.type===DELETE){
-        if(action.objet.getType()!='fil'){
+        if(action.objet.getType()!=FIL){
           components.splice(action.index, 1);
           //circuit.ajouterComposant(action.objet);
         }
@@ -108,7 +108,7 @@ function validerAction(action){
      action.type !== MODIFIER)
     throw new Error('L\'action '+action.type+' n\'est pas recconnus'+
     'comme type d\'action');
-  if(!(action.objet instanceof Composant || action.objet.getType()==='fil'))
+  if(!(action.objet instanceof Composant || action.objet.getType()===FIL))
     throw new Error('La cible du changement n\'est pas préciser');
   if(action.type === MODIFIER){
     if(!action.changements instanceof Array)
