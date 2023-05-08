@@ -81,6 +81,7 @@
      * Change l'array pour que le circuit soit en série grâce à l'historique. Après cette méthode, le
      * circuit devrait commencer de la pile, puis finir à la composante juste avant la pile.
      */
+<<<<<<< HEAD
     rearrangerArrayCircuit(){
         print(this.circuit);
         let nouvCircuit = [];
@@ -101,6 +102,16 @@
                         this.circuit[index].ajouterComposante(nouvC);
                         this.circuit[nextIndex].dejaPasser = true;
                     }
+=======
+    rearrangerArrayCircuit(debutComposant, insideNoeud){
+        let nouvC = new Circuit();
+        do{
+            if(debutComposant.dejaPasser == false){
+                if(!(debutComposant.prochaineComposante.length < 2)){
+                    for(let i = 0; i < debutComposant.prochaineComposante.length; i++){
+                        debutComposant.ajouterComposante(this.rearrangerArrayCircuit(debutComposant.prochaineComposante[i], true));
+                    } 
+>>>>>>> parent of 4f4dceb (Rendre le code plus compréhensible)
                 }
 
                 this.circuit[nextIndex].dejaPasser = true;
@@ -233,7 +244,11 @@
 
     remplirResisteursAvecCourant(){
         for (let i = 0; i < this.circuit.length; i++){
+<<<<<<< HEAD
             if(this.circuit[i].getType() == RESISTEUR){    
+=======
+            if(this.circuit[i].getType() == RESISTEUR){   
+>>>>>>> parent of 4f4dceb (Rendre le code plus compréhensible)
                 this.circuit[i].courant = this.courant;
                 this.circuit[i].tension = this.courant * this.circuit[i].resistance;
             }else if(this.circuit[i].getType() == NOEUD){
