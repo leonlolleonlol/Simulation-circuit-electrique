@@ -60,7 +60,7 @@
 
         this.trouverPile();
         print(this.circuit);
-        this.circuit = this.rearrangerArrayCircuit(this.circuit[0], false).circuit;
+        this.circuit = this.rearrangerArrayCircuit(this.circuit[0]).circuit;
         print(this.circuit);
         //this.trouverPile(this.circuit);
         // this.arrangerC = true;
@@ -84,35 +84,59 @@
     }
 
     /**
-     * La méthode regarde les connections entre les composantes et les assemblent correctement pour les calculs.
-     * @param {*} debutComposant 
-     * C'est la composant ou le réassemblage va commencer. Si c'est la première fois que la méthode est appelé, la pile doit être mise ici.
-     * @param {*} insideNoeud 
-     * Indique si la méthode est appellé dans un noeud. Si c'est la première fois que la méthode est appelé, ça doit être false.
-     * @returns
-     * Retourn une instance de la class Circuit qui contient le circuit réarrangé.
+     * Change l'array pour que le circuit soit en série grâce à l'historique. Après cette méthode, le
+     * circuit devrait commencer de la pile, puis finir à la composante juste avant la pile.
      */
-    rearrangerArrayCircuit(debutComposant, insideNoeud){
+    rearrangerArrayCircuit(debutComposant){
         let nouvC = new Circuit();
+    
         do{
             if(debutComposant.dejaPasser == false){
                 if(!(debutComposant.prochaineComposante.length < 2)){
                     nouvC.compteurDeNoeuds++;
                     for(let i = 0; i < debutComposant.prochaineComposante.length; i++){
-                        debutComposant.ajouterComposante(this.rearrangerArrayCircuit(debutComposant.prochaineComposante[i], true));
+                        debutComposant.ajouterComposante(this.rearrangerArrayCircuit(debutComposant.prochaineComposante[i]));
+                        debutComposant.circuitsEnParallele[i].circuit.pop();
                     } 
                 }
                 nouvC.ajouterComposante(debutComposant); 
                 debutComposant.dejaPasser = true;
             }
             debutComposant = debutComposant.getProchaineComposante(); 
-        }while((debutComposant.composantePrecedente.length < 2 || !insideNoeud) 
+        }while((debutComposant.composantePrecedente.length < 2 || nouvC.compteurDeNoeuds != 0) 
             && !(debutComposant.getProchaineComposante().getType() == BATTERIE));
-        
-        if(!insideNoeud){
-            nouvC.ajouterComposante(debutComposant);
-        }
+        nouvC.ajouterComposante(debutComposant);
         return nouvC;
+        
+
+        /*SUREMENT INUTILE
+        print(this.circuit);
+        let nouvCircuit = [];
+        this.trouverPile();
+        nouvCircuit[0] = this.circuit[0];
+        let nextIndex = 0;
+        print(nouvCircuit);
+        for(let i = 1; i < this.circuit.length; i++){
+            let index = nextIndex;
+            nextIndex = this.circuit.indexOf(this.circuit[nextIndex].getProchaineComposante());
+            if(!this.circuit[nextIndex].dejaPasser){
+                if(this.circuit[index].prochaineComposante.length == 1){
+                    nouvCircuit[i] = this.circuit[nextIndex];
+                }else{
+                    for(let i = 0; i < this.circuit[index].prochaineComposante.length; i++){
+                        let nouvC = new Circuit();
+                        this.remplirAvecSuivant(nouvC, this.circuit[nextIndex])
+                    }
+                }
+
+                this.circuit[nextIndex].dejaPasser = true;
+            }
+            
+            
+            print(nouvCircuit);      
+        }
+        this.circuit = nouvCircuit;
+        */
     }
 
     
