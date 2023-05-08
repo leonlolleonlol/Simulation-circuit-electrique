@@ -95,16 +95,16 @@ function test(){
   n1.ajouterComposante(c3);
   */
   
-  /*
+  
   c1.ajouterComposante(n1);
   c1.ajouterComposante(r1);
   c1.ajouterComposante(n2);
+  c1.ajouterComposante(p1);
   c1.ajouterComposante(r4);
   c1.ajouterComposante(r3);
-  */
-
-  c1.ajouterComposante(p1);
   
+  
+
   c1.connectComposante(p1, n1);
   c1.connectComposante(n1, n2);
   c1.connectComposante(n2, r2);
@@ -118,14 +118,12 @@ function test(){
   c1.connectComposante(r6, p1);
   c1.update();
 
-  print("r1: i = " + r1.courant.round(5) + "A; DeltaV = " + r1.tension.round(2) + "V");
-  print("r2: i = " + r2.courant.round(5) + "A; DeltaV = " + r2.tension.round(2) + "V");
-  print("r3: i = " + r3.courant.round(5) + "A; DeltaV = " + r3.tension.round(2) + "V");
-  print("r4: i = " + r4.courant.round(5) + "A; DeltaV = " + r4.tension.round(2) + "V");
-  print("r5: i = " + r5.courant.round(5) + "A; DeltaV = " + r5.tension.round(2) + "V");
-  print("r6: i = " + r6.courant.round(5) + "A; DeltaV = " + r6.tension.round(2) + "V");
-  print("r7: i = " + r7.courant.round(5) + "A; DeltaV = " + r7.tension.round(2) + "V");
- 
+  
+  
+  print(r1.courant.round(5) + " " + r1.tension.round(2));
+  print(r2.courant.round(5) + " " + r2.tension.round(2));
+  print(r3.courant.round(5) + " " + r3.tension.round(2));
+  print(r4.courant.round(5) + " " + r4.tension.round(2));
   
   //c1.solveCourrantkirchhoff();
 }
