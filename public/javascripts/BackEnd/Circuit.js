@@ -57,6 +57,7 @@
         this.trouverPile();
         this.circuit = this.rearrangerArrayCircuit(this.circuit[0], false).circuit;
         this.tensionEQ = this.circuit[0].tension;
+        print(this.circuit);
         this.trouverEq();
     }
 
@@ -84,12 +85,14 @@
         let nouvC = new Circuit();
         do{
             if(debutComposant.dejaPasser == false){
-                if(!(debutComposant.prochaineComposante.length < 2)){
+                if(debutComposant.prochaineComposante.length > 1){
                     for (const pComposant of debutComposant.prochaineComposante) {
                         debutComposant.ajouterComposante(this.rearrangerArrayCircuit(pComposant, true));
                     }
                 }
-                nouvC.ajouterComposante(debutComposant); 
+                if(!(debutComposant.composantePrecedente.length > 1 && debutComposant.getType() == NOEUD)){
+                    nouvC.ajouterComposante(debutComposant); 
+                }
                 debutComposant.dejaPasser = true;
             }
             debutComposant = debutComposant.getProchaineComposante(); 

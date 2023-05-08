@@ -79,6 +79,8 @@ function test(){
   c4 = new Circuit();
   c5 = new Circuit();
   n2 = new Noeuds();
+  n3 = new Noeuds();
+  n4 = new Noeuds();
   /*
   c4.ajouterComposante(r5);
   c4.ajouterComposante(r6);
@@ -107,13 +109,20 @@ function test(){
   
   c1.connectComposante(p1, n1);
   c1.connectComposante(n1, n2);
-  c1.connectComposante(n2, r2);
-  c1.connectComposante(r2, r3);
-  c1.connectComposante(r3, r5);
-  c1.connectComposante(n2, r1);
-  c1.connectComposante(r1, r5);
   c1.connectComposante(n1, r4);
-  c1.connectComposante(r4, r5);
+
+  c1.connectComposante(n2, r2);
+  c1.connectComposante(n2, r1);
+
+  c1.connectComposante(r2, r3);
+
+  c1.connectComposante(r3, n3);
+  c1.connectComposante(r1, n3);
+
+  c1.connectComposante(n3, n4);
+  c1.connectComposante(r4, n4);
+
+  c1.connectComposante(n4, r5);
   c1.connectComposante(r5, r6);
   c1.connectComposante(r6, p1);
   c1.update();
