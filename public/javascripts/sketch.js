@@ -70,7 +70,7 @@ function test(){
 
   r2 = new Resisteur(0, 0, 800);
   r3 = new Resisteur(0, 0, 1100);
-  r4 = new Resisteur(0, 0, 450); 
+  r4 = new Resisteur(0, 0, 400); 
   
 
   r5 = new Resisteur(0, 0, 400);
@@ -98,24 +98,19 @@ function test(){
   
   c1.ajouterComposante(n1);
   c1.ajouterComposante(r1);
-  c1.ajouterComposante(n2);
+  c1.ajouterComposante(r2);
   c1.ajouterComposante(p1);
   c1.ajouterComposante(r4);
-  c1.ajouterComposante(r3);
   
   
 
   c1.connectComposante(p1, n1);
-  c1.connectComposante(n1, n2);
-  c1.connectComposante(n2, r2);
-  c1.connectComposante(r2, r3);
-  c1.connectComposante(r3, r5);
-  c1.connectComposante(n2, r1);
-  c1.connectComposante(r1, r5);
+  c1.connectComposante(n1, r2);
   c1.connectComposante(n1, r4);
-  c1.connectComposante(r4, r5);
-  c1.connectComposante(r5, r6);
-  c1.connectComposante(r6, p1);
+  c1.connectComposante(r4, r1);
+  c1.connectComposante(r2, r1);
+  //c1.connectComposante(r3, r1);
+  c1.connectComposante(r1, p1);
   c1.update();
 
   
