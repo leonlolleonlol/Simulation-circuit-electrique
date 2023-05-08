@@ -501,21 +501,23 @@ function mousePressed() {
   if(inGrid(mouseX/grid.scale,mouseY/grid.scale))
     drag = grid;
 }
-function creatNoeud(fil, action){
+function creatNoeud(fil){
   fil.trierPoint();
-  f1 = new Fil(fil.xi, fil.yi,fil.xf,fil.yf)
-  f1.UsePrint();
+  f1 = new Fil(fil.xi, fil.yi,fil.xf,fil.yf);
   // étape 1 : vérifier les deux cas de présence de noeud 
-  for(let i = 0; i < fils.length - 1; i++){
-    if(fils[i].xi === fils[i+1].xi && fils[i].yi === fils[i+1].yi){
-
+  for (const nfil of fils) {
+    if(nfil !== fil){
+      if((fil.yi - nfil.yi) * (fil.yi-nfil.yf) <= 0 && (fil.yi !== nfil.yi && nfil.yi !== nfil.yf)){
+        f1.UsePrint();
+      }
     }
   }
-  if (drag.getType()==FIL) {
-    let point = findGridLock(grid.translateX, grid.translateY);
-    drag.xf = point.x;
-    drag.yf = point.y;
-  } 
+  for(let i = 0; i < fils.length - 1; i++){
+      if(fils[i].xi === fils[i+1].xi || fils[i].yi === fils[i+1].yi){
+        //if(fil.yi != fils[i].yi && fil.yf != fils[i].yf){
+        }
+   // }  
+  }
 }
 
 function mouseDragged() {
@@ -560,6 +562,7 @@ function mouseReleased() {
       if(drag.longueur()>0){
         let actions = [{type:CREATE, objet:drag}]
         let actionsSup = simplifyNewFil(drag, actions);
+        creatNoeud(drag);
         addActions(actions);
       }else {
         let fil = fils.pop();
@@ -567,7 +570,6 @@ function mouseReleased() {
           selection = fil.origin;
         }
       }
-      creatNoeud(drag,action);
     } else if(drag instanceof Composant) {
         if(validComposantPos(drag) && dist(drag.pastPos.x, drag.pastPos.y, drag.x, drag.y) > 0){
           let actions = [{type:MODIFIER, objet:drag, changements:[
