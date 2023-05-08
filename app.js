@@ -36,9 +36,6 @@ app.get('/nerdamer/all.min.js', function(req, res) {
 app.get('/sketch.js', function(req, res) {
   res.sendFile(path.join(__dirname, 'public/javascripts/sketch.js'));
 });
-app.get('/Sympy.js', function(req, res) {
-  res.sendFile(path.join(__dirname, 'public/javascripts/Sympy.js'));
-});
 app.get('/Forme.js', function(req, res) {
   res.sendFile(path.join(__dirname, 'public/javascripts/Forme.js'));
 });
@@ -49,11 +46,14 @@ app.get('/Historique.js', function(req, res) {
   res.sendFile(path.join(__dirname, 'public/javascripts/Historique.js'));
 });
 app.get('/Circuit.js', function(req, res) {
-  res.sendFile(path.join(__dirname, 'public/javascripts/BackEnd/Circuit.js'));
+  res.sendFile(path.join(__dirname, 'public/javascripts/Circuit.js'));
 });
 app.get('/p5.min.js', function(req, res) {
   res.sendFile(path.join(__dirname, 'public/javascripts/lib/p5.min.js'));
 });
+app.get('/fil.js', function(req, res){
+  res.sendFile(path.join(__dirname, 'public/javascripts/fil.js'));
+})
 app.get('/Composant.js', function(req, res) {
   res.sendFile(path.join(__dirname, 'public/javascripts/Composant.js'));
 });
