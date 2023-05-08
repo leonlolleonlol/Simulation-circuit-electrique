@@ -809,6 +809,9 @@ function mousePressed() {
   if(inGrid(mouseX/grid.scale,mouseY/grid.scale))
     drag = grid;
 }
+function creatNoeud(){
+  // étape 1 : vérifier les deux cas de présence de noeud 
+}
 
 function mouseDragged() {
   if(drag != null){
