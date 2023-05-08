@@ -13,9 +13,19 @@ app.listen(port, () => {
   var start = (process.platform == 'darwin'? 'open': process.platform == 'win32'? 'start': 'xdg-open');
   require('child_process').exec(start + ' ' + url+'/editeur');
 })
-
+app.set("view engine", "ejs");
 app.get('/', function(req, res) {
   res.sendFile(path.join(__dirname, '/acceuil.html'));
+  //res.render("index");
+});
+app.get('/users/register', function(req, res) {
+  res.render("register");
+});
+app.get('/users/login', function(req, res) {
+  res.render("login");
+});
+app.get('/users/dashboard', function(req, res) {
+  res.render("dashboard", {user: "Conor"});
 });
 app.get('/acceuil', function(req, res) {
   res.sendFile(path.join(__dirname, '/acceuil.html'));
@@ -48,7 +58,6 @@ app.get('/Composant.js', function(req, res) {
   res.sendFile(path.join(__dirname, 'public/javascripts/Composant.js'));
 });
 app.get('/editeur', function(req, res) {
-  app.use
   res.sendFile(path.join(__dirname, '/editeur.html'));
 });
 

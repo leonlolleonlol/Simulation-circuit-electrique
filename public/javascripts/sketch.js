@@ -11,6 +11,7 @@ let grid;
 const composants_panneau = [new Batterie(58, 215, 12),
   new Resisteur(58, 265, 25), new Ampoule(58, 315, 40)]; // Le panneau de choix des composants
 
+
 // liens vers des éléments DOM utiles
 let undo_button;
 let redo_button;
@@ -39,6 +40,7 @@ function setup() {
   //----------------------------------------
   reset_button.mousePressed(refresh);
   undo_button.mousePressed(undo);
+
   redo_button.mousePressed(redo);
   animation_button.mousePressed(() => {animate=!animate;});
   line_grid_button.mousePressed(()=>{ grid.quadrillage=QUADRILLE;});
@@ -81,7 +83,7 @@ function test(){
 }
 
 function initComponents(){
-  animate=false;
+  animate=1;
   fils = [];
   components = [];
   drag = null;
@@ -145,6 +147,7 @@ function draw() {
   if (origin != null) {
     drag.draw(grid.translateX, grid.translateY);
   }
+  pop();
 }
 
 function drawComponentsChooser() {
