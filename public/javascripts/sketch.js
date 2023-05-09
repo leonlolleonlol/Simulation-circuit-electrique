@@ -318,7 +318,8 @@ let point = findGridLock(grid.translateX,grid.translateY)
 }
 
 /**
- * 
+ * Vérifie si un point en x et y connecte au borne d'un composant sur la grille et 
+ * retourne ce composant si c'est le cas.
  * @param {number} x la position en x
  * @param {number} y la position en y
  * @returns Le composant trouvé ou null
@@ -328,7 +329,8 @@ function getConnectingComposant(x, y){
 }
 
 /**
- * 
+ * Vérifie si un point x et y est valide pour commencer un nouveau fil et
+ * retourne ce fil si c'est le cas
  * @param {number} x la position en x
  * @param {number} y la position en y
  * @returns Le fil trouvé qui connecte ou null
@@ -348,11 +350,15 @@ function filStart(x, y){
 
 
 /**
- * 
- * @param {Fil} fil Le nouveau fil à simplifier
- * @param {Array} actions La liste d'actions ou l'on va enregistrer les actions interne effectuer dans la fonction
+ * Effectue les ajustements automatique après la création d'un nouveau fil par l'utilisateur.
+ * 1. Ordonner les points initiaux et finaux plus petit au plus grand (xi doit être < que xf)
+ * 2. Unir certains fils possible en un seul fil
+ * 3. Coupe le fil dépendant des composants par lequel il passe
+ * @param {Fil} fil Le nouveau fil
+ * @param {Array} actions La liste d'actions ou l'on va enregistrer les actions interne 
+ * effectuer dans la fonction
  */
-function simplifyNewFil(fil, actions){
+function ajustementAutomatiqueNouveauFil(fil, actions){
   fil.trierPoint();
   for (let index = 0; index < fils.length; index++) {
     const testFil = fils[index];
@@ -375,10 +381,12 @@ function simplifyNewFil(fil, actions){
 }
 
 /**
- * 
+ * Cette fonction permet de faire les appels pour la fonctions couperFil pour chaque composant.
+ * Elle a été créer pour nous permettre d'éviter lorsque l'on créer dans la fonction couperFil
+ * un nouveau fil de répasser par la fonction ajustementNouveauFil au complet.
  * @param {Fil} fil Le fil à vérifier
- * @param {Array} actions La liste d'actions ou l'on va enregistrer les actions interne effectuer dans la fonction
- * @returns 
+ * @param {Array} actions La liste d'actions ou l'on va enregistrer les actions interne 
+ * effectuer dans la fonction
  */
 function verifierCouperFil(fil, actions){
   let penteFil = Math.abs(fil.pente());
@@ -386,7 +394,7 @@ function verifierCouperFil(fil, actions){
     for (const composant of components) {
       let continuer = couperFil(fil, composant, actions);
       if(!continuer)
-        return;
+        break;
     }
   }
 }
@@ -394,11 +402,16 @@ function verifierCouperFil(fil, actions){
 // --------------------------------------
 
 /**
- * 
- * @param {Fil} fil Le fil à valider
- * @param {Composant} composant Le composant à valider
- * @param {Array} actions La liste d'actions ou l'on va enregistrer les actions interne effectuer dans la fonction
- * @returns 
+ * Fonction permettant d'appliquer la règle qu'un fil doit toujours se connecter à un 
+ * autre fil ou au borne d'un composant. Dans cette fonction, on vérifier qu'un composant
+ * connecte avec un fil et si c'est le cas, on change si nécéssaire les valeur de positions
+ * des bornes du fil pour qu'il connecte au composant ou on le supprime tout simplement
+ * @param {Fil} fil Le fil que l'on veut comparer
+ * @param {Composant} composant Le composant que l'on veut comparer
+ * @param {Array} actions La liste d'actions ou l'on va enregistrer les actions 
+ * interne effectuer dans la fonction
+ * @returns Un boolean qui dit si le fil a été supprimer du répertoire. Très important si c'est un
+ * nouveau fil (voir verifierCouperFil)
  */
 function couperFil(fil, composant, actions){
   let penteFil = Math.abs(fil.pente());
@@ -458,7 +471,7 @@ function validComposantPos(composant){
  * @param {Composant} composant Le nouveau composant à valider
  * @param {Array} actions La liste d'actions ou l'on va enregistrer les actions interne effectuer dans la fonction
  */
-function simplifyComposant(composant, actions){
+function ajustementAutomatiqueComposant(composant, actions){
   for (let index = 0; index < components.length; index++) {
     const element = components[index];
     if(element!== composant && element.x == composant.x &&
@@ -572,6 +585,11 @@ function mouseDragged() {
   }
 }
 
+/**
+ * Cette fonction offerte par p5 permet d'exécuter une action après un click avec la souris.
+ * Dans le cadre du projet, c'est utiliser pour arrèter le drag si il y en a un en cours
+ * et aussi de faire les modifications et vérfications finales.
+ */
 function mouseReleased() {
   // Arrète le drag si il y en avait un en cours
   if (drag != null){
@@ -580,14 +598,14 @@ function mouseReleased() {
       if(validComposantPos(drag)){
         components.push(drag);
         let actions = [{type: CREATE, objet: drag}];
-        simplifyComposant(drag, actions);
+        ajustementAutomatiqueComposant(drag, actions);
         addActions(actions);
       }
     origin = null;
     } else if (drag.getType()==FIL) {
       if(drag.longueur()>0){
         let actions = [{type:CREATE, objet:drag}]
-        let actionsSup = simplifyNewFil(drag, actions);
+        let actionsSup = ajustementAutomatiqueNouveauFil(drag, actions);
         addActions(actions);
       }else {
         let fil = fils.pop();
@@ -600,7 +618,7 @@ function mouseReleased() {
           let actions = [{type:MODIFIER, objet:drag, changements:[
             	{attribut:'x', ancienne_valeur:drag.pastPos.x, nouvelle_valeur:drag.x},
               {attribut:'y', ancienne_valeur:drag.pastPos.y, nouvelle_valeur:drag.y}]}];
-          simplifyComposant(drag, actions);
+          ajustementAutomatiqueComposant(drag, actions);
           addActions(actions);
         } else{
           // Annuler le mouvement
@@ -612,18 +630,28 @@ function mouseReleased() {
   }
 }
 
+/**
+ * Cette fonction zoom la grille si certaines conditions sont respecter. Cette fonction est 
+ * géré et appelé par p5.
+ * @param {*} event l'evenement en liens avec cet appel de fonction
+ * @returns false si l'on veut empécher tout comportement par défaut dans le navigateur
+ * en lien avec cet évenement
+ */
 function mouseWheel(event){
-  if(event.delta < 0 && grid.scale * 1.1 < 9){
-    zoom(0.1);
-  }
-  else if(event.delta > 0 && grid.scale * 0.9 > 0.2){
-    zoom(-0.1);
+  if(inGrid(mouseX/grid.scale, mouseY/grid.scale)){
+    if(event.delta < 0 && grid.scale * 1.1 < 9){
+      zoom(0.1);
+    }
+    else if(event.delta > 0 && grid.scale * 0.9 > 0.2){
+      zoom(-0.1);
+    }
+    return false;
   }
 }
 
 /**
  * Modifie le zoom qui est appliquer sur notre grille et ces composants
- * @param {number} factor Le facteur de zoom. présentement 0.1 ou -0.1
+ * @param {number} factor Le facteur de zoom. Ce facteur est soit 0.1 ou -0.1
  */
 function zoom(factor){
   let pastScale = grid.scale;
@@ -687,7 +715,7 @@ function keyPressed() {
         }(point.x,point.y);
       if(validComposantPos(newC)){
         let actions = [{type:CREATE,objet:newC}];
-        action = simplifyComposant(newC, actions);
+        action = ajustementAutomatiqueComposant(newC, actions);
         selection = newC;
         components.push(newC);
         //circuit.ajouterComposante(newC);
