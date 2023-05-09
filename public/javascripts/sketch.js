@@ -136,7 +136,7 @@ function updateBouton(){
 
 /**
  * Effectue les éléments suivant:
- * 1. Changer le background
+ * 1. Mettre à jour les boutons
  * 2. Dessiner la grille
  * 3. Dessiner les fils et composants
  * 4. Dessiner le panneau de choix des composants
@@ -148,10 +148,7 @@ function draw() {
   drawGrid();
   drawFils();
   drawComposants();
-  push();
-  scale(1/grid.scale);
   drawComponentsChooser();
-  pop();
   if (origin != null) {
     drag.draw(grid.translateX, grid.translateY);
   }
@@ -162,9 +159,11 @@ function draw() {
  */
 function drawComponentsChooser() {
   push();
+  scale(1/grid.scale);
   noStroke();
   textAlign(CENTER);
   fill(backgroundColor);
+  // Pour cacher les composants hors de la grille
   rect(0, 0, grid.offsetX * grid.scale, height);
   rect(0, 0, width, grid.offsetY * grid.scale);
   rectMode(CENTER);
@@ -186,7 +185,8 @@ function drawComponentsChooser() {
 
 
 /**
- * Redirige vers la la fonction pour dessiner la grille dépendant du type de quadrillage sélectionner
+ * Redirige vers la la fonction pour dessiner la grille dépendant 
+ * du type de quadrillage sélectionner
  */
 function drawGrid(){
   switch (grid.quadrillage) {
@@ -224,10 +224,10 @@ function drawComposants(){
 }
 
 /**
- * 
+ * Calcule la position pour un pourcentage du fil entre 0 et 1
  * @param {Fil} fil Le fil concerner par le calcul
  * @param {number} percent Le pourcentage entre 0 et 1 pour sélectionner la position du fil
- * @returns L'objet contenant la position (x, y)
+ * @returns L'objet contenant la position x, y
  */
 function posAtPercent(fil, percent) {
   let dx = fil.xf - fil.xi;
@@ -241,6 +241,10 @@ function posAtPercent(fil, percent) {
 
 // GRILLE ------------------------------------------
 
+/**
+ * Dessine une grille de type pointié (bullet)
+ * @param {p5.Color} color La couleur de remplissage pour les point de la grille
+ */
 function drawPointGrid(color) {
   push();
   stroke(color);
@@ -255,6 +259,10 @@ function drawPointGrid(color) {
   pop();
 }
 
+/**
+ * Dessine une grille de type quadrillé
+ * @param {p5.Color} color La couleur de remplissage pour les lignes de la grille
+ */
 function drawLineGrid(color) {
   push();
   stroke(color);
@@ -288,18 +296,29 @@ function findGridLock(offsetX, offsetY) {
   return {x:lockX, y: lockY};
 }
 
+/**
+ * Vérification si un élément est déplacer
+ * @param {*} element Un élement qui peut être drag
+ * @returns boolean si cet élément est présentement déplacé
+ */
 function isElementDrag(element){
   return drag!=null && drag === element;
 }
 
+/**
+ * Vérification de la sélection d'un élément
+ * @param {*} element Un élement qui peut être sélectionner
+ * @returns boolean si cet élément est présentement sélectionner
+ */
 function isElementSelectionner(element){
   return selection!=null && selection === element;
 }
 
 /**
- * 
- * @param {number} x la position en y
- * @param {number} y la position en x
+ * Vérifie si la position en x et y se situe dans le spectre visible de la grille.
+ * Cette vérification ne prend en compte que le décalage de la grille par rapport au canvas
+ * @param {number} x la position en y (doit inclure translateX si nécéssaire)
+ * @param {number} y la position en x (doit inclure translateY si nécéssaire)
  * @returns boolean si notre point se situe dans la grille
  */
 function inGrid(x, y){
@@ -307,6 +326,15 @@ function inGrid(x, y){
 }
 
 // Fonction fil -----------------------------
+
+/**
+ * Vérifie si l'on peut commencer un nouveau fil à une position donné. Les critère sont:
+ *  - Le point se situe dans la grille visible
+ *  - Le fil connecte aux borne d'un composant ou touche à un autre fil
+ * @param {number} x la position en x
+ * @param {number} y la position en y
+ * @returns Si un nouveau fil peut commencer à cette position
+ */
 function validFilBegin(x, y){
 let point = findGridLock(grid.translateX,grid.translateY)
   if (!inGrid(mouseX/grid.scale, mouseY/grid.scale) || dist(point.x, point.y, x, y)>10){
@@ -358,7 +386,7 @@ function filStart(x, y){
  * @param {Array} actions La liste d'actions ou l'on va enregistrer les actions interne 
  * effectuer dans la fonction
  */
-function ajustementAutomatiqueNouveauFil(fil, actions){
+function ajustementAutomatiqueFil(fil, actions){
   fil.trierPoint();
   for (let index = 0; index < fils.length; index++) {
     const testFil = fils[index];
@@ -424,22 +452,26 @@ function couperFil(fil, composant, actions){
     let borne1 = connections[0];
     let borne2 = connections[1];
     if(piInBound && pfInBound){
+      //supprimer le fil
       fils.splice(index,1);
       actions.push({type:DELETE,objet:fil, index});
       return false;
     }else if(piInBound && !pfInBound){
+      //Raccourcir le fil pour le point initial
       actions.push({type:MODIFIER, objet:fil, changements:[
         {attribut:'xi', ancienne_valeur:fil.xi, nouvelle_valeur:borne2.x},
         {attribut:'yi', ancienne_valeur:fil.yi, nouvelle_valeur:borne2.y}]});
       fil.xi = borne2.x;
       fil.yi = borne2.y;
     }else if(!piInBound && pfInBound){
+      //raccourcir le fil pour le point final
       actions.push({type:MODIFIER, objet:fil, changements:[
         {attribut:'xf', ancienne_valeur:fil.xf, nouvelle_valeur:borne1.x},
         {attribut:'yf', ancienne_valeur:fil.yf, nouvelle_valeur:borne1.y}]});
       fil.xf = borne1.x;
       fil.yf = borne1.y;
     }else if(fil.inBoxBounds(composant.x,composant.y)){
+      // couper le fil en deux nouveaux fils
       let fil1 = new Fil(fil.xi, fil.yi, borne1.x, borne1.y);
       let fil2 = new Fil(borne2.x,borne2.y, fil.xf, fil.yf);
       fils.splice(index,1);
@@ -455,8 +487,9 @@ function couperFil(fil, composant, actions){
 }
 
 /**
- * Vérifie si un nouveau composant ou un composant que l'on a modifier a une position valide. Les critères sont que le composant se situe dans la grille
- * 
+ * Vérifie si un nouveau composant ou un composant que l'on a modifier a une position valide. 
+ * Les critères sont que le composant se situe dans la grille et qu'il ne connecte pas
+ * avec les bornes d'un composant
  * @param {Composant} composant Le composant que l'on veut valider la position
  * @returns Si la position du composant est valide
  */
@@ -467,19 +500,21 @@ function validComposantPos(composant){
 }
 
 /**
- * 
+ * Cette fonction est l'équivalent de ajustementAutomatiqueFil, mais pour les composants.
+ * Les actions qui peuvent être effectuer sont de remplacer un composant si deux composants
+ * sont à la même position (remplacer le plus ancien par le nouveau) et de recouper les fils
+ * si besoin (voir couperFil)
  * @param {Composant} composant Le nouveau composant à valider
- * @param {Array} actions La liste d'actions ou l'on va enregistrer les actions interne effectuer dans la fonction
+ * @param {Array} actions La liste d'actions ou l'on va enregistrer les actions interne 
+ * effectuer dans la fonction
  */
 function ajustementAutomatiqueComposant(composant, actions){
-  for (let index = 0; index < components.length; index++) {
-    const element = components[index];
-    if(element!== composant && element.x == composant.x &&
-      element.y == composant.y){
-        components.splice(index,1);
-        actions.push({type:DELETE,objet:element, index});
-        break;
-    }
+  let composantSuperpose = components.find(element => element!== composant && 
+    element.x == composant.x && element.y == composant.y);
+  if(composantSuperpose!=null){
+    let index = components.indexOf(composantSuperpose);
+    components.splice(index,1);
+    actions.push({type:DELETE,objet:element, index});
   }
   for (const fil of fils) {
     let penteFil = Math.abs(fil.pente());
@@ -489,10 +524,11 @@ function ajustementAutomatiqueComposant(composant, actions){
 }
 
 /**
- * 
- * @param {Composant|Fil} element L'élement que l'on veut drag
- * @param {number} x La position en x relative
- * @param {number} y La position en y relative
+ * Cette fonction utilitaire permet de juste d'initier les principales valeurs 
+ * utile lorsque l'on veut déplacer un composant (autre qu'un fil) sur la grille
+ * @param {Composant} element L'élement que l'on veut drag
+ * @param {number} x La position en x du composant
+ * @param {number} y La position en y du composant
  */
 function initDrag(element, x, y){
   drag = element;
@@ -502,9 +538,10 @@ function initDrag(element, x, y){
 }
 
 /**
- * 
+ * Créer un nouveau composant en prenant pour référence la position et le type 
+ * du composant précédent sélectionner dans menu des composants
  * @param {Composant} original Le composant du menu déroulant que l'on veut copier
- * @returns Le composant copier
+ * @returns Le composant qui a été copier
  */
 function copyComposant(original){
   // Création d'un nouveau composants selon le composant sélectionner
@@ -519,6 +556,9 @@ function copyComposant(original){
   }
 }
 
+/**
+ * Cette fonction gére les drag des composants grahique et la vérification de sélection d'un fil
+ */
 function mousePressed() {
   selection = null;
   // Vérification drag panneau de choix
@@ -540,6 +580,8 @@ function mousePressed() {
       return;
     }
   }
+
+  // Vérifier possibilité de création d'un nouveau fil
   if (validFilBegin(x, y)) {
     let point = findGridLock(grid.translateX, grid.translateY);
     drag = new Fil(point.x, point.y, point.x, point.y);
@@ -549,16 +591,21 @@ function mousePressed() {
     return;
   }
 
+  // Vérifier sélection d'un fil
   for (const nfil of fils) {
     if(nfil.inBounds(x, y)){
       selection = nfil;
       return;
     }
   }
+  // vérification d'un déplacement de la grille
   if(inGrid(mouseX/grid.scale,mouseY/grid.scale))
     drag = grid;
 }
 
+/**
+ * Met à jour les informations des éléments drag sur notre grille
+ */
 function mouseDragged() {
   if(drag != null){
     if (origin != null) {
@@ -605,7 +652,7 @@ function mouseReleased() {
     } else if (drag.getType()==FIL) {
       if(drag.longueur()>0){
         let actions = [{type:CREATE, objet:drag}]
-        let actionsSup = ajustementAutomatiqueNouveauFil(drag, actions);
+        let actionsSup = ajustementAutomatiqueFil(drag, actions);
         addActions(actions);
       }else {
         let fil = fils.pop();
@@ -667,6 +714,19 @@ function keyPressed() {
   * Gestion des raccourcis clavier.
   * Pour trouver les codes des combinaisons,
   * aller voir https://www.toptal.com/developers/keycode
+  * 
+  * Voici les raccourcis actuel:
+  *  - ctrl + Z : annuler
+  *  - ctrl + Shift + Z : refaire
+  *  - ctrl + S : sauvegarder
+  *  - backspace : supprimer sélection
+  *  - T : tourner selection de 90 degré
+  *  - shift + T : tourner selection de -90 degré
+  *  - S : Ajouter batterie
+  *  - R : Ajouter résisteur
+  *  - A : Ajouter ampoule
+  *  - C : Ajouter condensateur (désactiver présentement)
+  *  - D : Ajouter diode (désactiver présentement)
   */
   if (keyIsDown(CONTROL)) {
     if(keyCode === 90){
@@ -725,6 +785,11 @@ function keyPressed() {
     }
   }
 }
+
+/**
+ * Lorsque la fenêtre du navigateur est redimensionner, il faut aussi redimensionner le canvas
+ * et certaine autres positions
+ */
 function windowResized(){
   resizeCanvas(windowWidth - 50, windowHeight - 30);
   initPosition();
@@ -748,37 +813,30 @@ function refresh() {
  */
 function load(data){
   let obj = JSON.parse(data);
-  components = obj.components;
-  fils = obj.fils;
+  let tempElements = obj.components.concat(obj.fils);
+  components.length = fils.length = 0;
   let map = new Map();
   
   // Réaffecter les méthodes de classe
-  for (const composant of components) {
-    Object.setPrototypeOf(composant, getPrototype(composant.type));
-    map.set(composant.id, composant);
-  }
-  for (const fil of fils) {
-    Object.setPrototypeOf(fil, Fil.prototype);
-    map.set(fil.id, fil);
-  }
+  tempElements.map((element) =>{
+    let object = Object.assign(getComposantVide(element.type), element);
+    if(object instanceof Composant){
+      components.push(object);
+    }
+    else if(object instanceof Fil){
+      fils.push(object)
+    }
+    map.set(object.id, object);
+    return object;
+  })
 
   // Remplacer les id par des objets
-  for(const composant of components){
-    for (const key in composant) {
-      if (Object.hasOwnProperty.call(composant, key)) {
-        const value = composant[key];
+  for(const element of tempElements){
+    for (const key in element) {
+      if (Object.hasOwnProperty.call(element, key)) {
+        const value = element[key];
         if(typeof value == 'object' && value!=null && value.id != null){
-          composant[key] = map.get(value.id);
-        }
-      }
-    }
-  }
-  for(const fil of fils){
-    for (const key in fil) {
-      if (Object.hasOwnProperty.call(fil, key)) {
-        const value = fil[key];
-        if(typeof value == 'object' && value!=null && value.id != null){
-          fil[key] = map.get(value.id);
+          element[key] = map.get(value.id);
         }
       }
     }
@@ -786,21 +844,22 @@ function load(data){
 }
 
 /**
- * Cette fonction permet de trouver le prototype d'objet correspondant à partir du code de prototype
+ * Cette fonction permet de produire un nouvel objet correspondant à partir du type de classe
  * donné par la méthode des classes Composant et Fil getType(). Cette fonction est utile pour réasigner
  * les méthode d'une classe effacé lors du transcrivage en Json
  * @param {string} type Le code de représentation de la classe utiliser (voir méthode getType)
- * @returns Le prototype correspondant au code enregistrer
+ * @returns Un composant graphique vide (sans valeur)
  */
-function getPrototype(type){
+function getComposantVide(type){
+  // La fonction pourrait aussi se faire avec Object.create()
   switch (type) {
-    case FIL: return Fil.prototype;
-    case BATTERIE: return Batterie.prototype;
-    case RESISTEUR: return Resisteur.prototype;
-    case AMPOULE: return Ampoule.prototype;
-    case CONDENSATEUR: return Condensateur.prototype;
-    case DIODE: return Diode.prototype;
-    default: return Composant.prototype;
+    case FIL: return new Fil();
+    case BATTERIE: return new Batterie();
+    case RESISTEUR: return new Resisteur();
+    case AMPOULE: return new Ampoule();
+    case CONDENSATEUR: return new Condensateur();
+    case DIODE: return new Diode();
+    default: return new Composant();
   }
 }
 
