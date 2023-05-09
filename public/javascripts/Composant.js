@@ -1,3 +1,5 @@
+/** @module Composant */
+
 class Composant {
 
   constructor(x, y){
@@ -5,23 +7,28 @@ class Composant {
     this.x = x;
     this.y = y;
     // on crée automatiquement une classe de tension
-      this.courant = 0;
-      this.tension = 0;
+    this.courant = 0;
+    this.tension = 0;
   }
-  /* ****INUTILE?****
-  Cette méthode est appelé à chaque fois que l'on
-  veut calculer la tension et la différence de potentiel d'un 
-  composant. Les information disponible sont la branche (composant) et 
-  si notre composant est en paralèle ou en série
-  calcul(paralele, composant){
-      throw console.error();//todo préciser l'erreur
-  }*/
   draw() {
-    throw console.error();//todo préciser l'erreur
+    throw new Error('Cette fonction ne peut pas être appelé de l\'interface');
   }
+
+  /**
+   * 
+   * @param {number} x 
+   * @param {number} y 
+   * @param {number} approximation 
+   * @returns boolean si une borne est touché par le point
+   */
   checkConnection(x, y, approximation){
     return this.getBorne(x,y,approximation)!=null;
   }
+  /**
+   * Fonction qui permet de récupérer les positions x et y des bornes. Cette fonction dépend 
+   * de l'orientation du composant.
+   * @returns Les positions des bornes trier en ordre de grandeur du composant
+   */
   getConnections(){
     let pos;
     if(this.orientation % PI == 0){
@@ -33,11 +40,26 @@ class Composant {
     }
     return pos;
   }
+
+  /**
+   * Cette fonction est équivalente avec getConnections sauf que tu peux préciser une
+   * borne spécifique à récupérer.
+   * @param {*} borne Une borne spécifique (HAUT, BAS, GAUCHE, DROITE)
+   * @returns La position de la connexion
+   */
   getConnection(borne){
-    let connections = this.getConnection();
+    let connections = this.getConnections();
     return (borne == GAUCHE || borne ==HAUT)
     ? connections[0] : connections[1];
   }
+
+  /**
+   * 
+   * @param {number} x 
+   * @param {number} y 
+   * @param {number} approximation 
+   * @returns La borne que le position touche ou null
+   */
   getBorne(x, y, approximation){
     if(this.orientation % PI == 0){
       if(dist(this.x + 60/2, this.y, x, y) < approximation)
@@ -52,12 +74,20 @@ class Composant {
     }
   }
 
+  /**
+   * 
+   * @param {boolean} inverse 
+   */
   rotate(inverse){
     this.orientation = (this.orientation + (inverse?-HALF_PI:HALF_PI)) % TWO_PI
   }
 
+  /**
+   * Getter pour le type de composant
+   * @returns le type de composant
+   */
   getType() {
-    throw console.error();//todo préciser l'erreur
+    return this.type;
   }
 } 
 
@@ -66,6 +96,7 @@ class Resisteur extends Composant {
         super(x, y);
 	      this.resistance = resistance;
         this.orientation = orientation??0;
+        this.type = RESISTEUR;
     }
 
 
@@ -82,10 +113,6 @@ class Resisteur extends Composant {
         resisteur(this.x + offX,this.y + offY,this.orientation, isElementSelectionner(this));
     }
 
-    getType() {
-      return RESISTEUR;
-    }
-
     getTitle(){
       return 'Résisteur';
     }
@@ -95,6 +122,7 @@ class Resisteur extends Composant {
 class Ampoule extends Resisteur {
     constructor(x, y, resistance, orientation) {
         super(x, y, resistance, orientation);
+        this.type = AMPOULE;
     }
     inBounds(x, y) {
       if(this.orientation % PI === 0)
@@ -109,10 +137,6 @@ class Ampoule extends Resisteur {
         ampoule(this.x + offX,this.y + offY, this.orientation, isElementSelectionner(this));
     }
 
-    getType() {
-        return AMPOULE;
-    }
-
     getTitle(){
       return 'Ampoule';
     }
@@ -124,6 +148,7 @@ class Condensateur extends Composant {
 	    this.capacite = capacite;
       this.charge = 0;
       this.orientation = orientation??0;
+      this.type = CONDENSATEUR;
     }
     inBounds(x, y) {
       if(this.orientation % PI === 0)
@@ -138,10 +163,6 @@ class Condensateur extends Composant {
     draw(offsetX, offsetY) {
       condensateur(this.x + offsetX, this.y + offsetY, this.orientation, isElementSelectionner(this));
     }
-    
-    getType() {
-        return CONDENSATEUR;
-    }
 
     getTitle(){
       return 'Condensateur';
@@ -153,6 +174,7 @@ class Condensateur extends Composant {
         super(x, y);
 	      this.tension = tension;
         this.orientation = orientation??0;
+        this.type = BATTERIE;
     }
     inBounds(x, y) {
       if(this.orientation % PI === 0)
@@ -167,10 +189,6 @@ class Condensateur extends Composant {
         batterie(this.x + offX, this.y + offY, this.orientation, isElementSelectionner(this));
     }
 
-    getType() {
-      return BATTERIE;
-    }
-
     getTitle(){
       return 'Batterie';
     }
@@ -181,6 +199,7 @@ class Diode extends Composant {
       super(x, y);
       this.radius = 19;
       this.orientation = orientation??0;
+      this.type = DIODE;
     }
     inBounds(x, y) {
       return x >= this.x - this.radius && x <= this.x + this.radius && 
@@ -190,10 +209,6 @@ class Diode extends Composant {
     
     draw(offX, offY) {
       diode(this.x + offX,this.y + offY, this.orientation, isElementSelectionner(this));
-    }
-    
-    getType() {
-      return DIODE;
     }
 
     getTitle(){
@@ -304,5 +319,17 @@ class Noeuds extends Composant {
   getType() {
     return NOEUD;
   }
+}
+/**
+ * Vérifie si un nouveau composant ou un composant que l'on a modifier a une position valide. 
+ * Les critères sont que le composant se situe dans la grille et qu'il ne connecte pas
+ * avec les bornes d'un composant
+ * @param {Composant} composant Le composant que l'on veut valider la position
+ * @returns Si la position du composant est valide
+ */
+function validComposantPos(composant){
+  if (!inGrid(composant.x + grid.translateX, composant.y + grid.translateY))
+    return false;
+  return !components.some(element =>element.checkConnection(composant.x,composant.y,1) || composant.checkConnection(element.x,element.y,1));
 }
   

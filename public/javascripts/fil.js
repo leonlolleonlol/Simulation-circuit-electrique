@@ -1,3 +1,5 @@
+/** @module Fil */
+
 class Fil{
   
   constructor(xi, yi, xf, yf){
@@ -7,6 +9,7 @@ class Fil{
     this.yf = yf;
     this.courant = 0;
     this.id = Date.now();
+    this.type = FIL;
     
   }
 
@@ -101,6 +104,39 @@ class Fil{
   }
 
   getType(){
-    return FIL;
+    return this.type;
   }
+}
+
+/**
+ * Vérifie si l'on peut commencer un nouveau fil à une position donné. Les critère sont:
+ *  - Le point se situe dans la grille visible
+ *  - Le fil connecte aux borne d'un composant ou touche à un autre fil
+ * @param {number} x la position en x
+ * @param {number} y la position en y
+ * @returns Si un nouveau fil peut commencer à cette position
+ */
+function validFilBegin(x, y){
+  let point = findGridLock(grid.translateX,grid.translateY)
+  if (!inGrid(mouseX/grid.scale, mouseY/grid.scale) || dist(point.x, point.y, x, y)>10){
+    return false;
+  }
+  else {
+    return getConnectingComposant(x,y) != null || filStart(x, y)!=null;
+  }
+}
+
+/**
+ * Calcule la position pour un pourcentage du fil entre 0 et 1
+ * @param {Fil} fil Le fil concerner par le calcul
+ * @param {number} percent Le pourcentage entre 0 et 1 pour sélectionner la position du fil
+ * @returns L'objet contenant la position x, y
+ */
+function posAtPercent(fil, percent) {
+  let dx = fil.xf - fil.xi;
+  let dy = fil.yf - fil.yi;
+  return ({
+      x: fil.xi + dx * percent,
+      y: fil.yi + dy * percent
+  });
 }

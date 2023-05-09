@@ -109,7 +109,7 @@ function initPosition(){
 
 /**
  * Met à jour un bouton si la vérification de l'activation 
- * @param {*} button La référence du bouton p5
+ * @param {p5.Element} button La référence du vers le bouton {@link https://p5js.org/reference/#/p5.Element}
  * @param {boolean} verification le résultat de la vérification à faire
  */
 function validBoutonActif(button, verification) {
@@ -143,6 +143,7 @@ function updateBouton(){
  */
 function draw() {
   background(backgroundColor);// Mettre le choix de couleur pour le background
+  percent += 0.01;
   updateBouton();
   scale(grid.scale);
   drawGrid();
@@ -191,24 +192,22 @@ function drawComponentsChooser() {
 function drawGrid(){
   switch (grid.quadrillage) {
     case POINT: 
-      drawPointGrid(color('black'));
+      pointGrid(color('black'));
       break;
     case QUADRILLE:
-      drawLineGrid(color('black'));
+      lineGrid(color('black'));
       break;
     case QUADRILLEPOINT:
-      drawLineGrid(color('black'));
-      drawPointGrid(color('gray'));
+      lineGrid(color('black'));
+      pointGrid(color('gray'));
       break;
   }
 }
-
 
 /**
  * Dessine tout les composants de la liste de fils avec p5
  */
 function drawFils() {
-  percent += 0.01;
   for (let element of fils){
     element.draw(grid.translateX, grid.translateY);
   }
@@ -222,64 +221,6 @@ function drawComposants(){
     element.draw(grid.translateX, grid.translateY);
   }
 }
-
-/**
- * Calcule la position pour un pourcentage du fil entre 0 et 1
- * @param {Fil} fil Le fil concerner par le calcul
- * @param {number} percent Le pourcentage entre 0 et 1 pour sélectionner la position du fil
- * @returns L'objet contenant la position x, y
- */
-function posAtPercent(fil, percent) {
-  let dx = fil.xf - fil.xi;
-  let dy = fil.yf - fil.yi;
-  return ({
-      x: fil.xi + dx * percent,
-      y: fil.yi + dy * percent
-  });
-}
-
-
-// GRILLE ------------------------------------------
-
-/**
- * Dessine une grille de type pointié (bullet)
- * @param {p5.Color} color La couleur de remplissage pour les point de la grille
- */
-function drawPointGrid(color) {
-  push();
-  stroke(color);
-  strokeWeight(6);
-  let offsetX = grid.offsetX + (grid.translateX-grid.offsetX) % grid.tailleCell;
-  let offsetY = grid.offsetY + (grid.translateY-grid.offsetY) % grid.tailleCell;
-  for (let i = 0; i < windowWidth/grid.scale + grid.offsetX; i+=grid.tailleCell) {
-    for (let j = 0; j < windowHeight/grid.scale + grid.offsetY; j+=grid.tailleCell) {
-      point(offsetX + i, offsetY + j);
-    }
-  }
-  pop();
-}
-
-/**
- * Dessine une grille de type quadrillé
- * @param {p5.Color} color La couleur de remplissage pour les lignes de la grille
- */
-function drawLineGrid(color) {
-  push();
-  stroke(color);
-  strokeWeight(2);
-  let offsetX = grid.offsetX + (grid.translateX-grid.offsetX) % grid.tailleCell;
-  for (let i = 0; i < windowWidth/grid.scale + grid.offsetX; i+=grid.tailleCell) {
-    line(offsetX + i, grid.offsetY, offsetX + i , height/grid.scale);
-  }
-  let offsetY = grid.offsetY + (grid.translateY-grid.offsetY) % grid.tailleCell;
-  for (let j = 0; j < windowHeight/grid.scale + grid.offsetY; j+=grid.tailleCell) {
-    line(grid.offsetX, offsetY + j, width/grid.scale, offsetY + j);
-  }
-  pop();
-}
-// ---------------------------------------------------------
-
-
 
 /**
  * Permet de trouver la position idéal en x et y à partir de la 
@@ -323,26 +264,6 @@ function isElementSelectionner(element){
  */
 function inGrid(x, y){
   return x > grid.offsetX && y > grid.offsetY
-}
-
-// Fonction fil -----------------------------
-
-/**
- * Vérifie si l'on peut commencer un nouveau fil à une position donné. Les critère sont:
- *  - Le point se situe dans la grille visible
- *  - Le fil connecte aux borne d'un composant ou touche à un autre fil
- * @param {number} x la position en x
- * @param {number} y la position en y
- * @returns Si un nouveau fil peut commencer à cette position
- */
-function validFilBegin(x, y){
-let point = findGridLock(grid.translateX,grid.translateY)
-  if (!inGrid(mouseX/grid.scale, mouseY/grid.scale) || dist(point.x, point.y, x, y)>10){
-    return false;
-  }
-  else {
-    return getConnectingComposant(x,y) != null || filStart(x, y)!=null;
-  }
 }
 
 /**
@@ -427,8 +348,6 @@ function verifierCouperFil(fil, actions){
   }
 }
 
-// --------------------------------------
-
 /**
  * Fonction permettant d'appliquer la règle qu'un fil doit toujours se connecter à un 
  * autre fil ou au borne d'un composant. Dans cette fonction, on vérifier qu'un composant
@@ -484,19 +403,6 @@ function couperFil(fil, composant, actions){
     }
   }
   return true;
-}
-
-/**
- * Vérifie si un nouveau composant ou un composant que l'on a modifier a une position valide. 
- * Les critères sont que le composant se situe dans la grille et qu'il ne connecte pas
- * avec les bornes d'un composant
- * @param {Composant} composant Le composant que l'on veut valider la position
- * @returns Si la position du composant est valide
- */
-function validComposantPos(composant){
-  if (!inGrid(composant.x + grid.translateX, composant.y + grid.translateY))
-    return false;
-  return !components.some(element =>element.checkConnection(composant.x,composant.y,1) || composant.checkConnection(element.x,element.y,1));
 }
 
 /**
@@ -804,6 +710,9 @@ function refresh() {
   resetHistorique();
 }
 
+
+// BackEnd connection
+
 /**
  * Cette fonction permet de load un circuit à partir de donnée Json. Cette fonction est très
  * importante puisque certaine donné doivent être résolue (transformé en bon format) comme 
@@ -868,11 +777,6 @@ function getComposantVide(type){
  * La fonction va automatiquement produire une alerte si une erreur dans quelconque est produite
  */
 async function sauvegarder() {
-  //Va permettre au décryptement d'affecter nos donné au bon type d'objet
-  components.forEach(element => {element.type = element.getType();});
-  fils.forEach(element => {element.type = element.getType();});
-
-
   informations = {components, fils};
   caches = [];// permet d'enregistrer un objet une fois et d'utiliser des numéros d'identification les autres fois
   let data = JSON.stringify(informations, function(key, value){
