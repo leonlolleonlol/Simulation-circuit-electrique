@@ -1,4 +1,8 @@
 const express = require('express')
+const { pool } = require("./dbConfig");
+const bcrypt = require("bcrypt");
+const session=require("express-session");
+const flash=require("express-flash");
 const app = express()
 var bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({
@@ -19,6 +23,12 @@ app.listen(port, () => {
   require('child_process').exec(start + ' ' + url+'/editeur');
 })
 app.set("view engine", "ejs");
+app.use(session({
+  secret: 'secret',
+  resave: false,
+  saveUninitialized: false
+}));
+app.use(flash());
 app.get('/', function(req, res) {
   res.sendFile(path.join(__dirname, '/acceuil.html'));
   //res.render("index");
@@ -26,10 +36,65 @@ app.get('/', function(req, res) {
 app.get('/users/register', function(req, res) {
   res.render('register');
 });
-app.post('/users/register', function(req, res){
-  console.log(req.body);
-  res.end();
-})
+app.post('/users/register', async(req, res)=>{
+  let { name, email, password, password2 } = req.body;
+  console.log({
+    name,
+    email,
+    password,
+    password2
+  });
+  let errors = [];
+  if (!name || !email || !password || !password2) {
+    errors.push({ message: "Please enter all fields" });
+  }
+
+  if (password.length < 6) {
+    errors.push({ message: "Password must be a least 6 characters long" });
+  }
+
+  if (password !== password2) {
+    errors.push({ message: "Passwords do not match" });
+  }
+  else {
+    hashedPassword = await bcrypt.hash(password, 10);
+    console.log(hashedPassword);
+    // Validation passed
+    pool.query(
+      `SELECT * FROM users
+        WHERE email = $1`,
+      [email],
+      (err, results) => {
+        if (err) {
+          console.log(err);
+        }
+        console.log("step 1");
+        if (results.rows.length > 0||errors.length > 0) {
+          if(errors.length<1)
+            errors.push({ message: "Email already registered!" });
+          return res.status(404).render("register", { errors, name, email, password, password2 });
+        }
+        else{
+          pool.query(
+            `INSERT INTO users (name, email, password)
+                VALUES ($1, $2, $3)
+                RETURNING id, password`,
+            [name, email, hashedPassword],
+            (err, results) => {
+              if (err) {
+                throw err;
+              }
+              console.log("step 2");
+              req.flash("success_msg", "You are now registered. Please log in");
+              res.redirect("/users/login");
+            }
+          );
+        }
+      }
+      );
+    }
+  //res.end();
+});
 
 app.get('/users/login', function(req, res) {
   res.render("login");
