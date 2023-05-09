@@ -643,6 +643,10 @@ function keyPressed() {
   if (keyIsDown(CONTROL)) {
     if(keyCode === 90){
       keyIsDown(SHIFT)?redo():undo();
+      return false;
+    }else if(keyCode === 83){
+      sauvegarder();
+      return false;
     }
   } else {
     if(keyCode === 8 && selection!=null){
@@ -656,6 +660,7 @@ function keyPressed() {
       } 
       addActions({type:DELETE,objet:selection,index});
       selection = null;
+      return false;
     } else if(keyCode === 84 && selection!=null){
       if(selection instanceof Composant){
         let pRotate = selection.orientation;
@@ -667,6 +672,7 @@ function keyPressed() {
           selection.orientation = pRotate;
         }
       }
+      return false;
     } else if(keyCode === 82 || keyCode === 83 || keyCode === 65
         /*|| keyCode === 67 || keyCode === 68*/){
       let point = findGridLock(grid.translateX, grid.translateY);
@@ -687,6 +693,7 @@ function keyPressed() {
         //circuit.ajouterComposante(newC);
         addActions(actions);
       }
+      return false;
     }
   }
 }
@@ -704,40 +711,109 @@ function refresh() {
   resetHistorique();
 }
 
-async function save() {
-  const response = await fetch(url, {
-    method: "POST",
-    mode: "cors", // no-cors, *cors, same-origin
-    cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-    credentials: "same-origin", // include, *same-origin, omit
-    headers: {
-      "Content-Type": "application/json",
-      // 'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    redirect: "follow", // manual, *follow, error
-    referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-    body: getDataSave(), // body data type must match "Content-Type" header
-  });
-  if(response.error){
-    alert('Votre sauvegarde a échouer')
-  }
-  return response.json();
-}
-
-function getDataSave(){
+/**
+ * Cette fonction permet de load un circuit à partir de donnée Json. Cette fonction est très
+ * importante puisque certaine donné doivent être résolue (transformé en bon format) comme 
+ * le type de l'objet (prototype) qui est très important pour les méthodes et 
+ * les id (voir commentaire dans fonction sauvegarder)
+ * @param {string} data Les données du circuit en format Json
+ */
+function load(data){
+  let obj = JSON.parse(data);
+  components = obj.components;
+  fils = obj.fils;
+  let map = new Map();
+  
+  // Réaffecter les méthodes de classe
   for (const composant of components) {
-    composant.type = composant.getType();
+    Object.setPrototypeOf(composant, getPrototype(composant.type));
+    map.set(composant.id, composant);
   }
   for (const fil of fils) {
-    fil.type = fil.getType();
+    Object.setPrototypeOf(fil, Fil.prototype);
+    map.set(fil.id, fil);
   }
-  array = [components, fils];
-  let composants = JSON.stringify(array, function(key, value){
-    if(key === 'origin' && value != null){
-      return null;
+
+  // Remplacer les id par des objets
+  for(const composant of components){
+    for (const key in composant) {
+      if (Object.hasOwnProperty.call(composant, key)) {
+        const value = composant[key];
+        if(typeof value == 'object' && value!=null && value.id != null){
+          composant[key] = map.get(value.id);
+        }
+      }
+    }
+  }
+  for(const fil of fils){
+    for (const key in fil) {
+      if (Object.hasOwnProperty.call(fil, key)) {
+        const value = fil[key];
+        if(typeof value == 'object' && value!=null && value.id != null){
+          fil[key] = map.get(value.id);
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Cette fonction permet de trouver le prototype d'objet correspondant à partir du code de prototype
+ * donné par la méthode des classes Composant et Fil getType(). Cette fonction est utile pour réasigner
+ * les méthode d'une classe effacé lors du transcrivage en Json
+ * @param {string} type Le code de représentation de la classe utiliser (voir méthode getType)
+ * @returns Le prototype correspondant au code enregistrer
+ */
+function getPrototype(type){
+  switch (type) {
+    case FIL: return Fil.prototype;
+    case BATTERIE: return Batterie.prototype;
+    case RESISTEUR: return Resisteur.prototype;
+    case AMPOULE: return Ampoule.prototype;
+    case CONDENSATEUR: return Condensateur.prototype;
+    case DIODE: return Diode.prototype;
+    default: return Composant.prototype;
+  }
+}
+
+/**
+ * Fonction qui permet d'envoyer une requête au serveur pour enregistrer le circuit.
+ * La fonction va automatiquement produire une alerte si une erreur dans quelconque est produite
+ */
+async function sauvegarder() {
+  //Va permettre au décryptement d'affecter nos donné au bon type d'objet
+  components.forEach(element => {element.type = element.getType();});
+  fils.forEach(element => {element.type = element.getType();});
+
+
+  informations = {components, fils};
+  caches = [];// permet d'enregistrer un objet une fois et d'utiliser des numéros d'identification les autres fois
+  let data = JSON.stringify(informations, function(key, value){
+    if(value instanceof Composant || value instanceof Fil){
+      if(!caches.includes(value)){
+        caches.push(value);
+        return value;
+      }else return {id:value.id}
     }
     return value;
   });
-  return composants;
+  
+  // envoi de la requête
+  await fetch('users/sauvegarderCircuit', {
+      method: "POST",
+      mode: "cors",
+      cache: "no-cache",
+      credentials: "same-origin",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      redirect: "follow",
+      referrerPolicy: "no-referrer",
+      body: data,
+    }).then(function(response){
+      //les actions à faire lorsque notre action réussis
+   }).catch(function() {
+    alert('Votre sauvegarde a échouer');
+  }); 
 }
 

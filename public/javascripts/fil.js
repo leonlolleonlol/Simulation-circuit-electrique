@@ -6,6 +6,7 @@ class Fil{
     this.xf = xf;
     this.yf = yf;
     this.courant = 0;
+    this.id = Date.now();
     
   }
 

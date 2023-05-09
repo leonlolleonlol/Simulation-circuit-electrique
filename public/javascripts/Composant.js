@@ -1,7 +1,7 @@
 class Composant {
 
   constructor(x, y){
-      
+    this.id = Date.now();
     this.x = x;
     this.y = y;
     // on crée automatiquement une classe de tension
