@@ -1,18 +1,15 @@
-//const MODIFIER = 'modifier';//typeAction, objet, changements:[attribut, ancienne_valeur, nouvelle_valeur]
-//const CREATE = 'créer';//typeAction, objet
-//const DELETE = 'delete';//typeAction, objet , index
-
-
 
 const undo_list = [];
 const redo_list = [];
 
-const limitActions = 100;
+const limitActions = 100;// La limite du tableau undo_list
 
 /**
  * Enregistrer une action utilisable pour les fonctionnalités 
- * 'annuler' et 'refaire'
- * @param {*} action Liste d'actions que l'on veut enregistrer pour l'historique
+ * 'annuler' et 'refaire'. Si l'on veut que plusieurs actions soit exécuter en un seul appel
+ * de la fonctionnalité, fournir une liste d'action.
+ * @param {*} action Liste d'actions que l'on veut enregistrer pour l'historique. 
+ * Peut être une liste.
  */
 function addActions(action){
   redo_list.length = 0;
@@ -26,6 +23,9 @@ function addActions(action){
 }
 
 
+/**
+ * Annuler la dernière action ou liste d'action effectué par l'utilisateur
+ */
 function undo(){
   if(undo_list.length > 0){
     let actions = undo_list.pop();
@@ -36,25 +36,18 @@ function undo(){
       if(action.type===CREATE){
         if(action.objet.getType()!=FIL){
           components.splice(components.indexOf(action.objet),1);
-          //circuit.retirerComposant(action.objet);
-        }  
-        else
-          fils.splice(fils.indexOf(action.objet),1);
+        } else fils.splice(fils.indexOf(action.objet),1);
         if(selection == action.objet){
           selection = null;
         }
       }else if(action.type===DELETE){
         if(action.objet.getType()!=FIL){
           components.splice(action.index, 0, action.objet);
-          //circuit.ajouterComposant(action.objet);
-        }
-        else
-          fils.splice(action.index, 0, action.objet);
+        }else fils.splice(action.index, 0, action.objet);
         
       }else if(action.type===MODIFIER){
-        let composant = action.objet;
         for(changement of action.changements){
-          composant[changement.attribut] = changement.ancienne_valeur;
+          action.objet[changement.attribut] = changement.ancienne_valeur;
         }
       }
     }
@@ -62,6 +55,9 @@ function undo(){
 }
 
 
+/**
+ * Refaire la dernière action ou liste d'action annuler par l'utilisateur
+ */
 function redo(){
   // Enlever toute les actions qui suivent
   if(redo_list.length > 0){
@@ -70,28 +66,25 @@ function redo(){
     if(!(actions instanceof Array))
       actions = [actions];
     for (const action of actions) {
-      if(action.type===CREATE){
-        if(action.objet.getType()!=FIL){
-          components.push(action.objet);
-          //circuit.ajouterComposant(action.objet);
-        }
-        else
-          fils.push(action.objet);
-      }else if(action.type===DELETE){
-        if(action.objet.getType()!=FIL){
-          components.splice(action.index, 1);
-          //circuit.ajouterComposant(action.objet);
-        }
-        else
-          fils.splice(action.index, 1);
-        if(selection == action.objet){
+      switch (action.type) {
+        case CREATE:
+          if(action.objet.getType()!=FIL){
+            components.push(action.objet);
+          } else fils.push(action.objet);
+          break;
+        case DELETE:
+          if(action.objet.getType()!=FIL){
+            components.splice(action.index, 1);
+          } else fils.splice(action.index, 1);
+          if(selection == action.objet){
             selection = null;
           }
-      }else if(action.type===MODIFIER){
-        let composant = action.objet;
-        for(changement of action.changements){
-          composant[changement.attribut] = changement.nouvelle_valeur;
-        }
+          break;
+        case MODIFIER:
+          for(changement of action.changements){
+            action.objet[changement.attribut] = changement.nouvelle_valeur;
+          }
+          break;
       }
     }
   }
@@ -99,7 +92,11 @@ function redo(){
 
 /**
  * Vérifier si une action est bien construite pour ne pas enregistrer des prochaines
- * erreurs
+ * erreurs. Voici les construction possible:
+ *  - type:CREATE, objet:cible
+ *  - type:DELETE, objet:cible, index:indexSupression
+ *  - type:MODIFIER, objet:cible, 
+ *    changements:[{attribut:variable, ancienne_valeur:a, nouvelle_valeur:b},...]
  * @param {*} action L'action que l'on veut vérifier
  * @throws Une erreur de mauvaise construcution de l'action
  */
@@ -132,6 +129,9 @@ function applyLimitActions(){
     undo_list.shift();
 }
 
+/**
+ * Remet à zéro l'historique d'action
+ */
 function resetHistorique() {
   undo_list.length = 0;
   redo_list.length = 0;
