@@ -1,24 +1,48 @@
-/** @module Composant */
-
+/**
+ * Cet interface permet de définir tout les méthode nécéssaire pour le programme
+ * @interface
+ */
 class Composant {
 
+  /**
+   * Créer un composant avec une position, des valeurs mathématique =0 et un identifiant unique
+   * @param {number} x 
+   * @param {number} y 
+   */
   constructor(x, y){
-    this.id = Date.now();
+    this.id = Date.now();// Donne un identifiant unique à chaque composant
     this.x = x;
     this.y = y;
     // on crée automatiquement une classe de tension
     this.courant = 0;
     this.tension = 0;
   }
+
+  /**
+   * @abstract
+   * alllo fdsafkaslf ksf adlfds k lsa dk
+   */
   draw() {
     throw new Error('Cette fonction ne peut pas être appelé de l\'interface');
   }
 
   /**
+   * Permet de calculer si un cordonné (x, y) se situe dans le périmètre de contact 
+   * du composant.
+   * @abstract
+   * @param {number} x cordonné x
+   * @param {number} y cordonné y
+   * @returns {boolean}
+   */
+  inBounds(x, y) {
+    throw new Error('Cette fonction ne peut pas être appelé de l\'interface');
+  }
+
+  /**
    * 
-   * @param {number} x 
-   * @param {number} y 
-   * @param {number} approximation 
+   * @param {number} x cordonné x
+   * @param {number} y cordonné y
+   * @param {number} approximation rayon d'approximation permis
    * @returns boolean si une borne est touché par le point
    */
   checkConnection(x, y, approximation){
@@ -91,35 +115,46 @@ class Composant {
   }
 } 
 
+/**
+ * 
+ * @extends module:Composant~Composant 
+ */
 class Resisteur extends Composant {
-    constructor(x, y, resistance, orientation) {
-        super(x, y);
-	      this.resistance = resistance;
-        this.orientation = orientation??0;
-        this.type = RESISTEUR;
-    }
+  constructor(x, y, resistance, orientation) {
+      super(x, y);
+      this.resistance = resistance;
+      this.orientation = orientation??0;
+      this.type = RESISTEUR;
+  }
 
 
-    inBounds(x, y) {
-      if(this.orientation % PI === 0)
-        return x >= this.x - 60 / 2 && x <= this.x + 60 / 2 &&
-            y >= this.y - 25 / 2 && y <= this.y + 25 / 2;
-      else
-        return x >= this.x - 25 / 2 && x <= this.x + 25 / 2 &&
-            y >= this.y - 60 / 2 && y <= this.y + 60 / 2;
-    }
+  inBounds(x, y) {
+    if(this.orientation % PI === 0)
+      return x >= this.x - 60 / 2 && x <= this.x + 60 / 2 &&
+          y >= this.y - 25 / 2 && y <= this.y + 25 / 2;
+    else
+      return x >= this.x - 25 / 2 && x <= this.x + 25 / 2 &&
+          y >= this.y - 60 / 2 && y <= this.y + 60 / 2;
+  }
 
-    draw(offX, offY) {
-        resisteur(this.x + offX,this.y + offY,this.orientation, isElementSelectionner(this));
-    }
+  /**
+   * @inheritdoc
+   */
+  draw(offX, offY) {
+      resisteur(this.x + offX,this.y + offY,this.orientation, isElementSelectionner(this));
+  }
 
-    getTitle(){
-      return 'Résisteur';
-    }
+  getTitle(){
+    return 'Résisteur';
+  }
 }
 
 
-class Ampoule extends Resisteur {
+/**
+ * Représentation d'une ampoule
+ * @extends module:Composant~Resisteur 
+ */
+  class Ampoule extends Resisteur {
     constructor(x, y, resistance, orientation) {
         super(x, y, resistance, orientation);
         this.type = AMPOULE;
@@ -142,58 +177,73 @@ class Ampoule extends Resisteur {
     }
 }
 
+/**
+ * Représentation du condensateur
+ * @extends module:Composant~Composant 
+ * @deprecated Cet objet n'est **PAS** implémenter à cause du problème des circuits RC
+ */
 class Condensateur extends Composant {
-    constructor(x, y, capacite, orientation) {
-      super(x, y);
-	    this.capacite = capacite;
-      this.charge = 0;
-      this.orientation = orientation??0;
-      this.type = CONDENSATEUR;
-    }
-    inBounds(x, y) {
-      if(this.orientation % PI === 0)
-        return x >= this.x - 60 / 2 && x <= this.x + 60 / 2 &&
-          y >= this.y - 30 / 2 && y <= this.y + 30 / 2;
-      else
-        return x >= this.x - 30 / 2 && x <= this.x + 30 / 2 &&
-            y >= this.y - 60 / 2 && y <= this.y + 60 / 2;
+  constructor(x, y, capacite, orientation) {
+    super(x, y);
+    this.capacite = capacite;
+    this.charge = 0;
+    this.orientation = orientation??0;
+    this.type = CONDENSATEUR;
   }
-    
-    // offsetX et offsetY à retirer
-    draw(offsetX, offsetY) {
-      condensateur(this.x + offsetX, this.y + offsetY, this.orientation, isElementSelectionner(this));
-    }
-
-    getTitle(){
-      return 'Condensateur';
-    }
+  inBounds(x, y) {
+    if(this.orientation % PI === 0)
+      return x >= this.x - 60 / 2 && x <= this.x + 60 / 2 &&
+        y >= this.y - 30 / 2 && y <= this.y + 30 / 2;
+    else
+      return x >= this.x - 30 / 2 && x <= this.x + 30 / 2 &&
+          y >= this.y - 60 / 2 && y <= this.y + 60 / 2;
+}
+  
+  // offsetX et offsetY à retirer
+  draw(offsetX, offsetY) {
+    condensateur(this.x + offsetX, this.y + offsetY, this.orientation, isElementSelectionner(this));
   }
 
-  class Batterie extends Composant {
-    constructor(x, y, tension, orientation) {
-        super(x, y);
-	      this.tension = tension;
-        this.orientation = orientation??0;
-        this.type = BATTERIE;
-    }
-    inBounds(x, y) {
-      if(this.orientation % PI === 0)
-        return x >= this.x - 60 / 2 && x <= this.x + 60 / 2 &&
-            y >= this.y - 30 / 2 && y <= this.y + 30 / 2;
-      else
-        return x >= this.x - 30 / 2 && x <= this.x + 30 / 2 &&
-            y >= this.y - 60 / 2 && y <= this.y + 60 / 2;
-    }
-
-    draw(offX, offY) {
-        batterie(this.x + offX, this.y + offY, this.orientation, isElementSelectionner(this));
-    }
-
-    getTitle(){
-      return 'Batterie';
-    }
+  getTitle(){
+    return 'Condensateur';
+  }
 }
 
+/**
+ * Représentation d'une source de courant (batterie)
+ * @extends module:Composant~Composant 
+ */
+class Batterie extends Composant {
+  constructor(x, y, tension, orientation) {
+      super(x, y);
+      this.tension = tension;
+      this.orientation = orientation??0;
+      this.type = BATTERIE;
+  }
+  inBounds(x, y) {
+    if(this.orientation % PI === 0)
+      return x >= this.x - 60 / 2 && x <= this.x + 60 / 2 &&
+          y >= this.y - 30 / 2 && y <= this.y + 30 / 2;
+    else
+      return x >= this.x - 30 / 2 && x <= this.x + 30 / 2 &&
+          y >= this.y - 60 / 2 && y <= this.y + 60 / 2;
+  }
+
+  draw(offX, offY) {
+      batterie(this.x + offX, this.y + offY, this.orientation, isElementSelectionner(this));
+  }
+
+  getTitle(){
+    return 'Batterie';
+  }
+}
+
+/**
+ * Représentation d'une diode
+ * @extends module:Composant~Composant 
+ * @deprecated Pour l'instant l'objet n'est **PAS** accessible puisque les calculs se complexifie
+ * beaucoup si on implémentait la diode
+ */
 class Diode extends Composant {
     constructor(x, y, orientation) {
       super(x, y);
@@ -216,6 +266,12 @@ class Diode extends Composant {
     }
   }
 
+/**
+ * Cette classe est une représentation mathématique de la dérivation de brache (branche en parallèle). 
+ * Elle rassemble donc toute les branches en parallèle et cela permet de faire les calculs 
+ * d'équivalence du circuit et autre.
+ * @extends module:Composant~Composant 
+ */
 class Noeuds extends Composant {
   constructor(x, y, courant, tension){
     //super(courant, tension);
@@ -247,7 +303,7 @@ class Noeuds extends Composant {
  /**
   * Sert à trouver le circuit équivalent en série
   */
- trouverEq(){
+  trouverEq(){
     for (let i = 0; i < this.circuitsEnParallele.length; i++){ 
       this.circuitsEnParallele[i].trouverEq();
       if(this.circuitsEnParallele[i].valide){
@@ -256,25 +312,23 @@ class Noeuds extends Composant {
     }
 
     this.trouverTypeDeCircuit();
-    
     switch (this.type){
-        case circuitType.seulementR:
-          let resistanceTemp = 0;
-            for (let i = 0; i < this.circuitsEnParallele.length; i++){ 
-              resistanceTemp += 1 / this.circuitsEnParallele[i].resistanceEQ;
-            }
-            this.resistanceEQ = 1 / resistanceTemp;
-            break;
-        case circuitType.seulementC:
-            for (let i = 0; i < this.circuitsEnParallele.length; i++){ 
-              this.capaciteEQ += this.circuitsEnParallele[i].capaciteEQ;
-            }
-            break;
-        case circuitType.RC:
-            //C'est là que c'est difficile
-            break;
+      case circuitType.seulementR:
+        let resistanceTemp = 0;
+          for (let i = 0; i < this.circuitsEnParallele.length; i++){ 
+            resistanceTemp += 1 / this.circuitsEnParallele[i].resistanceEQ;
+          }
+          this.resistanceEQ = 1 / resistanceTemp;
+          break;
+      case circuitType.seulementC:
+          for (let i = 0; i < this.circuitsEnParallele.length; i++){ 
+            this.capaciteEQ += this.circuitsEnParallele[i].capaciteEQ;
+          }
+          break;
+      case circuitType.RC:
+          //C'est là que c'est difficile
+          break;
     }
-
   }
 
   trouverTypeDeCircuit(){
@@ -324,7 +378,7 @@ class Noeuds extends Composant {
  * Vérifie si un nouveau composant ou un composant que l'on a modifier a une position valide. 
  * Les critères sont que le composant se situe dans la grille et qu'il ne connecte pas
  * avec les bornes d'un composant
- * @param {Composant} composant Le composant que l'on veut valider la position
+ * @param {module:Composant~Composant} composant Le composant que l'on veut valider la position
  * @returns Si la position du composant est valide
  */
 function validComposantPos(composant){
