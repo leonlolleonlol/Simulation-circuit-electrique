@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>Composant.js - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    
+    <h2><a href="index.html">Home</a></h2><h2><a href="https://github.com/olivierstKronos/Simulation-circuit-electrique" target="_blank" class="menu-item" id="repository" >Github repo</a></h2><h3>Classes</h3><ul><li><a href="Ampoule.html">Ampoule</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Ampoule.html#checkConnection">checkConnection</a></li><li data-type='method' style='display: none;'><a href="Ampoule.html#getBorne">getBorne</a></li><li data-type='method' style='display: none;'><a href="Ampoule.html#getConnection">getConnection</a></li><li data-type='method' style='display: none;'><a href="Ampoule.html#getConnections">getConnections</a></li><li data-type='method' style='display: none;'><a href="Ampoule.html#getType">getType</a></li><li data-type='method' style='display: none;'><a href="Ampoule.html#inBounds">inBounds</a></li><li data-type='method' style='display: none;'><a href="Ampoule.html#rotate">rotate</a></li></ul></li><li><a href="Batterie.html">Batterie</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Batterie.html#checkConnection">checkConnection</a></li><li data-type='method' style='display: none;'><a href="Batterie.html#draw">draw</a></li><li data-type='method' style='display: none;'><a href="Batterie.html#getBorne">getBorne</a></li><li data-type='method' style='display: none;'><a href="Batterie.html#getConnection">getConnection</a></li><li data-type='method' style='display: none;'><a href="Batterie.html#getConnections">getConnections</a></li><li data-type='method' style='display: none;'><a href="Batterie.html#getTitle">getTitle</a></li><li data-type='method' style='display: none;'><a href="Batterie.html#getType">getType</a></li><li data-type='method' style='display: none;'><a href="Batterie.html#inBounds">inBounds</a></li><li data-type='method' style='display: none;'><a href="Batterie.html#rotate">rotate</a></li></ul></li><li><a href="Circuit.html">Circuit</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Circuit.html#rearrangerArrayCircuit">rearrangerArrayCircuit</a></li><li data-type='method' style='display: none;'><a href="Circuit.html#trouverEq">trouverEq</a></li><li data-type='method' style='display: none;'><a href="Circuit.html#trouverTypeDeCircuit">trouverTypeDeCircuit</a></li><li data-type='method' style='display: none;'><a href="Circuit.html#update">update</a></li></ul></li><li><a href="Condensateur.html">Condensateur</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Condensateur.html#checkConnection">checkConnection</a></li><li data-type='method' style='display: none;'><a href="Condensateur.html#draw">draw</a></li><li data-type='method' style='display: none;'><a href="Condensateur.html#getBorne">getBorne</a></li><li data-type='method' style='display: none;'><a href="Condensateur.html#getConnection">getConnection</a></li><li data-type='method' style='display: none;'><a href="Condensateur.html#getConnections">getConnections</a></li><li data-type='method' style='display: none;'><a href="Condensateur.html#getTitle">getTitle</a></li><li data-type='method' style='display: none;'><a href="Condensateur.html#getType">getType</a></li><li data-type='method' style='display: none;'><a href="Condensateur.html#inBounds">inBounds</a></li><li data-type='method' style='display: none;'><a href="Condensateur.html#rotate">rotate</a></li></ul></li><li><a href="Diode.html">Diode</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Diode.html#checkConnection">checkConnection</a></li><li data-type='method' style='display: none;'><a href="Diode.html#draw">draw</a></li><li data-type='method' style='display: none;'><a href="Diode.html#getBorne">getBorne</a></li><li data-type='method' style='display: none;'><a href="Diode.html#getConnection">getConnection</a></li><li data-type='method' style='display: none;'><a href="Diode.html#getConnections">getConnections</a></li><li data-type='method' style='display: none;'><a href="Diode.html#getTitle">getTitle</a></li><li data-type='method' style='display: none;'><a href="Diode.html#getType">getType</a></li><li data-type='method' style='display: none;'><a href="Diode.html#inBounds">inBounds</a></li><li data-type='method' style='display: none;'><a href="Diode.html#rotate">rotate</a></li></ul></li><li><a href="Fil.html">Fil</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Fil.html#angle">angle</a></li><li data-type='method' style='display: none;'><a href="Fil.html#draw">draw</a></li><li data-type='method' style='display: none;'><a href="Fil.html#getFunction">getFunction</a></li><li data-type='method' style='display: none;'><a href="Fil.html#getType">getType</a></li><li data-type='method' style='display: none;'><a href="Fil.html#inBounds">inBounds</a></li><li data-type='method' style='display: none;'><a href="Fil.html#inBoxBounds">inBoxBounds</a></li><li data-type='method' style='display: none;'><a href="Fil.html#longueur">longueur</a></li><li data-type='method' style='display: none;'><a href="Fil.html#overlap">overlap</a></li><li data-type='method' style='display: none;'><a href="Fil.html#pente">pente</a></li><li data-type='method' style='display: none;'><a href="Fil.html#trierPoint">trierPoint</a></li></ul></li><li><a href="Noeuds.html">Noeuds</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Noeuds.html#checkConnection">checkConnection</a></li><li data-type='method' style='display: none;'><a href="Noeuds.html#draw">draw</a></li><li data-type='method' style='display: none;'><a href="Noeuds.html#getBorne">getBorne</a></li><li data-type='method' style='display: none;'><a href="Noeuds.html#getConnection">getConnection</a></li><li data-type='method' style='display: none;'><a href="Noeuds.html#getConnections">getConnections</a></li><li data-type='method' style='display: none;'><a href="Noeuds.html#getTitle">getTitle</a></li><li data-type='method' style='display: none;'><a href="Noeuds.html#getType">getType</a></li><li data-type='method' style='display: none;'><a href="Noeuds.html#inBounds">inBounds</a></li><li data-type='method' style='display: none;'><a href="Noeuds.html#rotate">rotate</a></li><li data-type='method' style='display: none;'><a href="Noeuds.html#trouverEq">trouverEq</a></li></ul></li><li><a href="Resisteur.html">Resisteur</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Resisteur.html#checkConnection">checkConnection</a></li><li data-type='method' style='display: none;'><a href="Resisteur.html#draw">draw</a></li><li data-type='method' style='display: none;'><a href="Resisteur.html#getBorne">getBorne</a></li><li data-type='method' style='display: none;'><a href="Resisteur.html#getConnection">getConnection</a></li><li data-type='method' style='display: none;'><a href="Resisteur.html#getConnections">getConnections</a></li><li data-type='method' style='display: none;'><a href="Resisteur.html#getTitle">getTitle</a></li><li data-type='method' style='display: none;'><a href="Resisteur.html#getType">getType</a></li><li data-type='method' style='display: none;'><a href="Resisteur.html#inBounds">inBounds</a></li><li data-type='method' style='display: none;'><a href="Resisteur.html#rotate">rotate</a></li></ul></li></ul><h3>Interfaces</h3><ul><li><a href="Composant.html">Composant</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Composant.html#checkConnection">checkConnection</a></li><li data-type='method' style='display: none;'><a href="Composant.html#draw">draw</a></li><li data-type='method' style='display: none;'><a href="Composant.html#getBorne">getBorne</a></li><li data-type='method' style='display: none;'><a href="Composant.html#getConnection">getConnection</a></li><li data-type='method' style='display: none;'><a href="Composant.html#getConnections">getConnections</a></li><li data-type='method' style='display: none;'><a href="Composant.html#getTitle">getTitle</a></li><li data-type='method' style='display: none;'><a href="Composant.html#getType">getType</a></li><li data-type='method' style='display: none;'><a href="Composant.html#inBounds">inBounds</a></li><li data-type='method' style='display: none;'><a href="Composant.html#rotate">rotate</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#AMPOULE">AMPOULE</a></li><li><a href="global.html#BAS">BAS</a></li><li><a href="global.html#BATTERIE">BATTERIE</a></li><li><a href="global.html#CIRCUIT">CIRCUIT</a></li><li><a href="global.html#CONDENSATEUR">CONDENSATEUR</a></li><li><a href="global.html#CREATE">CREATE</a></li><li><a href="global.html#DELETE">DELETE</a></li><li><a href="global.html#DIODE">DIODE</a></li><li><a href="global.html#DROITE">DROITE</a></li><li><a href="global.html#FIL">FIL</a></li><li><a href="global.html#FunctionObject">FunctionObject</a></li><li><a href="global.html#GAUCHE">GAUCHE</a></li><li><a href="global.html#HAUT">HAUT</a></li><li><a href="global.html#MODIFIER">MODIFIER</a></li><li><a href="global.html#NOEUD">NOEUD</a></li><li><a href="global.html#POINT">POINT</a></li><li><a href="global.html#QUADRILLE">QUADRILLE</a></li><li><a href="global.html#QUADRILLEPOINT">QUADRILLEPOINT</a></li><li><a href="global.html#RESISTEUR">RESISTEUR</a></li><li><a href="global.html#addActions">addActions</a></li><li><a href="global.html#ajustementAutomatiqueComposant">ajustementAutomatiqueComposant</a></li><li><a href="global.html#ajustementAutomatiqueFil">ajustementAutomatiqueFil</a></li><li><a href="global.html#ampoule">ampoule</a></li><li><a href="global.html#applyLimitActions">applyLimitActions</a></li><li><a href="global.html#batterie">batterie</a></li><li><a href="global.html#blendBG">blendBG</a></li><li><a href="global.html#composantType">composantType</a></li><li><a href="global.html#condensateur">condensateur</a></li><li><a href="global.html#copyComposant">copyComposant</a></li><li><a href="global.html#couperFil">couperFil</a></li><li><a href="global.html#diode">diode</a></li><li><a href="global.html#draw">draw</a></li><li><a href="global.html#drawComponentsChooser">drawComponentsChooser</a></li><li><a href="global.html#drawComposants">drawComposants</a></li><li><a href="global.html#drawFils">drawFils</a></li><li><a href="global.html#drawGrid">drawGrid</a></li><li><a href="global.html#filStart">filStart</a></li><li><a href="global.html#findGridLock">findGridLock</a></li><li><a href="global.html#getComposantVide">getComposantVide</a></li><li><a href="global.html#getConnectingComposant">getConnectingComposant</a></li><li><a href="global.html#inGrid">inGrid</a></li><li><a href="global.html#initDrag">initDrag</a></li><li><a href="global.html#isElementDrag">isElementDrag</a></li><li><a href="global.html#isElementSelectionner">isElementSelectionner</a></li><li><a href="global.html#lineGrid">lineGrid</a></li><li><a href="global.html#load">load</a></li><li><a href="global.html#mouseDragged">mouseDragged</a></li><li><a href="global.html#mousePressed">mousePressed</a></li><li><a href="global.html#mouseReleased">mouseReleased</a></li><li><a href="global.html#mouseWheel">mouseWheel</a></li><li><a href="global.html#pointGrid">pointGrid</a></li><li><a href="global.html#posAtPercent">posAtPercent</a></li><li><a href="global.html#redo">redo</a></li><li><a href="global.html#resetHistorique">resetHistorique</a></li><li><a href="global.html#resisteur">resisteur</a></li><li><a href="global.html#sauvegarder">sauvegarder</a></li><li><a href="global.html#undo">undo</a></li><li><a href="global.html#updateBouton">updateBouton</a></li><li><a href="global.html#validBoutonActif">validBoutonActif</a></li><li><a href="global.html#validComposantPos">validComposantPos</a></li><li><a href="global.html#validFilBegin">validFilBegin</a></li><li><a href="global.html#validerAction">validerAction</a></li><li><a href="global.html#verifierCouperFil">verifierCouperFil</a></li><li><a href="global.html#windowResized">windowResized</a></li><li><a href="global.html#zoom">zoom</a></li></ul>
+    
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">Composant.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Cet interface permet de définir tout les méthode nécéssaire pour le programme
+ * @interface
+ */
+class Composant {
+
+  /**
+   * Créer un composant avec une position, des valeurs mathématique =0 et un identifiant unique
+   * @param {number} x 
+   * @param {number} y 
+   */
+  constructor(x, y){
+    this.id = Date.now();// Donne un identifiant unique à chaque composant
+    this.x = x;
+    this.y = y;
+    // on crée automatiquement une classe de tension
+    this.courant = 0;
+    this.tension = 0;
+  }
+
+  /**
+   * Dessine un composant quelconque sur le canvas. Utilise la librairie p5.js pour le faire. 
+   * Chaque implémentation doit toujours commencer avec un `push()` et finir avec un `pop()` pour 
+   * que chaque modification des attributs de dessin soit annuler à la sortie de la méthode.
+   * @abstract
+   * @todo offsetX et offsetY à retirer
+   */
+  draw() {
+    throw new Error('Cette fonction ne peut pas être appelé de l\'interface');
+  }
+
+  /**
+   * Permet de calculer si un cordonné (x, y) se situe dans le périmètre de contact 
+   * du composant.
+   * @abstract
+   * @param {number} x cordonné x
+   * @param {number} y cordonné y
+   * @returns {boolean}
+   */
+  inBounds(x, y) {
+    throw new Error('Cette fonction ne peut pas être appelé de l\'interface');
+  }
+
+  /**
+   * Chaque composant possède deux borne opposé qui sont les connections avec les fils. Cette fonction 
+   * permet de faire vérfifier si une position entre en contact avec une des bornes.
+   * @param {number} x cordonné x
+   * @param {number} y cordonné y
+   * @param {number} approximation rayon d'approximation permis
+   * @returns {boolean} si une borne est touché par le point
+   * @see Composant#getBorne simplification de la fonction
+   */
+  checkConnection(x, y, approximation){
+    return this.getBorne(x,y,approximation)!=null;
+  }
+  /**
+   * Fonction qui permet de récupérer les positions x et y des bornes. Cette fonction dépend 
+   * de l'orientation du composant.
+   * @returns Les positions des bornes trier en ordre de grandeur du composant
+   */
+  getConnections(){
+    let pos;
+    if(this.orientation % PI == 0){
+      pos = [{x:this.x + 60/2, y:this.y},{x:this.x - 60/2, y:this.y}];
+      pos.sort(function(a, b){return a.x - b.x});
+    } else if (this.orientation % HALF_PI == 0){
+      pos = [{x : this.x, y : this.y + 60/2},{x:this.x, y:this.y - 60/2}];
+      pos.sort(function(a, b){return a.y - b.y});
+    }
+    return pos;
+  }
+
+  /**
+   * Cette fonction est équivalente avec getConnections sauf que tu peux préciser une
+   * borne spécifique à récupérer.
+   * @param {Pos} borne Une borne spécifique (HAUT, BAS, GAUCHE, DROITE)
+   * @returns La position de la connexion
+   */
+  getConnection(borne){
+    let connections = this.getConnections();
+    return (borne == GAUCHE || borne ==HAUT)
+    ? connections[0] : connections[1];
+  }
+
+  /**
+   * 
+   * @param {number} x 
+   * @param {number} y 
+   * @param {number} approximation 
+   * @returns La borne que le position touche ou null
+   */
+  getBorne(x, y, approximation){
+    if(this.orientation % PI == 0){
+      if(dist(this.x + 60/2, this.y, x, y) &lt; approximation)
+        return DROITE;
+      else if (dist(this.x - 60/2, this.y, x, y) &lt; approximation)
+        return GAUCHE;
+    } else if (this.orientation % HALF_PI == 0){
+      if(dist(this.x, this.y + 60/2, x, y) &lt; approximation)
+        return BAS;
+      else if (dist(this.x, this.y - 60/2, x, y) &lt; approximation)
+        return HAUT;
+    }
+  }
+
+  /**
+   * 
+   * @param {boolean} inverse 
+   */
+  rotate(inverse){
+    this.orientation = (this.orientation + (inverse?-HALF_PI:HALF_PI)) % TWO_PI
+  }
+
+  /**
+   * Getter pour le type de composant
+   * @returns le type de composant
+   */
+  getType() {
+    return this.type;
+  }
+
+  /**
+   * 
+   */
+  getTitle(){
+    throw new Error('Cette fonction ne peut pas être appelé de l\'interface');
+  }
+} 
+
+/**
+ * 
+ * @extends Composant 
+ */
+class Resisteur extends Composant {
+  constructor(x, y, resistance, orientation) {
+      super(x, y);
+      this.resistance = resistance;
+      this.orientation = orientation??0;
+      this.type = RESISTEUR;
+  }
+
+
+  inBounds(x, y) {
+    if(this.orientation % PI === 0)
+      return x >= this.x - 60 / 2 &amp;&amp; x &lt;= this.x + 60 / 2 &amp;&amp;
+          y >= this.y - 25 / 2 &amp;&amp; y &lt;= this.y + 25 / 2;
+    else
+      return x >= this.x - 25 / 2 &amp;&amp; x &lt;= this.x + 25 / 2 &amp;&amp;
+          y >= this.y - 60 / 2 &amp;&amp; y &lt;= this.y + 60 / 2;
+  }
+
+  /**
+   * @inheritdoc
+   */
+  draw(offX, offY) {
+      resisteur(this.x + offX,this.y + offY,this.orientation, isElementSelectionner(this));
+  }
+
+  /**
+   * @inheritdoc
+   */
+  getTitle(){
+    return 'Résisteur';
+  }
+}
+
+
+/**
+ * Représentation d'une ampoule
+ * @extends Resisteur 
+ */
+class Ampoule extends Resisteur {
+  constructor(x, y, resistance, orientation) {
+      super(x, y, resistance, orientation);
+      this.type = AMPOULE;
+  }
+  inBounds(x, y) {
+    if(this.orientation % PI === 0)
+      return x >= this.x - 60 / 2 &amp;&amp; x &lt;= this.x + 60 / 2 &amp;&amp;
+          y >= this.y - 22 / 2 &amp;&amp; y &lt;= this.y + 22 / 2;
+    else
+      return x >= this.x - 22 / 2 &amp;&amp; x &lt;= this.x + 22 / 2 &amp;&amp;
+          y >= this.y - 60 / 2 &amp;&amp; y &lt;= this.y + 60 / 2;
+  }
+
+ /**
+  * @inheritdoc
+  */
+  draw(offX, offY) {
+      ampoule(this.x + offX,this.y + offY, this.orientation, isElementSelectionner(this));
+  }
+
+ /**
+  * @inheritdoc
+  */
+  getTitle(){
+    return 'Ampoule';
+  }
+}
+
+/**
+ * Représentation du condensateur
+ * @extends Composant 
+ * @deprecated Cet objet n'est **PAS** implémenter à cause du problème des circuits RC
+ */
+class Condensateur extends Composant {
+  constructor(x, y, capacite, orientation) {
+    super(x, y);
+    this.capacite = capacite;
+    this.charge = 0;
+    this.orientation = orientation??0;
+    this.type = CONDENSATEUR;
+  }
+  inBounds(x, y) {
+    if(this.orientation % PI === 0)
+      return x >= this.x - 60 / 2 &amp;&amp; x &lt;= this.x + 60 / 2 &amp;&amp;
+        y >= this.y - 30 / 2 &amp;&amp; y &lt;= this.y + 30 / 2;
+    else
+      return x >= this.x - 30 / 2 &amp;&amp; x &lt;= this.x + 30 / 2 &amp;&amp;
+          y >= this.y - 60 / 2 &amp;&amp; y &lt;= this.y + 60 / 2;
+}
+  
+  /**
+   * @inheritdoc
+   */
+  draw(offsetX, offsetY) {
+    condensateur(this.x + offsetX, this.y + offsetY, this.orientation, isElementSelectionner(this));
+  }
+
+  /**
+   * @inheritdoc
+   */
+  getTitle(){
+    return 'Condensateur';
+  }
+}
+
+/**
+ * Représentation d'une source de courant (batterie)
+ * @extends Composant 
+ */
+class Batterie extends Composant {
+  constructor(x, y, tension, orientation) {
+      super(x, y);
+      this.tension = tension;
+      this.orientation = orientation??0;
+      this.type = BATTERIE;
+  }
+  inBounds(x, y) {
+    if(this.orientation % PI === 0)
+      return x >= this.x - 60 / 2 &amp;&amp; x &lt;= this.x + 60 / 2 &amp;&amp;
+          y >= this.y - 30 / 2 &amp;&amp; y &lt;= this.y + 30 / 2;
+    else
+      return x >= this.x - 30 / 2 &amp;&amp; x &lt;= this.x + 30 / 2 &amp;&amp;
+          y >= this.y - 60 / 2 &amp;&amp; y &lt;= this.y + 60 / 2;
+  }
+
+  /**
+   * @inheritdoc
+   */
+  draw(offX, offY) {
+      batterie(this.x + offX, this.y + offY, this.orientation, isElementSelectionner(this));
+  }
+
+  /**
+   * @inheritdoc
+   */
+  getTitle(){
+    return 'Batterie';
+  }
+}
+
+/**
+ * Représentation d'une diode
+ * @extends Composant 
+ * @deprecated Pour l'instant l'objet n'est **PAS** accessible puisque les calculs se complexifie
+ * beaucoup si on implémentait la diode
+ */
+class Diode extends Composant {
+  constructor(x, y, orientation) {
+    super(x, y);
+    this.radius = 19;
+    this.orientation = orientation??0;
+    this.type = DIODE;
+  }
+  inBounds(x, y) {
+    return x >= this.x - this.radius &amp;&amp; x &lt;= this.x + this.radius &amp;&amp; 
+      y >= this.y - this.radius &amp;&amp; y &lt;= this.y + this.radius;
+
+}
+  
+  /**
+   * @inheritdoc
+   */
+  draw(offX, offY) {
+    diode(this.x + offX,this.y + offY, this.orientation, isElementSelectionner(this));
+  }
+
+  /**
+   * @inheritdoc
+   */
+  getTitle(){
+    return 'Diode';
+  }
+}
+
+/**
+ * Cette classe est une représentation mathématique de la dérivation de brache (branche en parallèle). 
+ * Elle rassemble donc toute les branches en parallèle et cela permet de faire les calculs 
+ * d'équivalence du circuit et autre.
+ * @extends Composant 
+ */
+class Noeuds extends Composant {
+  constructor(x, y, courant, tension){
+    //super(courant, tension);
+    super(x, y);
+    this.circuitsEnParallele = []; //Array de Circuit qui sont en parallèle
+
+    //C'est variable sont utile pour calculer l'équivalence du noeud
+    this.capaciteEQ = 0;
+    this.resistanceEQ = 0;
+    this.tensionEQ = 0;
+
+    //Sert stocker le type de circuit. AKA -> seulement des résistances, seulement des condensateurs ou RC.
+    this.type;
+
+    //Indique si le courant à un chemin pour passer dans au moins une des branches
+    this.valide = false; //On assume que c'est faux, mais si une des branches est valide, on le met vrai.
+  }
+
+  ajouterComposanteALaFin(composant){
+    this.circuitsEnParallele.push(composant);
+  }
+
+  retirerCircuit(position){
+    this.circuitsEnParallele.splice(position, 1);
+  }
+ /**
+  * Sert à trouver le circuit équivalent en série
+  */
+  trouverEq(){
+    for (let i = 0; i &lt; this.circuitsEnParallele.length; i++){ 
+      this.circuitsEnParallele[i].trouverEq();
+      if(this.circuitsEnParallele[i].valide){
+        this.valide = true;
+      }
+    }
+
+    this.trouverTypeDeCircuit();
+    switch (this.type){
+      case circuitType.seulementR:
+        let resistanceTemp = 0;
+          for (let i = 0; i &lt; this.circuitsEnParallele.length; i++){ 
+            resistanceTemp += 1 / this.circuitsEnParallele[i].resistanceEQ;
+          }
+          this.resistanceEQ = 1 / resistanceTemp;
+          break;
+      case circuitType.seulementC:
+          for (let i = 0; i &lt; this.circuitsEnParallele.length; i++){ 
+            this.capaciteEQ += this.circuitsEnParallele[i].capaciteEQ;
+          }
+          break;
+      case circuitType.RC:
+          //C'est là que c'est difficile
+          break;
+    }
+  }
+
+  trouverTypeDeCircuit(){
+    let circuitR = false;
+    let circuitC = false;
+    let circuitRC = false;
+
+    for (let i = 0; i &lt; this.circuitsEnParallele.length; i++){ 
+        switch(this.circuitsEnParallele[i].getTypeCalcul()){
+            case circuitType.seulementR:
+              circuitR = true;
+              break;
+            case circuitType.seulementC:
+              circuitC = true;
+              break;
+            case circuitType.RC:
+              circuitRC = true;
+              break;
+        }
+    }
+
+    if((circuitR &amp;&amp; circuitC) || circuitRC){
+        this.type = circuitType.RC;
+    }else if (circuitC){
+        this.type = circuitType.seulementC;
+    }else{
+        this.type = circuitType.seulementR;
+    }
+  }
+
+  checkConnection(x, y, aproximation){
+    return false;
+  }
+
+  remplirResisteursAvecDifTension(){
+    for (let i = 0; i &lt; this.circuitsEnParallele.length; i++){
+      this.circuitsEnParallele[i].courant = this.tensionEQ / this.circuitsEnParallele[i].resistanceEQ;
+      this.circuitsEnParallele[i].remplirResisteursAvecCourant();
+    }
+  }
+
+  getType() {
+    return NOEUD;
+  }
+}
+/**
+ * Vérifie si un nouveau composant ou un composant que l'on a modifier a une position valide. 
+ * Les critères sont que le composant se situe dans la grille et qu'il ne connecte pas
+ * avec les bornes d'un composant
+ * @param {Composant} composant Le composant que l'on veut valider la position
+ * @returns Si la position du composant est valide
+ */
+function validComposantPos(composant){
+  if (!inGrid(composant.x + grid.translateX, composant.y + grid.translateY))
+    return false;
+  return !components.some(element =>element.checkConnection(composant.x,composant.y,1) || composant.checkConnection(element.x,element.y,1));
+}
+  
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.2</a> on Wed May 10 2023 15:25:54 GMT-0400 (heure avancée de l’Est) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+<script src="scripts/collapse.js" defer></script>
+
+
+</body>
+</html>

@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>Ampoule - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    
+    <h2><a href="index.html">Home</a></h2><h2><a href="https://github.com/olivierstKronos/Simulation-circuit-electrique" target="_blank" class="menu-item" id="repository" >Github repo</a></h2><h3>Classes</h3><ul><li><a href="Ampoule.html">Ampoule</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Ampoule.html#checkConnection">checkConnection</a></li><li data-type='method' style='display: none;'><a href="Ampoule.html#getBorne">getBorne</a></li><li data-type='method' style='display: none;'><a href="Ampoule.html#getConnection">getConnection</a></li><li data-type='method' style='display: none;'><a href="Ampoule.html#getConnections">getConnections</a></li><li data-type='method' style='display: none;'><a href="Ampoule.html#getType">getType</a></li><li data-type='method' style='display: none;'><a href="Ampoule.html#inBounds">inBounds</a></li><li data-type='method' style='display: none;'><a href="Ampoule.html#rotate">rotate</a></li></ul></li><li><a href="Batterie.html">Batterie</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Batterie.html#checkConnection">checkConnection</a></li><li data-type='method' style='display: none;'><a href="Batterie.html#draw">draw</a></li><li data-type='method' style='display: none;'><a href="Batterie.html#getBorne">getBorne</a></li><li data-type='method' style='display: none;'><a href="Batterie.html#getConnection">getConnection</a></li><li data-type='method' style='display: none;'><a href="Batterie.html#getConnections">getConnections</a></li><li data-type='method' style='display: none;'><a href="Batterie.html#getTitle">getTitle</a></li><li data-type='method' style='display: none;'><a href="Batterie.html#getType">getType</a></li><li data-type='method' style='display: none;'><a href="Batterie.html#inBounds">inBounds</a></li><li data-type='method' style='display: none;'><a href="Batterie.html#rotate">rotate</a></li></ul></li><li><a href="Circuit.html">Circuit</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Circuit.html#rearrangerArrayCircuit">rearrangerArrayCircuit</a></li><li data-type='method' style='display: none;'><a href="Circuit.html#trouverEq">trouverEq</a></li><li data-type='method' style='display: none;'><a href="Circuit.html#trouverTypeDeCircuit">trouverTypeDeCircuit</a></li><li data-type='method' style='display: none;'><a href="Circuit.html#update">update</a></li></ul></li><li><a href="Condensateur.html">Condensateur</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Condensateur.html#checkConnection">checkConnection</a></li><li data-type='method' style='display: none;'><a href="Condensateur.html#draw">draw</a></li><li data-type='method' style='display: none;'><a href="Condensateur.html#getBorne">getBorne</a></li><li data-type='method' style='display: none;'><a href="Condensateur.html#getConnection">getConnection</a></li><li data-type='method' style='display: none;'><a href="Condensateur.html#getConnections">getConnections</a></li><li data-type='method' style='display: none;'><a href="Condensateur.html#getTitle">getTitle</a></li><li data-type='method' style='display: none;'><a href="Condensateur.html#getType">getType</a></li><li data-type='method' style='display: none;'><a href="Condensateur.html#inBounds">inBounds</a></li><li data-type='method' style='display: none;'><a href="Condensateur.html#rotate">rotate</a></li></ul></li><li><a href="Diode.html">Diode</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Diode.html#checkConnection">checkConnection</a></li><li data-type='method' style='display: none;'><a href="Diode.html#draw">draw</a></li><li data-type='method' style='display: none;'><a href="Diode.html#getBorne">getBorne</a></li><li data-type='method' style='display: none;'><a href="Diode.html#getConnection">getConnection</a></li><li data-type='method' style='display: none;'><a href="Diode.html#getConnections">getConnections</a></li><li data-type='method' style='display: none;'><a href="Diode.html#getTitle">getTitle</a></li><li data-type='method' style='display: none;'><a href="Diode.html#getType">getType</a></li><li data-type='method' style='display: none;'><a href="Diode.html#inBounds">inBounds</a></li><li data-type='method' style='display: none;'><a href="Diode.html#rotate">rotate</a></li></ul></li><li><a href="Fil.html">Fil</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Fil.html#angle">angle</a></li><li data-type='method' style='display: none;'><a href="Fil.html#draw">draw</a></li><li data-type='method' style='display: none;'><a href="Fil.html#getFunction">getFunction</a></li><li data-type='method' style='display: none;'><a href="Fil.html#getType">getType</a></li><li data-type='method' style='display: none;'><a href="Fil.html#inBounds">inBounds</a></li><li data-type='method' style='display: none;'><a href="Fil.html#inBoxBounds">inBoxBounds</a></li><li data-type='method' style='display: none;'><a href="Fil.html#longueur">longueur</a></li><li data-type='method' style='display: none;'><a href="Fil.html#overlap">overlap</a></li><li data-type='method' style='display: none;'><a href="Fil.html#pente">pente</a></li><li data-type='method' style='display: none;'><a href="Fil.html#trierPoint">trierPoint</a></li></ul></li><li><a href="Noeuds.html">Noeuds</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Noeuds.html#checkConnection">checkConnection</a></li><li data-type='method' style='display: none;'><a href="Noeuds.html#draw">draw</a></li><li data-type='method' style='display: none;'><a href="Noeuds.html#getBorne">getBorne</a></li><li data-type='method' style='display: none;'><a href="Noeuds.html#getConnection">getConnection</a></li><li data-type='method' style='display: none;'><a href="Noeuds.html#getConnections">getConnections</a></li><li data-type='method' style='display: none;'><a href="Noeuds.html#getTitle">getTitle</a></li><li data-type='method' style='display: none;'><a href="Noeuds.html#getType">getType</a></li><li data-type='method' style='display: none;'><a href="Noeuds.html#inBounds">inBounds</a></li><li data-type='method' style='display: none;'><a href="Noeuds.html#rotate">rotate</a></li><li data-type='method' style='display: none;'><a href="Noeuds.html#trouverEq">trouverEq</a></li></ul></li><li><a href="Resisteur.html">Resisteur</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Resisteur.html#checkConnection">checkConnection</a></li><li data-type='method' style='display: none;'><a href="Resisteur.html#draw">draw</a></li><li data-type='method' style='display: none;'><a href="Resisteur.html#getBorne">getBorne</a></li><li data-type='method' style='display: none;'><a href="Resisteur.html#getConnection">getConnection</a></li><li data-type='method' style='display: none;'><a href="Resisteur.html#getConnections">getConnections</a></li><li data-type='method' style='display: none;'><a href="Resisteur.html#getTitle">getTitle</a></li><li data-type='method' style='display: none;'><a href="Resisteur.html#getType">getType</a></li><li data-type='method' style='display: none;'><a href="Resisteur.html#inBounds">inBounds</a></li><li data-type='method' style='display: none;'><a href="Resisteur.html#rotate">rotate</a></li></ul></li></ul><h3>Interfaces</h3><ul><li><a href="Composant.html">Composant</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Composant.html#checkConnection">checkConnection</a></li><li data-type='method' style='display: none;'><a href="Composant.html#draw">draw</a></li><li data-type='method' style='display: none;'><a href="Composant.html#getBorne">getBorne</a></li><li data-type='method' style='display: none;'><a href="Composant.html#getConnection">getConnection</a></li><li data-type='method' style='display: none;'><a href="Composant.html#getConnections">getConnections</a></li><li data-type='method' style='display: none;'><a href="Composant.html#getTitle">getTitle</a></li><li data-type='method' style='display: none;'><a href="Composant.html#getType">getType</a></li><li data-type='method' style='display: none;'><a href="Composant.html#inBounds">inBounds</a></li><li data-type='method' style='display: none;'><a href="Composant.html#rotate">rotate</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#AMPOULE">AMPOULE</a></li><li><a href="global.html#BAS">BAS</a></li><li><a href="global.html#BATTERIE">BATTERIE</a></li><li><a href="global.html#CIRCUIT">CIRCUIT</a></li><li><a href="global.html#CONDENSATEUR">CONDENSATEUR</a></li><li><a href="global.html#CREATE">CREATE</a></li><li><a href="global.html#DELETE">DELETE</a></li><li><a href="global.html#DIODE">DIODE</a></li><li><a href="global.html#DROITE">DROITE</a></li><li><a href="global.html#FIL">FIL</a></li><li><a href="global.html#FunctionObject">FunctionObject</a></li><li><a href="global.html#GAUCHE">GAUCHE</a></li><li><a href="global.html#HAUT">HAUT</a></li><li><a href="global.html#MODIFIER">MODIFIER</a></li><li><a href="global.html#NOEUD">NOEUD</a></li><li><a href="global.html#POINT">POINT</a></li><li><a href="global.html#QUADRILLE">QUADRILLE</a></li><li><a href="global.html#QUADRILLEPOINT">QUADRILLEPOINT</a></li><li><a href="global.html#RESISTEUR">RESISTEUR</a></li><li><a href="global.html#addActions">addActions</a></li><li><a href="global.html#ajustementAutomatiqueComposant">ajustementAutomatiqueComposant</a></li><li><a href="global.html#ajustementAutomatiqueFil">ajustementAutomatiqueFil</a></li><li><a href="global.html#ampoule">ampoule</a></li><li><a href="global.html#applyLimitActions">applyLimitActions</a></li><li><a href="global.html#batterie">batterie</a></li><li><a href="global.html#blendBG">blendBG</a></li><li><a href="global.html#composantType">composantType</a></li><li><a href="global.html#condensateur">condensateur</a></li><li><a href="global.html#copyComposant">copyComposant</a></li><li><a href="global.html#couperFil">couperFil</a></li><li><a href="global.html#diode">diode</a></li><li><a href="global.html#draw">draw</a></li><li><a href="global.html#drawComponentsChooser">drawComponentsChooser</a></li><li><a href="global.html#drawComposants">drawComposants</a></li><li><a href="global.html#drawFils">drawFils</a></li><li><a href="global.html#drawGrid">drawGrid</a></li><li><a href="global.html#filStart">filStart</a></li><li><a href="global.html#findGridLock">findGridLock</a></li><li><a href="global.html#getComposantVide">getComposantVide</a></li><li><a href="global.html#getConnectingComposant">getConnectingComposant</a></li><li><a href="global.html#inGrid">inGrid</a></li><li><a href="global.html#initDrag">initDrag</a></li><li><a href="global.html#isElementDrag">isElementDrag</a></li><li><a href="global.html#isElementSelectionner">isElementSelectionner</a></li><li><a href="global.html#lineGrid">lineGrid</a></li><li><a href="global.html#load">load</a></li><li><a href="global.html#mouseDragged">mouseDragged</a></li><li><a href="global.html#mousePressed">mousePressed</a></li><li><a href="global.html#mouseReleased">mouseReleased</a></li><li><a href="global.html#mouseWheel">mouseWheel</a></li><li><a href="global.html#pointGrid">pointGrid</a></li><li><a href="global.html#posAtPercent">posAtPercent</a></li><li><a href="global.html#redo">redo</a></li><li><a href="global.html#resetHistorique">resetHistorique</a></li><li><a href="global.html#resisteur">resisteur</a></li><li><a href="global.html#sauvegarder">sauvegarder</a></li><li><a href="global.html#undo">undo</a></li><li><a href="global.html#updateBouton">updateBouton</a></li><li><a href="global.html#validBoutonActif">validBoutonActif</a></li><li><a href="global.html#validComposantPos">validComposantPos</a></li><li><a href="global.html#validFilBegin">validFilBegin</a></li><li><a href="global.html#validerAction">validerAction</a></li><li><a href="global.html#verifierCouperFil">verifierCouperFil</a></li><li><a href="global.html#windowResized">windowResized</a></li><li><a href="global.html#zoom">zoom</a></li></ul>
+    
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">Ampoule</h1>
+    
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>
+        
+            Ampoule
+        
+        </h2>
+        
+            <div class="class-description usertext"><p>Représentation d'une ampoule</p></div>
+        
+    
+</header>
+
+<article>
+    
+        <div class="container-overview">
+        
+            
+
+    
+    <h2>Constructor</h2>
+    
+
+    <h4 class="name" id="Ampoule"><span class="type-signature"></span>new Ampoule<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Composant.js.html">Composant.js</a>, <a href="Composant.js.html#line172">line 172</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+        </div>
+    
+
+    
+        <h3 class="subsection-title">Extends</h3>
+
+        
+
+
+    <ul>
+        <li><a href="Resisteur.html">Resisteur</a></li>
+    </ul>
+
+
+    
+
+    
+
+    
+    
+    
+
+     
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id="checkConnection"><span class="type-signature"></span>checkConnection<span class="signature">(x, y, approximation)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>Chaque composant possède deux borne opposé qui sont les connections avec les fils. Cette fonction
+permet de faire vérfifier si une position entre en contact avec une des bornes.</p></li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Composant.js.html">Composant.js</a>, <a href="Composant.js.html#line53">line 53</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="Resisteur.html#checkConnection">Resisteur#checkConnection</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li>Composant#getBorne simplification de la fonction</li>
+        </ul>
+    </dd>
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>x</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>cordonné x</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>y</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>cordonné y</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>approximation</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>rayon d'approximation permis</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>si une borne est touché par le point</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="getBorne"><span class="type-signature"></span>getBorne<span class="signature">(x, y, approximation)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Composant.js.html">Composant.js</a>, <a href="Composant.js.html#line92">line 92</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="Resisteur.html#getBorne">Resisteur#getBorne</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>x</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>y</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>approximation</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>La borne que le position touche ou null</p>
+</div>
+
+
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="getConnection"><span class="type-signature"></span>getConnection<span class="signature">(borne)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>Cette fonction est équivalente avec getConnections sauf que tu peux préciser une
+borne spécifique à récupérer.</p></li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Composant.js.html">Composant.js</a>, <a href="Composant.js.html#line79">line 79</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="Resisteur.html#getConnection">Resisteur#getConnection</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>borne</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Pos</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Une borne spécifique (HAUT, BAS, GAUCHE, DROITE)</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>La position de la connexion</p>
+</div>
+
+
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="getConnections"><span class="type-signature"></span>getConnections<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>Fonction qui permet de récupérer les positions x et y des bornes. Cette fonction dépend
+de l'orientation du composant.</p></li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Composant.js.html">Composant.js</a>, <a href="Composant.js.html#line61">line 61</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="Resisteur.html#getConnections">Resisteur#getConnections</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Les positions des bornes trier en ordre de grandeur du composant</p>
+</div>
+
+
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="getType"><span class="type-signature"></span>getType<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>Getter pour le type de composant</p></li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Composant.js.html">Composant.js</a>, <a href="Composant.js.html#line118">line 118</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="Resisteur.html#getType">Resisteur#getType</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>le type de composant</p>
+</div>
+
+
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="inBounds"><span class="type-signature type-signature-abstract">(abstract) </span>inBounds<span class="signature">(x, y)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+    <dt class="tag-description">Description:</dt>
+    <dd class="tag-description"><ul class="dummy"><li><p>Permet de calculer si un cordonné (x, y) se situe dans le périmètre de contact
+du composant.</p></li></ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Composant.js.html">Composant.js</a>, <a href="Composant.js.html#line40">line 40</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="Resisteur.html#inBounds">Resisteur#inBounds</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>x</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>cordonné x</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>y</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>cordonné y</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5 class="h5-returns">Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="rotate"><span class="type-signature"></span>rotate<span class="signature">(inverse)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Composant.js.html">Composant.js</a>, <a href="Composant.js.html#line110">line 110</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="Resisteur.html#rotate">Resisteur#rotate</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="h5-parameters">Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>inverse</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.2</a> on Wed May 10 2023 15:25:54 GMT-0400 (heure avancée de l’Est) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+<script src="scripts/collapse.js" defer></script>
+
+
+</body>
+</html>

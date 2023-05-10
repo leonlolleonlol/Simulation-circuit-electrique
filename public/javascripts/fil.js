@@ -1,5 +1,3 @@
-/** @module Fil */
-
 /**
  * Cette classe permet de représenter les fils de notre circuit.
  * Chaque est linéaire et peut être dans n'importe quelle direction a n'importe quel angle.
@@ -10,7 +8,7 @@ class Fil{
    * Créer un nouveau fil avec les arguments du **début du fil** et de la 
    * **fin du fil**. Spécifie aussi un identifiant unique 
    * @param {number} xi cordonné en x du point initial
-   * @param {number} yi cordonné en y du point initial
+   * @param {number} yi codonné en y du point initial
    * @param {number} xf cordonné en x du point final
    * @param {number} yf cordonné en y du point final
    * @see [Date.now()]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/now} 
@@ -28,7 +26,7 @@ class Fil{
   }
 
   /**
-   * Aller voir {@link module:Composant~Composant#draw | Composant.prototype.draw()}
+   * Aller voir {@link Composant#draw | Composant.draw()}
    * @param offX 
    * @param offY 
    */
@@ -68,7 +66,7 @@ class Fil{
    * @param {number} x coordoné en x à tester
    * @param {number} y coordoné en y à tester
    * @returns {boolean}
-   * @see {@link module:Composant~Composant#inBounds | Composant.inBounds}
+   * @see {@link Composant#inBounds | Composant.inBounds()}
    */
   inBounds(x, y){
     if(!this.inBoxBounds(x,y)){
@@ -87,7 +85,7 @@ class Fil{
    * @param {number} y coordoné en y
    * @deprecated Va être bientôt supprimer si il n'y a pas une différence 
    * de performance substantiel en différence de 
-   * {@link module:Fil~Fil#inBounds | Fil.prototype.inBounds}
+   * {@link Fil#inBounds | Fil.inBounds()}
    * @returns {boolean}
    */
   inBoxBounds(x, y){
@@ -131,7 +129,7 @@ class Fil{
   /**
    * Calcule l'angle d'inclinaison du fil. 
    * @returns l'angle en radian
-   * @see {@link module:Fil~Fil#pente | pente()}
+   * @see {@link Fil#pente | Fil.pente()}
    */
   angle(){
     return Math.atan(1/this.pente());

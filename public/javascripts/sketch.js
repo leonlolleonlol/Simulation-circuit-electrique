@@ -109,7 +109,7 @@ function initPosition(){
 
 /**
  * Met à jour un bouton si la vérification de l'activation 
- * @param {p5.Element} button La référence du vers le bouton {@link https://p5js.org/reference/#/p5.Element}
+ * @param {p5.Element} button La référence du vers le bouton {@link https://p5js.org/reference/#/p5.Element | p5.Element}
  * @param {boolean} verification le résultat de la vérification à faire
  */
 function validBoutonActif(button, verification) {
@@ -188,8 +188,8 @@ function drawComponentsChooser() {
 /**
  * Redirige vers la la fonction pour dessiner la grille dépendant 
  * du type de quadrillage sélectionner
- * @see {@link module:Forme.pointGrid | pointGrid()}
- * @see {@link module:Forme.lineGrid | lineGrid()}
+ * @see {@link pointGrid}
+ * @see {@link lineGrid}
  */
 function drawGrid(){
   switch (grid.quadrillage) {
@@ -208,7 +208,7 @@ function drawGrid(){
 
 /**
  * Dessine tout les composants de la liste de fils avec p5
- * @see {@link module:Fil~Fil#draw | Fil.prototype.draw()}
+ * @see {@link Fil#draw | Fil.prototype.draw()}
  */
 function drawFils() {
   for (let element of fils){
@@ -306,7 +306,7 @@ function filStart(x, y){
  * 1. Ordonner les points initiaux et finaux plus petit au plus grand (xi doit être < que xf)
  * 2. Unir certains fils possible en un seul fil
  * 3. Coupe le fil dépendant des composants par lequel il passe
- * @param {module:Fil~Fil} fil Le nouveau fil
+ * @param {Fil} fil Le nouveau fil
  * @param {Array} actions La liste d'actions ou l'on va enregistrer les actions interne 
  * effectuer dans la fonction
  */
@@ -336,7 +336,7 @@ function ajustementAutomatiqueFil(fil, actions){
  * Cette fonction permet de faire les appels pour la fonctions couperFil pour chaque composant.
  * Elle a été créer pour nous permettre d'éviter lorsque l'on créer dans la fonction couperFil
  * un nouveau fil de répasser par la fonction ajustementNouveauFil au complet.
- * @param {module:Fil~Fil} fil Le fil à vérifier
+ * @param {Fil} fil Le fil à vérifier
  * @param {Array} actions La liste d'actions ou l'on va enregistrer les actions interne 
  * effectuer dans la fonction
  */
@@ -356,8 +356,8 @@ function verifierCouperFil(fil, actions){
  * autre fil ou au borne d'un composant. Dans cette fonction, on vérifier qu'un composant
  * connecte avec un fil et si c'est le cas, on change si nécéssaire les valeur de positions
  * des bornes du fil pour qu'il connecte au composant ou on le supprime tout simplement
- * @param {module:Fil~Fil} fil Le fil que l'on veut comparer
- * @param {module:Composant~Composant} composant Le composant que l'on veut comparer
+ * @param {Fil} fil Le fil que l'on veut comparer
+ * @param {Composant} composant Le composant que l'on veut comparer
  * @param {Array} actions La liste d'actions ou l'on va enregistrer les actions 
  * interne effectuer dans la fonction
  * @returns Un boolean qui dit si le fil a été supprimer du répertoire. Très important si c'est un
@@ -413,7 +413,7 @@ function couperFil(fil, composant, actions){
  * Les actions qui peuvent être effectuer sont de remplacer un composant si deux composants
  * sont à la même position (remplacer le plus ancien par le nouveau) et de recouper les fils
  * si besoin (voir couperFil)
- * @param {module:Composant~Composant} composant Le nouveau composant à valider
+ * @param {Composant} composant Le nouveau composant à valider
  * @param {Array} actions La liste d'actions ou l'on va enregistrer les actions interne 
  * effectuer dans la fonction
  */
@@ -435,7 +435,7 @@ function ajustementAutomatiqueComposant(composant, actions){
 /**
  * Cette fonction utilitaire permet de juste d'initier les principales valeurs 
  * utile lorsque l'on veut déplacer un composant (autre qu'un fil) sur la grille
- * @param {module:Composant~Composant} element L'élement que l'on veut drag
+ * @param {Composant} element L'élement que l'on veut drag
  * @param {number} x La position en x du composant
  * @param {number} y La position en y du composant
  */
@@ -449,7 +449,7 @@ function initDrag(element, x, y){
 /**
  * Créer un nouveau composant en prenant pour référence la position et le type 
  * du composant précédent sélectionner dans menu des composants
- * @param {module:Composant~Composant} original Le composant du menu déroulant que l'on veut copier
+ * @param {Composant} original Le composant du menu déroulant que l'on veut copier
  * @returns Le composant qui a été copier
  */
 function copyComposant(original){

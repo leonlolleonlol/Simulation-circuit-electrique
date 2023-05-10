@@ -1,6 +1,3 @@
-
-/** @module Forme */
-
 /**
  * Dessine un résisteur sur le canvas
  * @param {number} x coordoné en x du composant

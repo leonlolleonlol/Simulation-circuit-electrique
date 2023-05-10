@@ -48,7 +48,7 @@ class Composant {
    * @param {number} y cordonné y
    * @param {number} approximation rayon d'approximation permis
    * @returns {boolean} si une borne est touché par le point
-   * @see module:Composant~Composant#getBorne simplification de la fonction
+   * @see Composant#getBorne simplification de la fonction
    */
   checkConnection(x, y, approximation){
     return this.getBorne(x,y,approximation)!=null;
@@ -73,7 +73,7 @@ class Composant {
   /**
    * Cette fonction est équivalente avec getConnections sauf que tu peux préciser une
    * borne spécifique à récupérer.
-   * @param {module:Constantes~Pos} borne Une borne spécifique (HAUT, BAS, GAUCHE, DROITE)
+   * @param {Pos} borne Une borne spécifique (HAUT, BAS, GAUCHE, DROITE)
    * @returns La position de la connexion
    */
   getConnection(borne){
@@ -129,7 +129,7 @@ class Composant {
 
 /**
  * 
- * @extends module:Composant~Composant 
+ * @extends Composant 
  */
 class Resisteur extends Composant {
   constructor(x, y, resistance, orientation) {
@@ -167,7 +167,7 @@ class Resisteur extends Composant {
 
 /**
  * Représentation d'une ampoule
- * @extends module:Composant~Resisteur 
+ * @extends Resisteur 
  */
 class Ampoule extends Resisteur {
   constructor(x, y, resistance, orientation) {
@@ -200,7 +200,7 @@ class Ampoule extends Resisteur {
 
 /**
  * Représentation du condensateur
- * @extends module:Composant~Composant 
+ * @extends Composant 
  * @deprecated Cet objet n'est **PAS** implémenter à cause du problème des circuits RC
  */
 class Condensateur extends Composant {
@@ -237,7 +237,7 @@ class Condensateur extends Composant {
 
 /**
  * Représentation d'une source de courant (batterie)
- * @extends module:Composant~Composant 
+ * @extends Composant 
  */
 class Batterie extends Composant {
   constructor(x, y, tension, orientation) {
@@ -272,7 +272,7 @@ class Batterie extends Composant {
 
 /**
  * Représentation d'une diode
- * @extends module:Composant~Composant 
+ * @extends Composant 
  * @deprecated Pour l'instant l'objet n'est **PAS** accessible puisque les calculs se complexifie
  * beaucoup si on implémentait la diode
  */
@@ -308,7 +308,7 @@ class Diode extends Composant {
  * Cette classe est une représentation mathématique de la dérivation de brache (branche en parallèle). 
  * Elle rassemble donc toute les branches en parallèle et cela permet de faire les calculs 
  * d'équivalence du circuit et autre.
- * @extends module:Composant~Composant 
+ * @extends Composant 
  */
 class Noeuds extends Composant {
   constructor(x, y, courant, tension){
@@ -413,7 +413,7 @@ class Noeuds extends Composant {
  * Vérifie si un nouveau composant ou un composant que l'on a modifier a une position valide. 
  * Les critères sont que le composant se situe dans la grille et qu'il ne connecte pas
  * avec les bornes d'un composant
- * @param {module:Composant~Composant} composant Le composant que l'on veut valider la position
+ * @param {Composant} composant Le composant que l'on veut valider la position
  * @returns Si la position du composant est valide
  */
 function validComposantPos(composant){

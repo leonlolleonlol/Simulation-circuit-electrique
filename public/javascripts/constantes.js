@@ -1,6 +1,3 @@
-/** @module Constantes */
-
-
 /**
  * @typedef {Quadrillage}
  * @global

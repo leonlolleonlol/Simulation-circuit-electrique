@@ -9,7 +9,8 @@
   "private": false,
   "scripts": {
     "start": "node app.js",
-    "dev": "nodemon app.js"
+    "dev": "nodemon app.js",
+    "doc": "jsdoc -c public/jsdoc.json"
   },
   "dependencies": {
     "bcrypt": "^5.1.0",
@@ -24,7 +25,10 @@
     "pg": "^8.10.0"
   },
   "devDependencies": {
-    "jester": "^0.2.3"
+    "docdash": "^2.0.1",
+    "jester": "^0.2.3",
+    "jsdoc": "^4.0.2",
+    "jsdoc-to-markdown": "^8.0.0"
   },
   "engines": {
     "node": ">=14"
