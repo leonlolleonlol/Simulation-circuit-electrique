@@ -188,6 +188,8 @@ function drawComponentsChooser() {
 /**
  * Redirige vers la la fonction pour dessiner la grille dépendant 
  * du type de quadrillage sélectionner
+ * @see {@link module:Forme.pointGrid | pointGrid()}
+ * @see {@link module:Forme.lineGrid | lineGrid()}
  */
 function drawGrid(){
   switch (grid.quadrillage) {
@@ -206,6 +208,7 @@ function drawGrid(){
 
 /**
  * Dessine tout les composants de la liste de fils avec p5
+ * @see {@link module:Fil~Fil#draw | Fil.prototype.draw()}
  */
 function drawFils() {
   for (let element of fils){
@@ -777,8 +780,8 @@ function getComposantVide(type){
  * La fonction va automatiquement produire une alerte si une erreur dans quelconque est produite
  */
 async function sauvegarder() {
-  informations = {components, fils};
-  caches = [];// permet d'enregistrer un objet une fois et d'utiliser des numéros d'identification les autres fois
+  let informations = {components, fils};
+  let caches = [];// permet d'enregistrer un objet une fois et d'utiliser des numéros d'identification les autres fois
   let data = JSON.stringify(informations, function(key, value){
     if(value instanceof Composant || value instanceof Fil){
       if(!caches.includes(value)){
