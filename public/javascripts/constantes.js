@@ -1,30 +1,64 @@
+/** @module Constantes */
+
+
+/**
+ * @typedef {Quadrillage}
+ * @global
+ */
+
+/** @const {Quadrillage} POINT */
 POINT = 'point';
+/** @const {Quadrillage} QUADRILLE */
 QUADRILLE = 'quadrille';
+/** @const {Quadrillage} QUADRILLEPOINT */
 QUADRILLEPOINT = 'quadrille avec point';
 
-/** @constant {string}*/
+/**
+ * @typedef {ComposantType}
+ * @global
+ */
+
+/** @const {ComposantType} RESISTEUR */
 RESISTEUR = 'resisteur';
-/** @constant {string}*/
+/** @const {ComposantType} CONDENSATEUR */
 CONDENSATEUR = 'condensateur';
-/** @constant {string}*/
+/** @const {ComposantType} AMPOULE */
 AMPOULE = 'ampoule';
-/** @constant {string}*/
+/** @const {ComposantType} DIODE */
 DIODE = 'diode';
-/** @constant {string}*/
+/** @const {ComposantType} BATTERIE */
 BATTERIE = 'batterie'
-/** @constant {string}*/
+/** @const {ComposantType} NOEUD */
 NOEUD = 'noeud';
-/** @constant {string}*/
+/** @const {ComposantType} FIL */
 FIL = 'fil';
-/** @constant {string}*/
+/** @const {ComposantType} CIRCUIT */
 CIRCUIT = 'circuit';
 
+/**
+ * @typedef {ActionType} 
+ * @global
+ */
+
+/** @const {ActionType} CREATE */
 CREATE = 'create';
+/** @const {ActionType} DELETE */
 DELETE = 'delete';
+/** @const {ActionType} MODIFIER */
 MODIFIER = 'modifier';
 
+
+/**
+ * @typedef {Pos} 
+ * @global
+ */
+
+/** @const {Pos} DROITE */
 DROITE = 'droite';
+/** @const {Pos} GAUCHE */
 GAUCHE = 'gauche';
+/** @const {Pos} HAUT */
 HAUT = 'haut';
+/** @const {Pos} BAS */
 BAS = 'bas';
 
