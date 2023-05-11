@@ -4,11 +4,13 @@ const bcrypt = require("bcrypt");
 const session=require("express-session");
 const flash=require("express-flash");
 const app = express()
+const passport=require("passport");
+const initializePassport=require("./passportConfig");
 var bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({
   extended: true
 }));
-
+initializePassport(passport);
 app.use(bodyParser.json());
 const port = 3000;
 const path = require('path')
@@ -28,12 +30,14 @@ app.use(session({
   resave: false,
   saveUninitialized: false
 }));
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(flash());
 app.get('/', function(req, res) {
   res.sendFile(path.join(__dirname, '/acceuil.html'));
   //res.render("index");
 });
-app.get('/users/register', function(req, res) {
+app.get('/users/register', checkAuthenticated, function(req, res) {
   res.render('register');
 });
 app.post('/users/register', async(req, res)=>{
@@ -96,15 +100,27 @@ app.post('/users/register', async(req, res)=>{
   //res.end();
 });
 
-app.get('/users/login', function(req, res) {
+app.get('/users/login', checkAuthenticated, function(req, res) {
   res.render("login");
 });
+app.post(
+  "/users/login",
+  passport.authenticate("local", {
+    successRedirect: "/users/dashboard",
+    failureRedirect: "/users/login",
+    failureFlash: true
+  })
+);
 
-app.get('/users/logout', function(req, res) {
-  res.render("login");
+app.get("/users/logout", async (req, res) => {
+  req.logout(function(err) {
+    if (err) { return next(err); }
+    req.flash("success_msg", "You have logged out");
+    res.redirect("/users/login");
+  });
 });
-app.get('/users/dashboard', function(req, res) {
-  res.render("dashboard", {user: "Conor"});
+app.get('/users/dashboard', checkNotAuthenticated, function(req, res) {
+  res.render("dashboard", {user: req.user.name});
 });
 app.get('/acceuil', function(req, res) {
   res.sendFile(path.join(__dirname, '/acceuil.html'));
@@ -139,4 +155,17 @@ app.get('/Composant.js', function(req, res) {
 app.get('/editeur', function(req, res) {
   res.sendFile(path.join(__dirname, '/editeur.html'));
 });
+function checkAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+    return res.redirect("/users/dashboard");
+  }
+  next();
+}
+
+function checkNotAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.redirect("/users/login");
+}
 
