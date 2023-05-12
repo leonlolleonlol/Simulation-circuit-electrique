@@ -502,8 +502,14 @@ function mousePressed() {
     drag = grid;
 }
 function creatNoeud(fil){
+  //Pas besoin de cette fonction, les points on déjà été trier
   fil.trierPoint();
   f1 = new Fil(fil.xi, fil.yi,fil.xf,fil.yf);
+  // On peut remplacer cela par: 
+  //connectionBegin = filStart(fil.xi, fil.yi);
+  //if(connectionBegin!=null && dist(fil.xi, fil.yi,connectionBegin.xi, connectionBegin.yi)!=0
+  // && dist(fil.xi, fil.yi,connectionBegin.xf, connectionBegin.yf)!=0
+  // Et on recommence pour xf et yf
   // étape 1 : vérifier les deux cas de présence de noeud 
   for (const nfil of fils) {
     if(nfil !== fil){
