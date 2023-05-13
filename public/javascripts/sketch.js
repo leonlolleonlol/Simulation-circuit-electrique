@@ -38,6 +38,8 @@ function setup() {
   let line_grid_button = select('#line-grid');
   let point_grid_button = select('#point-grid');
   let point_line_grid_button = select('#point-line-grid');
+  let telecharger_button = select('#download');
+  let sauvegarder_button = select('#save');
   undo_button = select('#undo');
   redo_button = select('#redo')
   reset_button = select('#reset');
@@ -64,18 +66,20 @@ function setup() {
   line_grid_button.mousePressed(()=>{ grid.quadrillage=QUADRILLE;});
   point_grid_button.mousePressed(()=>{ grid.quadrillage=POINT;});
   point_line_grid_button.mousePressed(()=>{ grid.quadrillage=QUADRILLEPOINT;});
+  telecharger_button.mousePressed(telecharger);
+  sauvegarder_button.mousePressed(sauvegarder);
   setTooltip(line_grid_button,'#line-grid-tip');
   setTooltip(point_grid_button,'#point-grid-tip');
   setTooltip(point_line_grid_button,'#pointLine-grid-tip');
   setTooltip(select('#acceuil'),'#acceuil-tip');
-  setTooltip(select('#download'),'#download-tip');
-  setTooltip(select('#save'),'#save-tip');
+  setTooltip(telecharger_button,'#download-tip');
+  setTooltip(sauvegarder_button,'#save-tip');
   setTooltip(undo_button,'#undo-tip');
   setTooltip(redo_button,'#redo-tip');
   setTooltip(reset_button,'#reset-tip');
   setTooltip(animation_button,'#animation-tip');
   c1 = new Circuit(true);
-  getLocalCircuit();
+  loadLocalCircuit();
 
   //test();
 }
@@ -841,33 +845,6 @@ function getComposantVide(type){
   }
 }
 
-/**
- * Fonction qui permet d'envoyer une requête au serveur pour enregistrer le circuit localement.
- * La fonction va automatiquement produire une alerte si une erreur dans quelconque est produite.
- * Cette fonction est présentement juste disponible pour le programmeur
- */
-async function sauvegarderLocal() {
-  let data = getStringData();
-  // envoi de la requête
-  await fetch('save-dev/circuit3', {
-      method: "POST",
-      mode: "cors",
-      cache: "no-cache",
-      credentials: "same-origin",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      redirect: "follow",
-      referrerPolicy: "no-referrer",
-      body: data,
-    }).then(function(response){
-      //les actions à faire lorsque notre action réussis
-   }).catch(function() {
-    alert('Votre sauvegarde local a éjouer a échouer');
-  }); 
-}
-
-
 
 /**
  * Fonction qui permet d'envoyer une requête au serveur pour enregistrer le circuit.
@@ -904,4 +881,25 @@ async function loadLocalCircuit(){
     .then((response) => response.json())
     .then((json) => load(json));
 
+}
+
+/**
+ * @see https://www.aspsnippets.com/Articles/Download-JSON-object-Array-as-File-from-Browser-using-JavaScript.aspx
+ */
+function telecharger(){
+  let data = [getStringData()];
+  const blob = new Blob(data, {type: "application/json"});
+  var isIE = false || !!document.documentMode;
+  if (isIE) {
+    window.navigator.msSaveBlob(blob, "circuit.json");
+  } else {
+    var url = window.URL || window.webkitURL;
+    link = url.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.download = "circuit.json";
+    a.href = link;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
 }

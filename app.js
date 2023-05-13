@@ -124,15 +124,6 @@ app.get('/users/dashboard', checkNotAuthenticated, function(req, res) {
   res.render("dashboard", {user: req.user.name});
 });
 
-app.post('/save-dev/:fileName', function(req, res) {
-  fs.writeFile(path.join(__dirname, 'public/data/'+req.params.fileName+'.json'), JSON.stringify(req.body
-), (error)=>{
-  if(error)
-    console.log(error);
-  else
-    res.send('Votre sauvegarde a été effectuer avec succès');
-  });
-});
 app.get('/test/circuit/:fileName', function(req, res) {
   res.sendFile(path.join(__dirname, '/public/data/'+req.params.fileName+'.json'));
 });
