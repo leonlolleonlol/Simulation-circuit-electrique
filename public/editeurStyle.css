@@ -36,10 +36,18 @@ a {
     height: 40px;
 }
 
+#upload {
+  position:absolute;
+  top: 10px;
+  left: 140px;
+  width: 60px;
+  height: 40px;
+}
+
 #save {
     position:absolute;
     top: 10px;
-    left: 140px;
+    left: 205px;
     width: 60px;
     height: 40px;
 }
@@ -120,6 +128,11 @@ a {
 }
 
 #download-tip{
+  width: 80px;
+  left: 48px;
+}
+
+#upload-tip{
   width: 80px;
   left: 48px;
 }

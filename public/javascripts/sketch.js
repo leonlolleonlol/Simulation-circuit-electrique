@@ -39,6 +39,7 @@ function setup() {
   let point_grid_button = select('#point-grid');
   let point_line_grid_button = select('#point-line-grid');
   let telecharger_button = select('#download');
+  let upload_button = select('#upload');
   let sauvegarder_button = select('#save');
   undo_button = select('#undo');
   redo_button = select('#redo')
@@ -67,12 +68,14 @@ function setup() {
   point_grid_button.mousePressed(()=>{ grid.quadrillage=POINT;});
   point_line_grid_button.mousePressed(()=>{ grid.quadrillage=QUADRILLEPOINT;});
   telecharger_button.mousePressed(telecharger);
+  upload_button.mousePressed(upload);
   sauvegarder_button.mousePressed(sauvegarder);
   setTooltip(line_grid_button,'#line-grid-tip');
   setTooltip(point_grid_button,'#point-grid-tip');
   setTooltip(point_line_grid_button,'#pointLine-grid-tip');
   setTooltip(select('#acceuil'),'#acceuil-tip');
   setTooltip(telecharger_button,'#download-tip');
+  setTooltip(upload_button,'#upload-tip');
   setTooltip(sauvegarder_button,'#save-tip');
   setTooltip(undo_button,'#undo-tip');
   setTooltip(redo_button,'#redo-tip');
@@ -773,7 +776,7 @@ function refresh() {
  * importante puisque certaine donné doivent être résolue (transformé en bon format) comme 
  * le type de l'objet (prototype) qui est très important pour les méthodes et 
  * les id (voir commentaire dans fonction sauvegarder)
- * @param {string} data Les données du circuit en format Json
+ * @param {object} data Un objet représentant nos données
  */
 function load(data){
   let tempElements = data.components.concat(data.fils);
@@ -898,8 +901,22 @@ function telecharger(){
     var a = document.createElement("a");
     a.download = "circuit.json";
     a.href = link;
-    document.body.appendChild(a);
     a.click();
-    document.body.removeChild(a);
   }
+}
+
+function upload(){
+  var input = document.createElement("input");
+  input.type = "file";
+  input.addEventListener("change", function(){
+    if(this.files[0]!=null){
+      let file = this.files[0];
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        load(JSON.parse(reader.result));
+      };
+      reader.readAsText(file);
+    }
+  }, false);
+  input.click();
 }
