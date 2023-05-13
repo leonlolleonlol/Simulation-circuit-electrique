@@ -23,6 +23,8 @@ let redo_tip;
 let reset_tip;
 let animation_tip;
 
+let baseCircuit = 'circuit3';
+
 let percent;
 let animate;//bool qui determine si on veut animation ou pas
 
@@ -73,6 +75,8 @@ function setup() {
   setTooltip(reset_button,'#reset-tip');
   setTooltip(animation_button,'#animation-tip');
   c1 = new Circuit(true);
+  getLocalCircuit();
+
   //test();
 }
 
@@ -799,6 +803,25 @@ function load(data){
 }
 
 /**
+ * Transforme notre circuit en string json. Aussi, remplace les occurences 
+ * d'objet répétitive par leurs identifiants
+ * @returns {string}
+ */
+function getStringData(){
+  let informations = {components, fils};
+  let caches = [];// permet d'enregistrer un objet une fois et d'utiliser des numéros d'identification les autres fois
+  return JSON.stringify(informations, function(key, value){
+    if(value instanceof Composant || value instanceof Fil){
+      if(!caches.includes(value)){
+        caches.push(value);
+        return value;
+      }else return {id:value.id}
+    }
+    return value;
+  });
+}
+
+/**
  * Cette fonction permet de produire un nouvel objet correspondant à partir du type de classe
  * donné par la méthode des classes Composant et Fil getType(). Cette fonction est utile pour réasigner
  * les méthode d'une classe effacé lors du transcrivage en Json
@@ -819,22 +842,39 @@ function getComposantVide(type){
 }
 
 /**
+ * Fonction qui permet d'envoyer une requête au serveur pour enregistrer le circuit localement.
+ * La fonction va automatiquement produire une alerte si une erreur dans quelconque est produite.
+ * Cette fonction est présentement juste disponible pour le programmeur
+ */
+async function sauvegarderLocal() {
+  let data = getStringData();
+  // envoi de la requête
+  await fetch('save-dev/circuit3', {
+      method: "POST",
+      mode: "cors",
+      cache: "no-cache",
+      credentials: "same-origin",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      redirect: "follow",
+      referrerPolicy: "no-referrer",
+      body: data,
+    }).then(function(response){
+      //les actions à faire lorsque notre action réussis
+   }).catch(function() {
+    alert('Votre sauvegarde local a éjouer a échouer');
+  }); 
+}
+
+
+
+/**
  * Fonction qui permet d'envoyer une requête au serveur pour enregistrer le circuit.
  * La fonction va automatiquement produire une alerte si une erreur dans quelconque est produite
  */
 async function sauvegarder() {
-  let informations = {components, fils};
-  let caches = [];// permet d'enregistrer un objet une fois et d'utiliser des numéros d'identification les autres fois
-  let data = JSON.stringify(informations, function(key, value){
-    if(value instanceof Composant || value instanceof Fil){
-      if(!caches.includes(value)){
-        caches.push(value);
-        return value;
-      }else return {id:value.id}
-    }
-    return value;
-  });
-  
+  let data = getStringData();
   // envoi de la requête
   await fetch('users/sauvegarderCircuit', {
       method: "POST",
@@ -854,3 +894,14 @@ async function sauvegarder() {
   }); 
 }
 
+/**
+ * Fait une requête au serveur pour récupérer un des circuits test qui est 
+ * enregistrer dans sur le serveur (pas dans la base de donné) et load le circuit
+ * @see baseCircuit Le nom du circuit à récupérer
+ */
+async function loadLocalCircuit(){
+  fetch('test/circuit/'+baseCircuit)
+    .then((response) => response.json())
+    .then((json) => load(json));
+
+}

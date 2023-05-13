@@ -225,6 +225,7 @@ function validFilBegin(x, y){
  * @returns L'objet contenant la position x, y
  */
 function posAtPercent(fil, percent) {
+  //https://stackoverflow.com/questions/17083580/i-want-to-do-animation-of-an-object-along-a-particular-path
   let dx = fil.xf - fil.xi;
   let dy = fil.yf - fil.yi;
   return ({

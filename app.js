@@ -1,4 +1,5 @@
-const express = require('express')
+const express = require('express');
+const fs = require('fs');
 const { pool } = require("./dbConfig");
 const bcrypt = require("bcrypt");
 const session=require("express-session");
@@ -21,7 +22,7 @@ app.use(express.static('public'));
 app.listen(port, () => {
   var url = `http://localhost:${port}`
   console.log('Server listen on '+url);
-  var start = (process.platform == 'darwin'? 'open': process.platform == 'win32'? 'start': 'xdg-open');
+  var start = (process.platform == 'darwin'? 'open': process.platform == 'win32' ? 'start' : 'xdg-open');
   require('child_process').exec(start + ' ' + url+'/editeur');
 })
 app.set("view engine", "ejs");
@@ -122,8 +123,21 @@ app.get("/users/logout", async (req, res) => {
 app.get('/users/dashboard', checkNotAuthenticated, function(req, res) {
   res.render("dashboard", {user: req.user.name});
 });
+
+app.post('/save-dev/:fileName', function(req, res) {
+  fs.writeFile(path.join(__dirname, 'public/data/'+req.params.fileName+'.json'), JSON.stringify(req.body
+), (error)=>{
+  if(error)
+    console.log(error);
+  else
+    res.send('Votre sauvegarde a été effectuer avec succès');
+  });
+});
+app.get('/test/circuit/:fileName', function(req, res) {
+  res.sendFile(path.join(__dirname, '/public/data/'+req.params.fileName+'.json'));
+});
 app.get('/acceuil', function(req, res) {
-  res.sendFile(path.join(__dirname, '/acceuil.html'));
+  res.redirect('/');
 });
 app.get('/nerdamer/all.min.js', function(req, res) {
   res.sendFile(path.join(__dirname, 'node_modules/nerdamer/all.min.js'));
