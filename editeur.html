@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <!--<link rel="stylesheet" href="lib/fontawesome-free-6.4.0-web/css/fontawesome.css">
-  <link rel="stylesheet" href="lib/fontawesome-free-6.4.0-web/css/brands.css">
-  <link rel="stylesheet" href="lib/fontawesome-free-6.4.0-web/css/solid.css">-->
   <link rel="stylesheet" href="editeurStyle.css">
 </head>
 <body>
@@ -18,22 +15,46 @@
   <script src="sketch.js"></script>
   <a href="acceuil">
     <button id="acceuil">
-      <i class="fa-solid fa-house"> acceuil</i>
+      <img class="icon" src = "images/icons/home.svg" alt="Acceuil"/>
+      <span class="tooltip bottom" id="acceuil-tip">Acceuil</span>
     </button>
   </a>
-  <button id="undo">Annuler</button>
-  <button id="redo">Refaire</button>
-  <button id="animate">Animation</button>
+  <button id="download">
+    <img class="icon" src = "images/icons/download.svg" alt="Acceuil"/>
+    <span class="tooltip bottom" id="download-tip">Télécharger</span>
+  </button>
+  <button id="save">
+    <img class="icon" src = "images/icons/save.svg" alt="Acceuil"/>
+    <span class="tooltip bottom" id="save-tip">Sauvegarder</span>
+  </button>
+  <button id="undo">
+    <img class="icon" src = "images/icons/undo.svg" alt="Acceuil"/>
+    <span class="tooltip top" id="undo-tip">Annuler</span>
+  </button>
+  <button id="redo">
+    <img class="icon" src = "images/icons/redo.svg" alt="Acceuil"/>
+    <span class="tooltip top" id="redo-tip">Refaire</span>
+  </button>
+  <button id="reset">
+    <img class="icon" src = "images/icons/refresh.svg" alt="Acceuil"/>
+    <span class="tooltip top" id="reset-tip">Recommencer</span>
+  </button>
+  <button id="animate">
+    <img class="icon" id="animate_image" src = "images/icons/square.svg" alt="Animation"/>
+    <span class="tooltip bottom" id="animation-tip">Arrêter l'animation</span>
+  </button>
   <button id="line-grid">
-   <img class="img-grid" src = "images/icons/line-grid.svg" alt="Grid line choice"/>
+   <img class="icon" src = "images/icons/line-grid.svg" alt="Grid line choice"/>
+   <span class="tooltip top" id="line-grid-tip">Grid line</span>
   </button>
   <button id="point-grid">
-   <img class="img-grid" src = "images/icons/dot-grid.svg" alt="Grid point choice"/>
+   <img class="icon" src = "images/icons/dot-grid.svg" alt="Grid point choice"/>
+   <span class="tooltip top" id="point-grid-tip">Grid point</span>
   </button>
   <button id="point-line-grid">
-   <img class="img-grid" src = "images/icons/point-line-grid.svg" alt="Grid point line choice"/>
+   <img class="icon" src = "images/icons/point-line-grid.svg" alt="Grid point line choice"/>
+   <span class="tooltip top" id="pointLine-grid-tip">Grid point & line</span>
   </button>
-  <button id="reset">Recommencer</button>
   
 </body>
 </html>

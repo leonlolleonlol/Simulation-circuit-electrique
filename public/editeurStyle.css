@@ -25,35 +25,53 @@ a {
     position:absolute;
     top: 10px;
     left: 10px;
-    width: 120px;
-    height: 80px;
+    width: 60px;
+    height: 40px;
 }
+#download {
+    position:absolute;
+    top: 10px;
+    left: 75px;
+    width: 60px;
+    height: 40px;
+}
+
+#save {
+    position:absolute;
+    top: 10px;
+    left: 140px;
+    width: 60px;
+    height: 40px;
+}
+
 
 #undo {
     position: absolute;
     top: 95px;
-    width: 60px;
-    height: 50px;
+    width: 40px;
+    height: 30px;
 }
   
 #redo {
     position: absolute;
     top: 95px;
-    left:70px;
-    width: 60px;
-    height: 50px;
+    left:50px;
+    width: 40px;
+    height: 30px;
 }
 #reset {
     position: absolute;
-    top: 390px;
-    width: 120px;
-    height: 50px;
+    top: 95px;
+    left: 92px;
+    width: 40px;
+    height: 30px;
 }
 #animate {
     position: absolute;
     top: 440px;
-    width: 120px;
-    height: 50px;
+    left:50px;
+    width: 40px;
+    height: 40px;
 }
   
 #line-grid {
@@ -73,7 +91,104 @@ a {
     left: 88px;
 }
   
-.img-grid {
+.icon {
     width: 24px;
     height: 24px;
+}
+
+#line-grid-tip{
+  width: 60px;
+  left: 58px;
+}
+#line-grid-tip::after {
+  left: 20px;
+}
+
+#point-grid-tip{
+  width: 70px;
+  left: 43px;
+}
+
+#pointLine-grid-tip{
+  width: 100px;
+  left: 28px;
+}
+
+#acceuil-tip{
+  width: 60px;
+  left: 58px;
+}
+
+#download-tip{
+  width: 80px;
+  left: 48px;
+}
+
+#save-tip{
+  width: 90px;
+  left: 43px;
+}
+
+#undo-tip{
+  width: 60px;
+  left: 58px;
+}
+
+#undo-tip::after {
+  left: 20px;
+}
+
+#redo-tip{
+  width: 60px;
+  left: 48px;
+}
+#reset-tip{
+  width: 90px;
+  left: 33px;
+}
+
+#animation-tip{
+  width: 120px;
+  left: 18px;
+}
+
+/*https://www.w3schools.com/howto/howto_css_tooltip.asp*/
+.tooltip {
+  visibility: hidden;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  margin-left: -60px;
+}
+
+.tooltip::after {
+  content: "";
+  position: absolute;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  left: 50%;
+}
+
+
+.top {
+  bottom: 125%;
+}
+
+.top::after {
+  top: 100%;
+  border-color: #555 transparent transparent transparent;
+}
+
+.bottom {
+  top: 125%;
+}
+
+.bottom::after {
+  bottom: 100%;
+  border-color: transparent transparent #555 transparent;
 }

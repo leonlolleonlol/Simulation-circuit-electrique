@@ -18,6 +18,10 @@ let redo_button;
 let reset_button;
 let animation_button;
 
+let undo_tip;
+let redo_tip;
+let reset_tip;
+let animation_tip;
 
 let percent;
 let animate;//bool qui determine si on veut animation ou pas
@@ -25,7 +29,6 @@ let animate;//bool qui determine si on veut animation ou pas
 let c1; //variable contenant l'instance du circuit. Sert pour les calculs
 
 let backgroundColor = 'rgb(200,200,200)';//220
-
 // Initialisation du circuit
 function setup() {
   initComponents();
@@ -37,15 +40,38 @@ function setup() {
   redo_button = select('#redo')
   reset_button = select('#reset');
   animation_button= select('#animate');
+  undo_tip = select('#undo-tip');
+  redo_tip = select('#redo-tip');
+  reset_tip = select('#reset-tip');
+  animation_tip = select('#animation-tip');
+  let animate_image = select('#animate_image');
   //----------------------------------------
   reset_button.mousePressed(refresh);
   undo_button.mousePressed(undo);
-
   redo_button.mousePressed(redo);
-  animation_button.mousePressed(() => {animate=!animate;});
+  animation_button.mousePressed(() => {
+    animate=!animate;
+    if(animate){
+      animate_image.attribute('src','images/icons/square.svg');
+      animation_tip.html('Arrêter l\'animation');
+    }else{
+      animate_image.attribute('src','images/icons/play.svg');
+      animation_tip.html('Jouer l\'animation');
+    }
+  });
   line_grid_button.mousePressed(()=>{ grid.quadrillage=QUADRILLE;});
   point_grid_button.mousePressed(()=>{ grid.quadrillage=POINT;});
   point_line_grid_button.mousePressed(()=>{ grid.quadrillage=QUADRILLEPOINT;});
+  setTooltip(line_grid_button,'#line-grid-tip');
+  setTooltip(point_grid_button,'#point-grid-tip');
+  setTooltip(point_line_grid_button,'#pointLine-grid-tip');
+  setTooltip(select('#acceuil'),'#acceuil-tip');
+  setTooltip(select('#download'),'#download-tip');
+  setTooltip(select('#save'),'#save-tip');
+  setTooltip(undo_button,'#undo-tip');
+  setTooltip(redo_button,'#redo-tip');
+  setTooltip(reset_button,'#reset-tip');
+  setTooltip(animation_button,'#animation-tip');
   c1 = new Circuit(true);
   //test();
 }
@@ -107,14 +133,32 @@ function initPosition(){
 
 //DOM -------------------------------
 
+function setTooltip(button,tooltipId){
+  //http://jsfiddle.net/xaliber/TxxQh/
+  let tooltip = select(tooltipId);
+  let tooltipTimeout;
+  button.mouseOver(function(){
+    tooltipTimeout = setTimeout(function(){
+      if(button.attribute('disabled')==null)
+        tooltip.style('visibility', 'visible');
+    }, 1000);
+  });
+  button.mouseOut(function(){
+    clearTimeout(tooltipTimeout);
+    tooltip.style('visibility', 'hidden');
+  });
+}
+
 /**
- * Met à jour un bouton si la vérification de l'activation 
- * @param {p5.Element} button La référence du vers le bouton {@link https://p5js.org/reference/#/p5.Element | p5.Element}
+ * Met à jour un bouton si la vérification de l'activation
+ * @param {p5.Element} button La référence du vers le bouton 
+ * {@link https://p5js.org/reference/#/p5.Element | p5.Element}
  * @param {boolean} verification le résultat de la vérification à faire
  */
-function validBoutonActif(button, verification) {
+function validBoutonActif(button, verification, tooltip) {
   if(verification && button.attribute('disabled')==null){
     button.attribute('disabled', '');
+    tooltip.style('visibility', 'hidden');
   }
   else if(!verification && button.attribute('disabled')!=null){
     button.removeAttribute('disabled');
@@ -125,10 +169,10 @@ function validBoutonActif(button, verification) {
  * Validation de l'activation d'un bouton
  */
 function updateBouton(){
-  validBoutonActif(undo_button, undo_list.length == 0);
-  validBoutonActif(reset_button, undo_list.length == 0);
-  validBoutonActif(redo_button, redo_list.length == 0);
-  validBoutonActif(animation_button, components.length==0);
+  validBoutonActif(undo_button, undo_list.length == 0, undo_tip);
+  validBoutonActif(redo_button, redo_list.length == 0, redo_tip);
+  validBoutonActif(reset_button, undo_list.length == 0, reset_tip);
+  validBoutonActif(animation_button, components.length==0, animation_tip);
 }
 
 
@@ -724,8 +768,7 @@ function refresh() {
  * @param {string} data Les données du circuit en format Json
  */
 function load(data){
-  let obj = JSON.parse(data);
-  let tempElements = obj.components.concat(obj.fils);
+  let tempElements = data.components.concat(data.fils);
   components.length = fils.length = 0;
   let map = new Map();
   
