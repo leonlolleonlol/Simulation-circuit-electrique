@@ -16,11 +16,13 @@ const composants_panneau = [new Batterie(58, 215, 12),
 let undo_button;
 let redo_button;
 let reset_button;
+let logout_button;
 let animation_button;
 
 let undo_tip;
 let redo_tip;
 let reset_tip;
+let logout_tip;
 let animation_tip;
 
 let baseCircuit = 'circuit3';
@@ -44,10 +46,12 @@ function setup() {
   undo_button = select('#undo');
   redo_button = select('#redo')
   reset_button = select('#reset');
+  logout_button = select('#logout');
   animation_button= select('#animate');
   undo_tip = select('#undo-tip');
   redo_tip = select('#redo-tip');
   reset_tip = select('#reset-tip');
+  logout_tip = select('#logout-tip');
   animation_tip = select('#animation-tip');
   let animate_image = select('#animate_image');
   //----------------------------------------
@@ -81,6 +85,7 @@ function setup() {
   setTooltip(redo_button,'#redo-tip');
   setTooltip(reset_button,'#reset-tip');
   setTooltip(animation_button,'#animation-tip');
+  setTooltip(logout_button,'#logout-tip');
   c1 = new Circuit(true);
   loadLocalCircuit();
 

@@ -98,6 +98,13 @@ a {
     top:150px;
     left: 88px;
 }
+#logout {
+  position:absolute;
+    top: 10px;
+    left: 270px;
+    width: 60px;
+    height: 40px;
+}
   
 .icon {
     width: 24px;
@@ -140,6 +147,11 @@ a {
 #save-tip{
   width: 90px;
   left: 43px;
+}
+
+#logout-tip{
+  width: 100px;
+  left: 50px;
 }
 
 #undo-tip{
