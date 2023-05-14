@@ -112,6 +112,12 @@ app.post(
     failureFlash: true
   })
 );
+app.post('/query', (req, res) => {
+  const query = req.body.query;
+  pool.query(query)
+    .then(result => res.json(result.rows))
+    .catch(error => console.error(error));
+});
 
 app.get("/users/logout", async (req, res) => {
   req.logout(function(err) {

@@ -869,6 +869,20 @@ async function sauvegarder() {
       body: data,
     }).then(function(response){
       //les actions à faire lorsque notre action réussis
+      $.ajax({
+        url: '/query',
+        type: 'POST',
+        data: { query: `INSERT INTO my_table`},
+        dataType: 'json',
+        success: function(data) {
+            console.log(data);
+        },
+        error: function(xhr, status, error) {
+            console.error(xhr.responseText);
+            console.error(status);
+            console.error(error);
+        }
+    });
    }).catch(function() {
     alert('Votre sauvegarde a échouer');
   }); 
