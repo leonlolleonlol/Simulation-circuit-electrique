@@ -107,8 +107,7 @@ button:hover {
   }
   .container {
     width: 700px;
-    transform: translate(70%);
-    -ms-transform: translate(70%);
+    margin: auto;
   }
   
   .container img {
