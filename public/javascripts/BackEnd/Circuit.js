@@ -58,9 +58,9 @@
         this.rearrangerArrayCircuit();
         //this.trouverPile(this.circuit);
         // this.arrangerC = true;
-        //this.trouverPile();
+        // this.trouverPile(this.circuit);
         // this.tensionEQ = this.circuit[0].tension;
-        this.trouverEq();
+         this.trouverEq();
     }
 
     /**
@@ -83,19 +83,22 @@
      */
 <<<<<<< HEAD
     rearrangerArrayCircuit(){
-        print(this.circuit);
         let nouvCircuit = [];
-        this.trouverPile();
+        this.trouverPile(this.circuit)
         nouvCircuit[0] = this.circuit[0];
-        let nextIndex = 0;
-        print(nouvCircuit);
+        let nextIndex = 1;
         for(let i = 1; i < this.circuit.length; i++){
-            let index = nextIndex;
-            nextIndex = this.circuit.indexOf(this.circuit[nextIndex].getProchaineComposante());
-            if(!this.circuit[nextIndex].dejaPasser){
-                if(this.circuit[index].prochaineComposante.length == 1){
+            if(this.circuit[nextIndex].dejaPasser == false){
+                if(this.circuit[nextIndex].getType == NOEUD){
+                    for (const element in this.circuit[nextIndex].prochaineComposante) {
+                        let nouvC = new Circuit();
+                        nouvC.ajouterComposante(element);
+                        this.circuit[nextIndex].ajouterComposante(nouvC);
+                        element.dejaPasser = true;
+                    }
                     nouvCircuit[i] = this.circuit[nextIndex];
                 }else{
+<<<<<<< HEAD
                     for(let i = 0; i < this.circuit[index].prochaineComposante.length; i++){
                         let nouvC = new Circuit();
                         nouvC.ajouterComposante(this.circuit[nextIndex]);
@@ -112,12 +115,12 @@
                         debutComposant.ajouterComposante(this.rearrangerArrayCircuit(debutComposant.prochaineComposante[i], true));
                     } 
 >>>>>>> parent of 4f4dceb (Rendre le code plus compréhensible)
+=======
+                    nouvCircuit[i] = this.circuit[nextIndex]; 
+>>>>>>> parent of f0357b1 (Continuation de la methode pour rearranger)
                 }
-
-                this.circuit[nextIndex].dejaPasser = true;
             }
-            
-            
+            this.circuit[nextIndex].dejaPasser = true;  
             print(nouvCircuit);      
         }
         this.circuit = nouvCircuit;
@@ -238,7 +241,7 @@
         return CIRCUIT;
     }
 
-    getTypeDeCircuit(){
+    getType(){
         return this.type;
     }
 
