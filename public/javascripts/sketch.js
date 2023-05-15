@@ -213,6 +213,7 @@ function draw() {
   if (origin != null) {
     drag.draw(grid.translateX, grid.translateY);
   }
+  text('Temps passé: ' + Math.round(millis()/1000)+' secondes', 5, 750);
 }
 
 /**
