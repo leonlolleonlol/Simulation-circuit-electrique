@@ -131,7 +131,7 @@ app.get("/users/logout", async (req, res) => {
   req.logout(function(err) {
     if (err) { return next(err); }
     req.flash("success_msg", "You have logged out");
-    res.redirect("/users/login");
+    res.redirect("/");
   });
 });
 app.get('/users/dashboard', checkNotAuthenticated, function(req, res) {
@@ -183,7 +183,7 @@ function checkAuthenticatedForEditor(req, res) {
   if (req.isAuthenticated())
     return res.sendFile(path.join(__dirname, '/editeur.html'));
   else
-    return res.redirect(path.join(__dirname, '/acceuil'));
+    return res.redirect(path.join(__dirname, '/'));
 } 
 
 function checkNotAuthenticated(req, res, next) {
