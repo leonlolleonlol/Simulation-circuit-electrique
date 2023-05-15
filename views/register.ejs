@@ -5,10 +5,37 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.css"/>
+    <style>body { 
+         width: 100%;
+        align-items : center;
+        height: 100%;
+         
+
+        /* Background image is centered vertically and horizontally at all times */
+        background-position: center center;
+
+        /* Background image doesn't tile */
+        background-repeat: no-repeat;
+
+        /* Background image is fixed in the viewport so that it doesn't move when 
+        the content's height is greater than the image's height */
+        background-attachment: fixed;
+
+        /* This is what makes the background image rescale based
+        on the container's size */
+        background-size: cover;
+
+        /* Set a background color that will be displayed
+        while the background image is loading */
+        overflow: hidden;
+
+        /* Location of the image */
+        background-image:url("https://www.electricrate.com/wp-content/uploads/2021/07/How-Electricity-Works.jpg.png") ;
+      }</style>
     <title>Register</title>
 </head>
 <body>
-    <h1>Register</h1>
+    <h1 style="color:rgb(0, 0, 0);font-size: 75px;">Register</h1>
     <ul>
         <% if (typeof errors != 'undefined') { %> <% errors.forEach(error => { %>
         <li><%= error.message %></li>
