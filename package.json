@@ -1,16 +1,16 @@
 {
-  "name": "express-hello-world",
+  "name": "simulation-circuit",
   "version": "1.0.0",
-  "description": "Express Hello World on Render",
+  "description": "Simulation d'un circuit électrique",
   "main": "app.js",
-  "repository": "https://github.com/render-examples/express-hello-world",
-  "author": "Render Developers",
-  "license": "MIT",
+  "repository": "https://github.com/olivierstKronos/Simulation-circuit-electrique",
+  "author": "Olivier St-Jean, Esteban Renaud, Leon Kojakian, Axel Shami",
   "private": false,
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js",
-    "doc": "jsdoc -c public/jsdoc.json"
+    "doc": "jsdoc -c public/jsdoc.json",
+    "minify": "uglifyjs public/javascripts/constantes.js public/javascripts/Historique.js public/javascripts/Circuit.js public/javascripts/fil.js public/javascripts/Composant.js public/javascripts/Forme.js public/javascripts/sketch.js -o public/javascripts/circuit.min.js --source-map"
   },
   "dependencies": {
     "bcrypt": "^5.1.0",
@@ -30,7 +30,9 @@
     "docdash": "^2.0.1",
     "jester": "^0.2.3",
     "jsdoc": "^4.0.2",
-    "jsdoc-to-markdown": "^8.0.0"
+    "jsdoc-to-markdown": "^8.0.0",
+    "uglify-js": "^3.17.4"
+    
   },
   "engines": {
     "node": ">=14"
