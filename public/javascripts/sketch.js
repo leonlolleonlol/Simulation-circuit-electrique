@@ -484,7 +484,7 @@ function ajustementAutomatiqueComposant(composant, actions){
   if(composantSuperpose!=null){
     let index = components.indexOf(composantSuperpose);
     components.splice(index,1);
-    actions.push({type:DELETE,objet:element, index});
+    actions.push({type:DELETE,objet:composantSuperpose, index});
   }
   for (const fil of fils) {
     let penteFil = Math.abs(fil.pente());
