@@ -23,7 +23,7 @@ app.listen(port, () => {
   var url = `http://localhost:${port}`
   console.log('Server listen on '+url);
   var start = (process.platform == 'darwin'? 'open': process.platform == 'win32' ? 'start' : 'xdg-open');
-  require('child_process').exec(start + ' ' + url+'/editeur');
+  require('child_process').exec(start + ' ' + url+'/acceuil');
 })
 app.set("view engine", "ejs");
 app.use(session({
@@ -163,8 +163,7 @@ app.get('/fil.js', function(req, res){
 app.get('/Composant.js', function(req, res) {
   res.sendFile(path.join(__dirname, 'public/javascripts/Composant.js'));
 });
-app.get('/editeur', function(req, res) {
-  res.sendFile(path.join(__dirname, '/editeur.html'));
+app.get('/editeur', checkAuthenticatedForEditor,function(req, res) {
 });
 function checkAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
@@ -172,6 +171,12 @@ function checkAuthenticated(req, res, next) {
   }
   next();
 }
+function checkAuthenticatedForEditor(req, res) {
+  if (req.isAuthenticated())
+    return res.sendFile(path.join(__dirname, '/editeur.html'));
+  else
+    return res.redirect(path.join(__dirname, '/acceuil'));
+} 
 
 function checkNotAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
