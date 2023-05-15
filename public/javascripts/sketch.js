@@ -862,7 +862,7 @@ function getComposantVide(type){
 async function sauvegarder() {
   let data = getStringData();
   // envoi de la requête
-  await fetch('users/sauvegarderCircuit', {
+  await fetch('/query', {
       method: "POST",
       mode: "cors",
       cache: "no-cache",
