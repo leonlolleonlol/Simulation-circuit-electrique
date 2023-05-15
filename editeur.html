@@ -2,7 +2,6 @@
 <html>
 <head>
   <link rel="stylesheet" href="editeurStyle.css">
-  <link rel="icon" type="image/svg" href="/images/icons/cpu.svg">
 </head>
 <body>
   <script src="p5.min.js"></script>
@@ -16,20 +15,20 @@
   <script src="sketch.js"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <a href="acceuil">
-    <button id="acceuil" class="button-jump">
+    <button id="acceuil">
       <img class="icon" src = "images/icons/home.svg" alt="Acceuil"/>
       <span class="tooltip bottom" id="acceuil-tip">Acceuil</span>
     </button>
   </a>
-  <button id="download" class="button-jump">
+  <button id="download">
     <img class="icon" src = "images/icons/download.svg" alt="Acceuil"/>
     <span class="tooltip bottom" id="download-tip">Télécharger</span>
   </button>
-  <button id="upload" class="button-jump">
+  <button id="upload">
     <img class="icon" src = "images/icons/upload.svg" alt="Acceuil"/>
     <span class="tooltip bottom" id="upload-tip">Upload</span>
   </button>
-  <button id="save" class="button-jump">
+  <button id="save">
     <img class="icon" src = "images/icons/save.svg" alt="Acceuil"/>
     <span class="tooltip bottom" id="save-tip">Sauvegarder</span>
   </button>
@@ -51,6 +50,12 @@
     <img class="icon" src = "images/icons/refresh.svg" alt="Acceuil"/>
     <span class="tooltip top" id="reset-tip">Recommencer</span>
   </button>
+  <a href="/users/logout">
+    <button id="logout">
+      <img class="icon" src = "images/icons/log-out.svg" alt="Déconnexion"/>
+      <span class="tooltip bottom" id="logout-tip">Déconnexion</span>
+    </button>
+  </a>
   <button id="animate">
     <img class="icon" id="animate_image" src = "images/icons/square.svg" alt="Animation"/>
     <span class="tooltip bottom" id="animation-tip">Arrêter l'animation</span>
