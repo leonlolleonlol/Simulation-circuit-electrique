@@ -51,13 +51,6 @@ a {
     width: 60px;
     height: 40px;
 }
-#logout {
-  position:absolute;
-    top: 10px;
-    left: 270px;
-    width: 60px;
-    height: 40px;
-}
 
 
 #undo {
@@ -65,7 +58,6 @@ a {
     top: 95px;
     width: 40px;
     height: 30px;
-    left:10px;
 }
   
 #redo {
@@ -92,7 +84,6 @@ a {
   
 #line-grid {
     position:absolute;
-    left: 10px;
     top:150px;
 }
   
