@@ -113,9 +113,17 @@ app.post(
   })
 );
 app.post('/query', (req, res) => {
-  const query = req.body.query;
+  const { json } = req.body;
+
+  // Define the INSERT query
+  const query = {
+    text: 'INSERT INTO my_table (json_data) VALUES ($1)',
+    values: [json],
+  };
+
+  // Execute the query using the pg pool
   pool.query(query)
-    .then(result => res.json(result.rows))
+    .then(() => res.sendStatus(200))
     .catch(error => console.error(error));
 });
 

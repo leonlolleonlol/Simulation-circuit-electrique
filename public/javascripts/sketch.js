@@ -213,7 +213,7 @@ function draw() {
   if (origin != null) {
     drag.draw(grid.translateX, grid.translateY);
   }
-  text('Temps passé: ' + Math.round(millis()/1000)+' secondes', 5, 750);
+  text('Temps passé: ' +Math.floor(millis()/60000)+' min '+ Math.round(millis()/1000)%60+' s', 5, 750);
 }
 
 /**
@@ -875,23 +875,32 @@ async function sauvegarder() {
       body: data,
     }).then(function(response){
       //les actions à faire lorsque notre action réussis
-      $.ajax({
-        url: '/query',
-        type: 'POST',
-        data: { query: `INSERT INTO my_table`},
-        dataType: 'json',
-        success: function(data) {
-            console.log(data);
-        },
-        error: function(xhr, status, error) {
-            console.error(xhr.responseText);
-            console.error(status);
-            console.error(error);
-        }
-    });
+      saveJsonData(data);
    }).catch(function() {
     alert('Votre sauvegarde a échouer');
   }); 
+}
+function saveJsonData(jsonString) {
+  // Create a new XMLHttpRequest object
+  const xhr = new XMLHttpRequest();
+
+  // Define the request method, URL, and content type
+  xhr.open('POST', '/query', true);
+  xhr.setRequestHeader('Content-Type', 'application/json');
+
+  // Define a callback function to handle the response
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState === XMLHttpRequest.DONE) {
+      if (xhr.status === 200) {
+        console.log('JSON data saved successfully');
+      } else {
+        console.error('Error: ' + xhr.status);
+      }
+    }
+  };
+
+  // Send the request with the JSON string as the payload
+  xhr.send(JSON.stringify({ json: jsonString }));
 }
 
 /**
