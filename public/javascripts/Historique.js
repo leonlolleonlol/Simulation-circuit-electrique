@@ -46,7 +46,7 @@ function undo(){
         }else fils.splice(action.index, 0, action.objet);
         
       }else if(action.type===MODIFIER){
-        for(changement of action.changements){
+        for(const changement of action.changements){
           action.objet[changement.attribut] = changement.ancienne_valeur;
         }
       }
@@ -76,12 +76,9 @@ function redo(){
           if(action.objet.getType()!=FIL){
             components.splice(action.index, 1);
           } else fils.splice(action.index, 1);
-          if(selection == action.objet){
-            selection = null;
-          }
           break;
         case MODIFIER:
-          for(changement of action.changements){
+          for(const changement of action.changements){
             action.objet[changement.attribut] = changement.nouvelle_valeur;
           }
           break;
@@ -111,7 +108,7 @@ function validerAction(action){
     if(!action.changements instanceof Array)
       throw new Error('Les changements mentionner dans l\'action devrait'
       +'être un tableau');
-    for(changement of action.changements){
+    for(const changement of action.changements){
       if(!changement.attribut instanceof String)
         throw new Error('L\'attribut n\'est pas du bon type: type =' +typeof changement.attribut);
       else if(changement.ancienne_valeur==null || 
