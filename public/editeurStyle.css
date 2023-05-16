@@ -9,13 +9,11 @@
   color: #36395A;
   cursor: pointer;
   display: inline-flex;
-  font-family: "JetBrains Mono",monospace;
   width: 40px;
   height: 36px;
   justify-content: center;
   line-height: 1;
   list-style: none;
-  overflow: hidden;
   padding-left: 16px;
   padding-right: 16px;
   position: relative;
@@ -27,7 +25,6 @@
   touch-action: manipulation;
   white-space: nowrap;
   will-change: box-shadow,transform;
-  font-size: 18px;
 }
 
 .button-jump:focus {
