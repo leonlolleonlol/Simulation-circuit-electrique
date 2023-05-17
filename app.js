@@ -113,18 +113,49 @@ app.post(
   })
 );
 app.post('/query', (req, res) => {
-  const { json } = req.body;
+  const { json,email } = req.body;
 
-  // Define the INSERT query
-  const query = {
-    text: 'INSERT INTO my_table (json_data) VALUES ($1)',
-    values: [json],
-  };
-
-  // Execute the query using the pg pool
-  pool.query(query)
-    .then(() => res.sendStatus(200))
-    .catch(error => console.error(error));
+  pool.query(
+    `SELECT * FROM jsoncircuits
+      WHERE email = $1`,
+    [email],
+    (err, results) => {
+      if (err) {
+        pool.query(
+          `INSERT INTO jsoncircuits (email, circ)
+              VALUES ($1, $2);`,
+          [email, json],
+          (err, results) => {
+            if (err) {
+              throw err;
+            }
+          }
+        );
+      }
+      else
+        {
+          pool.query(
+            `DELETE FROM jsoncircuits
+                WHERE email = $1;`,
+            [email],
+            (err, results) => {
+              if (err) {
+                throw err;
+              }
+          pool.query(
+            `INSERT INTO jsoncircuits (email, circ)
+                VALUES ($1, $2);`,
+            [email, json],
+            (err, results) => {
+              if (err) {
+                throw err;
+              }
+            }
+          );
+        });
+        }
+      }
+    );
 });
 
 app.get("/users/logout", async (req, res) => {
