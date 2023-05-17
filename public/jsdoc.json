@@ -24,7 +24,7 @@
         "scripts": [],
         "menu":{
             "Github repo": {
-                "href":"https://github.com/olivierstKronos/Simulation-circuit-electrique",
+                "href":"https://github.com/leonlolleonlol/Simulation-circuit-electrique",
                 "target":"_blank",
                 "class":"menu-item",
                 "id":"repository"
