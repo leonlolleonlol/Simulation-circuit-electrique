@@ -274,6 +274,7 @@ function draw() {
 function drawComponentsChooser() {
   push();
   scale(1/grid.scale);
+  stroke(51);
   text('Temps passé: ' +Math.floor(millis()/60000)+' min '+ Math.round(millis()/1000)%60+' s', 5, 750);
   noStroke();
   textAlign(CENTER);
