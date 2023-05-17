@@ -6,6 +6,6 @@ Ce projet a été fait dans l'optique de permettre une meilleur compréhension d
 
 ## Information supplémentaire
 
-Vous pouvez voir notre code sur [Github](https://github.com/olivierstKronos/Simulation-circuit-electrique)
+Vous pouvez voir notre code sur [Github](https://github.com/leonlolleonlol/Simulation-circuit-electrique)
 
 Nous avons la documentation complète à LIENS
