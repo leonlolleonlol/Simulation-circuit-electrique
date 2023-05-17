@@ -1,10 +1,9 @@
-
 /**
  * Dessine un résisteur sur le canvas
- * @param {number} x 
- * @param {number} y 
+ * @param {number} x coordoné en x du composant
+ * @param {number} y coordoné en y du composant
  * @param {number} orientation rotation du composant en radians
- * @param {boolean} drag 
+ * @param {boolean} selection Dessiner la boîte de sélectionnement
  */
 function resisteur(x, y, orientation, selection) {
   push();
@@ -45,10 +44,10 @@ function resisteur(x, y, orientation, selection) {
 
 /**
  * Dessine une batterie sur le canvas
- * @param {number} x 
- * @param {number} y 
+ * @param {number} x coordoné en x du composant
+ * @param {number} y coordoné en y du composant
  * @param {number} orientation rotation du composant en radians
- * @param {boolean} drag 
+ * @param {boolean} selection Dessiner la boîte de sélectionnement
  */
 function batterie(x, y, orientation, selection) {
   push();
@@ -86,11 +85,11 @@ function batterie(x, y, orientation, selection) {
 }
 
 /**
- * 
- * @param {number} x 
- * @param {number} y 
+ * Dessine un condensateur sur le canvas
+ * @param {number} x coordoné en x du composant
+ * @param {number} y coordoné en y du composant
  * @param {number} orientation rotation du composant en radians
- * @param {boolean} drag 
+ * @param {boolean} selection Dessiner la boîte de sélectionnement
  */
 function condensateur(x, y, orientation, selection) {
   push();
@@ -130,10 +129,10 @@ function condensateur(x, y, orientation, selection) {
 
 /**
  * Dessine une diode sur le canvas
- * @param {number} x 
- * @param {number} y 
+ * @param {number} x coordoné en x du composant
+ * @param {number} y coordoné en y du composant
  * @param {number} orientation rotation du composant en radians
- * @param {boolean} drag 
+ * @param {boolean} selection Dessiner la boîte de sélectionnement
  */
 function diode(x, y, orientation, selection) {
   push();
@@ -187,10 +186,10 @@ function diode(x, y, orientation, selection) {
 
 /**
  * Dessine une ampoule sur le canvas
- * @param {number} x 
- * @param {number} y 
+ * @param {number} x coordoné en x du composant
+ * @param {number} y coordoné en y du composant
  * @param {number} orientation rotation du composant en radians
- * @param {boolean} drag 
+ * @param {boolean} selection Dessiner la boîte de sélectionnement
  */
 function ampoule(x, y, orientation, selection) {
   push();
@@ -239,6 +238,45 @@ function ampoule(x, y, orientation, selection) {
   circle(0, 0, 20);
   pop();
 }
+
+/**
+ * Dessine une grille de type pointié (bullet)
+ * @param {p5.Color} color La couleur de remplissage pour les point de la grille
+ */
+function pointGrid(color) {
+  push();
+  stroke(color);
+  strokeWeight(6);
+  let offsetX = grid.offsetX + (grid.translateX-grid.offsetX) % grid.tailleCell;
+  let offsetY = grid.offsetY + (grid.translateY-grid.offsetY) % grid.tailleCell;
+  for (let i = 0; i < windowWidth/grid.scale + grid.offsetX; i+=grid.tailleCell) {
+    for (let j = 0; j < windowHeight/grid.scale + grid.offsetY; j+=grid.tailleCell) {
+      point(offsetX + i, offsetY + j);
+    }
+  }
+  pop();
+}
+
+/**
+ * Dessine une grille de type quadrillé
+ * @param {p5.Color} color La couleur de remplissage pour les lignes de la grille
+ */
+function lineGrid(color) {
+  push();
+  stroke(color);
+  strokeWeight(2);
+  let offsetX = grid.offsetX + (grid.translateX-grid.offsetX) % grid.tailleCell;
+  for (let i = 0; i < windowWidth/grid.scale + grid.offsetX; i+=grid.tailleCell) {
+    line(offsetX + i, grid.offsetY, offsetX + i , height/grid.scale);
+  }
+  let offsetY = grid.offsetY + (grid.translateY-grid.offsetY) % grid.tailleCell;
+  for (let j = 0; j < windowHeight/grid.scale + grid.offsetY; j+=grid.tailleCell) {
+    line(grid.offsetX, offsetY + j, width/grid.scale, offsetY + j);
+  }
+  pop();
+}
+
+//-------------------------------------------------------------------
 
 /**
  * Cette fonction permet de mélanger la couleur du background avec la couleur transparente d'un composant

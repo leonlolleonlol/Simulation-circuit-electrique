@@ -5,10 +5,25 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.css"/>
-    <title>Document</title>
+    <title>Dashboard</title>
 </head>
 <body>
-    <a href="/user/logout">Logout</a>
-    <h1>Hello <%= user %></h1>
+        <a href="/users/logout" class="w3-bar-item w3-button">Déconnexion</a>
+        <img src="../images/icons/log-out.svg" alt="Déconnexion"/>
+        <br></br>
+        <a href="/editeur"><button class="btn" style="font-size: 28px;";>Ouvrir l'éditeur</button></a>
+        <br></br>
+    <h1>Bonjour <%= user.charAt(0).toUpperCase() + user.slice(1) %></h1>
+    <br>
+    <h2>Projets</h2>
+    <% if(user.projets!=null){ %>
+        <ul>
+        <% for(const projet of user.projets){ %>
+            <li>
+                <a href="/editeur/"+<%= projet.id %> ><%= projet.name %></a>
+            </li>
+        <% } %>
+        </ul>
+    <% } %>
 </body>
 </html>

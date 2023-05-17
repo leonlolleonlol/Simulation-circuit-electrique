@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>Circuit.js - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    
+    <h2><a href="index.html">Home</a></h2><h2><a href="https://github.com/olivierstKronos/Simulation-circuit-electrique" target="_blank" class="menu-item" id="repository" >Github repo</a></h2><h3>Classes</h3><ul><li><a href="Ampoule.html">Ampoule</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Ampoule.html#checkConnection">checkConnection</a></li><li data-type='method' style='display: none;'><a href="Ampoule.html#getBorne">getBorne</a></li><li data-type='method' style='display: none;'><a href="Ampoule.html#getConnection">getConnection</a></li><li data-type='method' style='display: none;'><a href="Ampoule.html#getConnections">getConnections</a></li><li data-type='method' style='display: none;'><a href="Ampoule.html#getType">getType</a></li><li data-type='method' style='display: none;'><a href="Ampoule.html#inBounds">inBounds</a></li><li data-type='method' style='display: none;'><a href="Ampoule.html#rotate">rotate</a></li></ul></li><li><a href="Batterie.html">Batterie</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Batterie.html#checkConnection">checkConnection</a></li><li data-type='method' style='display: none;'><a href="Batterie.html#draw">draw</a></li><li data-type='method' style='display: none;'><a href="Batterie.html#getBorne">getBorne</a></li><li data-type='method' style='display: none;'><a href="Batterie.html#getConnection">getConnection</a></li><li data-type='method' style='display: none;'><a href="Batterie.html#getConnections">getConnections</a></li><li data-type='method' style='display: none;'><a href="Batterie.html#getTitle">getTitle</a></li><li data-type='method' style='display: none;'><a href="Batterie.html#getType">getType</a></li><li data-type='method' style='display: none;'><a href="Batterie.html#inBounds">inBounds</a></li><li data-type='method' style='display: none;'><a href="Batterie.html#rotate">rotate</a></li></ul></li><li><a href="Circuit.html">Circuit</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Circuit.html#rearrangerArrayCircuit">rearrangerArrayCircuit</a></li><li data-type='method' style='display: none;'><a href="Circuit.html#trouverEq">trouverEq</a></li><li data-type='method' style='display: none;'><a href="Circuit.html#trouverTypeDeCircuit">trouverTypeDeCircuit</a></li><li data-type='method' style='display: none;'><a href="Circuit.html#update">update</a></li></ul></li><li><a href="Condensateur.html">Condensateur</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Condensateur.html#checkConnection">checkConnection</a></li><li data-type='method' style='display: none;'><a href="Condensateur.html#draw">draw</a></li><li data-type='method' style='display: none;'><a href="Condensateur.html#getBorne">getBorne</a></li><li data-type='method' style='display: none;'><a href="Condensateur.html#getConnection">getConnection</a></li><li data-type='method' style='display: none;'><a href="Condensateur.html#getConnections">getConnections</a></li><li data-type='method' style='display: none;'><a href="Condensateur.html#getTitle">getTitle</a></li><li data-type='method' style='display: none;'><a href="Condensateur.html#getType">getType</a></li><li data-type='method' style='display: none;'><a href="Condensateur.html#inBounds">inBounds</a></li><li data-type='method' style='display: none;'><a href="Condensateur.html#rotate">rotate</a></li></ul></li><li><a href="Diode.html">Diode</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Diode.html#checkConnection">checkConnection</a></li><li data-type='method' style='display: none;'><a href="Diode.html#draw">draw</a></li><li data-type='method' style='display: none;'><a href="Diode.html#getBorne">getBorne</a></li><li data-type='method' style='display: none;'><a href="Diode.html#getConnection">getConnection</a></li><li data-type='method' style='display: none;'><a href="Diode.html#getConnections">getConnections</a></li><li data-type='method' style='display: none;'><a href="Diode.html#getTitle">getTitle</a></li><li data-type='method' style='display: none;'><a href="Diode.html#getType">getType</a></li><li data-type='method' style='display: none;'><a href="Diode.html#inBounds">inBounds</a></li><li data-type='method' style='display: none;'><a href="Diode.html#rotate">rotate</a></li></ul></li><li><a href="Fil.html">Fil</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Fil.html#angle">angle</a></li><li data-type='method' style='display: none;'><a href="Fil.html#draw">draw</a></li><li data-type='method' style='display: none;'><a href="Fil.html#getFunction">getFunction</a></li><li data-type='method' style='display: none;'><a href="Fil.html#getType">getType</a></li><li data-type='method' style='display: none;'><a href="Fil.html#inBounds">inBounds</a></li><li data-type='method' style='display: none;'><a href="Fil.html#inBoxBounds">inBoxBounds</a></li><li data-type='method' style='display: none;'><a href="Fil.html#longueur">longueur</a></li><li data-type='method' style='display: none;'><a href="Fil.html#overlap">overlap</a></li><li data-type='method' style='display: none;'><a href="Fil.html#pente">pente</a></li><li data-type='method' style='display: none;'><a href="Fil.html#trierPoint">trierPoint</a></li></ul></li><li><a href="Noeuds.html">Noeuds</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Noeuds.html#checkConnection">checkConnection</a></li><li data-type='method' style='display: none;'><a href="Noeuds.html#draw">draw</a></li><li data-type='method' style='display: none;'><a href="Noeuds.html#getBorne">getBorne</a></li><li data-type='method' style='display: none;'><a href="Noeuds.html#getConnection">getConnection</a></li><li data-type='method' style='display: none;'><a href="Noeuds.html#getConnections">getConnections</a></li><li data-type='method' style='display: none;'><a href="Noeuds.html#getTitle">getTitle</a></li><li data-type='method' style='display: none;'><a href="Noeuds.html#getType">getType</a></li><li data-type='method' style='display: none;'><a href="Noeuds.html#inBounds">inBounds</a></li><li data-type='method' style='display: none;'><a href="Noeuds.html#rotate">rotate</a></li><li data-type='method' style='display: none;'><a href="Noeuds.html#trouverEq">trouverEq</a></li></ul></li><li><a href="Resisteur.html">Resisteur</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Resisteur.html#checkConnection">checkConnection</a></li><li data-type='method' style='display: none;'><a href="Resisteur.html#draw">draw</a></li><li data-type='method' style='display: none;'><a href="Resisteur.html#getBorne">getBorne</a></li><li data-type='method' style='display: none;'><a href="Resisteur.html#getConnection">getConnection</a></li><li data-type='method' style='display: none;'><a href="Resisteur.html#getConnections">getConnections</a></li><li data-type='method' style='display: none;'><a href="Resisteur.html#getTitle">getTitle</a></li><li data-type='method' style='display: none;'><a href="Resisteur.html#getType">getType</a></li><li data-type='method' style='display: none;'><a href="Resisteur.html#inBounds">inBounds</a></li><li data-type='method' style='display: none;'><a href="Resisteur.html#rotate">rotate</a></li></ul></li></ul><h3>Interfaces</h3><ul><li><a href="Composant.html">Composant</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Composant.html#checkConnection">checkConnection</a></li><li data-type='method' style='display: none;'><a href="Composant.html#draw">draw</a></li><li data-type='method' style='display: none;'><a href="Composant.html#getBorne">getBorne</a></li><li data-type='method' style='display: none;'><a href="Composant.html#getConnection">getConnection</a></li><li data-type='method' style='display: none;'><a href="Composant.html#getConnections">getConnections</a></li><li data-type='method' style='display: none;'><a href="Composant.html#getTitle">getTitle</a></li><li data-type='method' style='display: none;'><a href="Composant.html#getType">getType</a></li><li data-type='method' style='display: none;'><a href="Composant.html#inBounds">inBounds</a></li><li data-type='method' style='display: none;'><a href="Composant.html#rotate">rotate</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#AMPOULE">AMPOULE</a></li><li><a href="global.html#BAS">BAS</a></li><li><a href="global.html#BATTERIE">BATTERIE</a></li><li><a href="global.html#CIRCUIT">CIRCUIT</a></li><li><a href="global.html#CONDENSATEUR">CONDENSATEUR</a></li><li><a href="global.html#CREATE">CREATE</a></li><li><a href="global.html#DELETE">DELETE</a></li><li><a href="global.html#DIODE">DIODE</a></li><li><a href="global.html#DROITE">DROITE</a></li><li><a href="global.html#FIL">FIL</a></li><li><a href="global.html#FunctionObject">FunctionObject</a></li><li><a href="global.html#GAUCHE">GAUCHE</a></li><li><a href="global.html#HAUT">HAUT</a></li><li><a href="global.html#MODIFIER">MODIFIER</a></li><li><a href="global.html#NOEUD">NOEUD</a></li><li><a href="global.html#POINT">POINT</a></li><li><a href="global.html#QUADRILLE">QUADRILLE</a></li><li><a href="global.html#QUADRILLEPOINT">QUADRILLEPOINT</a></li><li><a href="global.html#RESISTEUR">RESISTEUR</a></li><li><a href="global.html#addActions">addActions</a></li><li><a href="global.html#ajustementAutomatiqueComposant">ajustementAutomatiqueComposant</a></li><li><a href="global.html#ajustementAutomatiqueFil">ajustementAutomatiqueFil</a></li><li><a href="global.html#ampoule">ampoule</a></li><li><a href="global.html#applyLimitActions">applyLimitActions</a></li><li><a href="global.html#batterie">batterie</a></li><li><a href="global.html#blendBG">blendBG</a></li><li><a href="global.html#composantType">composantType</a></li><li><a href="global.html#condensateur">condensateur</a></li><li><a href="global.html#copyComposant">copyComposant</a></li><li><a href="global.html#couperFil">couperFil</a></li><li><a href="global.html#diode">diode</a></li><li><a href="global.html#draw">draw</a></li><li><a href="global.html#drawComponentsChooser">drawComponentsChooser</a></li><li><a href="global.html#drawComposants">drawComposants</a></li><li><a href="global.html#drawFils">drawFils</a></li><li><a href="global.html#drawGrid">drawGrid</a></li><li><a href="global.html#filStart">filStart</a></li><li><a href="global.html#findGridLock">findGridLock</a></li><li><a href="global.html#getComposantVide">getComposantVide</a></li><li><a href="global.html#getConnectingComposant">getConnectingComposant</a></li><li><a href="global.html#inGrid">inGrid</a></li><li><a href="global.html#initDrag">initDrag</a></li><li><a href="global.html#isElementDrag">isElementDrag</a></li><li><a href="global.html#isElementSelectionner">isElementSelectionner</a></li><li><a href="global.html#lineGrid">lineGrid</a></li><li><a href="global.html#load">load</a></li><li><a href="global.html#mouseDragged">mouseDragged</a></li><li><a href="global.html#mousePressed">mousePressed</a></li><li><a href="global.html#mouseReleased">mouseReleased</a></li><li><a href="global.html#mouseWheel">mouseWheel</a></li><li><a href="global.html#pointGrid">pointGrid</a></li><li><a href="global.html#posAtPercent">posAtPercent</a></li><li><a href="global.html#redo">redo</a></li><li><a href="global.html#resetHistorique">resetHistorique</a></li><li><a href="global.html#resisteur">resisteur</a></li><li><a href="global.html#sauvegarder">sauvegarder</a></li><li><a href="global.html#undo">undo</a></li><li><a href="global.html#updateBouton">updateBouton</a></li><li><a href="global.html#validBoutonActif">validBoutonActif</a></li><li><a href="global.html#validComposantPos">validComposantPos</a></li><li><a href="global.html#validFilBegin">validFilBegin</a></li><li><a href="global.html#validerAction">validerAction</a></li><li><a href="global.html#verifierCouperFil">verifierCouperFil</a></li><li><a href="global.html#windowResized">windowResized</a></li><li><a href="global.html#zoom">zoom</a></li></ul>
+    
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">Circuit.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Contient une suite de composantes en série. S'il y a un noeud, 
+ * c'est dans le noeud qu'on retrouvera les circuits en parallèle.
+ */
+class Circuit{
+    /**
+     * Initialise toute ce qu'on aura besoin pour les calculs. Si c'est une branche, la variable circuit devient "children" 
+     * @param {boolean} premierCircuit cette variable sert à indiquer si c'est cet objet qui contient le circuit au complet.
+     * Donc c'est true si ce n'est pas une branche du circuit construit par l'utilisateur.
+     */
+    constructor(premierCircuit){
+        this.premierCircuit = premierCircuit;
+        this.circuit = []; //Array de composantes qui sont en série
+        this.valide = true;
+
+        this.courant = 0;
+        this.charge = 0;
+
+        //C'est variable sont utile dans le cas où l'instance de cette class est une branche
+        this.capaciteEQ = 0;
+        this.resistanceEQ = 0;
+        this.tensionEQ = 0;
+        
+        //Sert stocker le type de circuit. AKA -> seulement des résistances, seulement des condensateurs ou RC.
+        this.type;
+    }
+
+    ajouterComposanteALaFin(composant){
+        this.circuit.push(composant);
+    }
+    
+    //position est l'emplacement de la valeur a modifier, le 0 est le nombre de valeur a modifier et composant est ce qu'on ajoute à la position
+    ajouterComposante(composant, position){ 
+        this.circuit.splice(position, 0, composant);
+    }
+    
+    retirerComposante(position){
+        this.circuit.splice(position, 1);
+    }
+    
+    echangerComposantes(position1, position2){
+        let temp1 = circuit[position1];
+        let temp2 = circuit[position2];
+        if(position1 &lt; position2){
+            this.circuit.splice(position1, 1, temp2);
+            this.circuit.splice(position2, 1, temp1);
+        } else if(position2 &lt; position1){
+            this.circuit.splice(position2, 1, temp1);
+            this.circuit.splice(position1, 1, temp2);
+        }
+    }
+  
+    /**
+     * Doit se faire appeler quand il y a une nouvelle connection entre 2 composantes, quand une connection est brisée et
+     * quand une valeur dans une composante est modifiée. Elle doit aussi seulement être appellé une fois au début sur la
+     * branche principale.
+     */
+    update(){//Chaque fois qu'il y a un changement dans le circuit
+        if(this.premierCircuit){
+            this.rearrangerArrayCircuit();
+            this.tensionEQ = this.circuit[0].tension;
+        }
+        this.trouverEq();
+        
+    }
+    
+    /**
+     * Change l'array pour que le circuit soit en série grâce à l'historique. Après cette méthode, le
+     * circuit devrait commencer de la pile, puis finir à la composante juste avant la pile.
+     */
+    rearrangerArrayCircuit(){
+    }
+
+    /**
+     * Sert à trouver le circuit équivalent en série
+     */
+    trouverEq(){
+        this.trouverTypeDeCircuit();
+        if(this.valide){
+            switch (this.type){
+                case circuitType.seulementR:
+                    for (let i = 0; i &lt; this.circuit.length; i++){
+                        if(this.circuit[i].getTypeCalcul() == composantType.noeudType){
+                            this.resistanceEQ += this.circuit[i].resistanceEQ;
+                        }else if (this.circuit[i].getTypeCalcul() == composantType.resisteurType){
+                            this.resistanceEQ += this.circuit[i].resistance;
+                        }
+                    }
+                    if(this.premierCircuit){
+                        this.courant = this.tensionEQ / this.resistanceEQ;
+                    }
+                    this.remplirResisteursAvecCourant();
+                    //TODO remplir les valeurs dans chaque résistances
+                    break;
+                case circuitType.seulementC:
+                    let capaciteTemp = 0;
+                    for (let i = 0; i &lt; this.circuit.length; i++){ 
+                        if(this.circuit[i].getTypeCalcul() == composantType.noeudType){
+                            capaciteTemp += 1 / this.circuit[i].capaciteEQ;
+                        }else if (this.circuit[i].getTypeCalcul() == composantType.condensateurType){
+                            capaciteTemp += 1 / this.circuit[i].capacite;
+                        }
+                    }
+                    this.capaciteEQ = 1/capaciteTemp;
+                    if(this.premierCircuit){
+                        this.charge = this.capaciteEQ * this.tensionEQ; 
+                    }
+                    //TODO remplir les valeurs dans chaque Condensateur
+                    break;
+                case circuitType.RC:
+                    //C'est là que c'est difficile
+                    //On peut aussi juste dire que le circuit est invalide.
+                    alert("Circuit RC détecté"); //(rip)
+                    break;
+            }
+    
+            if(this.premierCircuit){
+                print("CapaciteEQ: " + this.capaciteEQ);
+                print("ResistanceEQ: " + this.resistanceEQ);
+            }
+        } else{
+            if(this.premierCircuit){
+                print("Pas de chemin pour le courant");
+            }
+        }
+        
+    }
+
+    /**
+     * Sert à trouver si le circuit contient seulement des Résistances, seulement des Condensateurs ou contient les deux. Devrait
+     * changer la variable "type" en le type du circuit.
+     */
+    trouverTypeDeCircuit(){
+        let circuitR = false;
+        let circuitC = false;
+        let circuitRC = false;
+        for (let i = 0; i &lt; this.circuit.length; i++){ 
+            switch(this.circuit[i].getTypeCalcul()){
+                case composantType.resisteurType:
+                    circuitR = true;
+                    break;
+                case composantType.condensateurType:
+                    circuitC = true;
+                    break;
+                case composantType.noeudType:
+                    this.circuit[i].trouverEq();
+                    switch(this.circuit[i].type){
+                        case circuitType.seulementR:
+                            circuitR = true;
+                            break;
+                        case circuitType.seulementC:
+                            circuitC = true;
+                            break;
+                        case circuitType.RC:
+                            circuitRC = true;
+                            break;
+                    }
+                    break;
+                case composantType.diodeType:
+                    if(this.circuit[i].orientation == "wrong"){
+                        this.valide = false;
+                    }
+            }
+        }
+        if((circuitR &amp;&amp; circuitC) || circuitRC){
+            this.type = circuitType.RC;
+            //Même chose que : this.type = 09842;
+        }else if (circuitC){
+            this.type = circuitType.seulementC;
+        }else{
+            this.type = circuitType.seulementR;
+        }
+    }
+
+    getType(){
+        return CIRCUIT;
+    }
+
+    getTypeCalcul(){
+        return this.type;
+    }
+
+    remplirResisteursAvecCourant(){
+
+        for (let i = 0; i &lt; this.circuit.length; i++){
+            if(this.circuit[i].getTypeCalcul() == composantType.resisteurType){
+                
+                this.circuit[i].courant = this.courant;
+                this.circuit[i].tension = this.courant * this.circuit[i].resistance;
+            }else if(this.circuit[i].getTypeCalcul() == composantType.noeudType){
+                this.circuit[i].tensionEQ = this.courant * this.circuit[i].resistanceEQ;
+                this.circuit[i].remplirResisteursAvecDifTension();
+            }
+        }
+    }
+}
+
+/**
+ * C'est objet là ont le même rôle que des enum en java.
+ */
+let composantType = {
+    resisteurType: 75839,
+    condensateurType: 98435,
+    noeudType: 48134,
+    diodeType: 87931
+}
+//ces nombres sont choisi au hasard, il faut juste que quand on compare, si le nombre est pareil, on détecte que c'est du même type
+let circuitType = {
+    seulementR: 29852,
+    seulementC: 10854,
+    RC: 90842
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.2</a> on Wed May 10 2023 15:25:54 GMT-0400 (heure avancée de l’Est) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+<script src="scripts/collapse.js" defer></script>
+
+
+</body>
+</html>
