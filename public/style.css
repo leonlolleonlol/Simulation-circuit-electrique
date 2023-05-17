@@ -107,8 +107,7 @@ button:hover {
   }
   .container {
     width: 700px;
-    transform: translate(70%);
-    -ms-transform: translate(70%);
+    margin: auto;
   }
   
   .container img {
@@ -120,7 +119,7 @@ button:hover {
     width: 130px;
     height: 90px;
     position: absolute;
-    transform: translate(-330%,160%);
+    transform: translate(-280%,285%);
     color: white;
     font-size: 12px;
     cursor: pointer;

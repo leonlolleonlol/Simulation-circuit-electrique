@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>fil.js - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    
+    <h2><a href="index.html">Home</a></h2><h2><a href="https://github.com/olivierstKronos/Simulation-circuit-electrique" target="_blank" class="menu-item" id="repository" >Github repo</a></h2><h3>Classes</h3><ul><li><a href="Ampoule.html">Ampoule</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Ampoule.html#checkConnection">checkConnection</a></li><li data-type='method' style='display: none;'><a href="Ampoule.html#getBorne">getBorne</a></li><li data-type='method' style='display: none;'><a href="Ampoule.html#getConnection">getConnection</a></li><li data-type='method' style='display: none;'><a href="Ampoule.html#getConnections">getConnections</a></li><li data-type='method' style='display: none;'><a href="Ampoule.html#getType">getType</a></li><li data-type='method' style='display: none;'><a href="Ampoule.html#inBounds">inBounds</a></li><li data-type='method' style='display: none;'><a href="Ampoule.html#rotate">rotate</a></li></ul></li><li><a href="Batterie.html">Batterie</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Batterie.html#checkConnection">checkConnection</a></li><li data-type='method' style='display: none;'><a href="Batterie.html#draw">draw</a></li><li data-type='method' style='display: none;'><a href="Batterie.html#getBorne">getBorne</a></li><li data-type='method' style='display: none;'><a href="Batterie.html#getConnection">getConnection</a></li><li data-type='method' style='display: none;'><a href="Batterie.html#getConnections">getConnections</a></li><li data-type='method' style='display: none;'><a href="Batterie.html#getTitle">getTitle</a></li><li data-type='method' style='display: none;'><a href="Batterie.html#getType">getType</a></li><li data-type='method' style='display: none;'><a href="Batterie.html#inBounds">inBounds</a></li><li data-type='method' style='display: none;'><a href="Batterie.html#rotate">rotate</a></li></ul></li><li><a href="Circuit.html">Circuit</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Circuit.html#rearrangerArrayCircuit">rearrangerArrayCircuit</a></li><li data-type='method' style='display: none;'><a href="Circuit.html#trouverEq">trouverEq</a></li><li data-type='method' style='display: none;'><a href="Circuit.html#trouverTypeDeCircuit">trouverTypeDeCircuit</a></li><li data-type='method' style='display: none;'><a href="Circuit.html#update">update</a></li></ul></li><li><a href="Condensateur.html">Condensateur</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Condensateur.html#checkConnection">checkConnection</a></li><li data-type='method' style='display: none;'><a href="Condensateur.html#draw">draw</a></li><li data-type='method' style='display: none;'><a href="Condensateur.html#getBorne">getBorne</a></li><li data-type='method' style='display: none;'><a href="Condensateur.html#getConnection">getConnection</a></li><li data-type='method' style='display: none;'><a href="Condensateur.html#getConnections">getConnections</a></li><li data-type='method' style='display: none;'><a href="Condensateur.html#getTitle">getTitle</a></li><li data-type='method' style='display: none;'><a href="Condensateur.html#getType">getType</a></li><li data-type='method' style='display: none;'><a href="Condensateur.html#inBounds">inBounds</a></li><li data-type='method' style='display: none;'><a href="Condensateur.html#rotate">rotate</a></li></ul></li><li><a href="Diode.html">Diode</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Diode.html#checkConnection">checkConnection</a></li><li data-type='method' style='display: none;'><a href="Diode.html#draw">draw</a></li><li data-type='method' style='display: none;'><a href="Diode.html#getBorne">getBorne</a></li><li data-type='method' style='display: none;'><a href="Diode.html#getConnection">getConnection</a></li><li data-type='method' style='display: none;'><a href="Diode.html#getConnections">getConnections</a></li><li data-type='method' style='display: none;'><a href="Diode.html#getTitle">getTitle</a></li><li data-type='method' style='display: none;'><a href="Diode.html#getType">getType</a></li><li data-type='method' style='display: none;'><a href="Diode.html#inBounds">inBounds</a></li><li data-type='method' style='display: none;'><a href="Diode.html#rotate">rotate</a></li></ul></li><li><a href="Fil.html">Fil</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Fil.html#angle">angle</a></li><li data-type='method' style='display: none;'><a href="Fil.html#draw">draw</a></li><li data-type='method' style='display: none;'><a href="Fil.html#getFunction">getFunction</a></li><li data-type='method' style='display: none;'><a href="Fil.html#getType">getType</a></li><li data-type='method' style='display: none;'><a href="Fil.html#inBounds">inBounds</a></li><li data-type='method' style='display: none;'><a href="Fil.html#inBoxBounds">inBoxBounds</a></li><li data-type='method' style='display: none;'><a href="Fil.html#longueur">longueur</a></li><li data-type='method' style='display: none;'><a href="Fil.html#overlap">overlap</a></li><li data-type='method' style='display: none;'><a href="Fil.html#pente">pente</a></li><li data-type='method' style='display: none;'><a href="Fil.html#trierPoint">trierPoint</a></li></ul></li><li><a href="Noeuds.html">Noeuds</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Noeuds.html#checkConnection">checkConnection</a></li><li data-type='method' style='display: none;'><a href="Noeuds.html#draw">draw</a></li><li data-type='method' style='display: none;'><a href="Noeuds.html#getBorne">getBorne</a></li><li data-type='method' style='display: none;'><a href="Noeuds.html#getConnection">getConnection</a></li><li data-type='method' style='display: none;'><a href="Noeuds.html#getConnections">getConnections</a></li><li data-type='method' style='display: none;'><a href="Noeuds.html#getTitle">getTitle</a></li><li data-type='method' style='display: none;'><a href="Noeuds.html#getType">getType</a></li><li data-type='method' style='display: none;'><a href="Noeuds.html#inBounds">inBounds</a></li><li data-type='method' style='display: none;'><a href="Noeuds.html#rotate">rotate</a></li><li data-type='method' style='display: none;'><a href="Noeuds.html#trouverEq">trouverEq</a></li></ul></li><li><a href="Resisteur.html">Resisteur</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Resisteur.html#checkConnection">checkConnection</a></li><li data-type='method' style='display: none;'><a href="Resisteur.html#draw">draw</a></li><li data-type='method' style='display: none;'><a href="Resisteur.html#getBorne">getBorne</a></li><li data-type='method' style='display: none;'><a href="Resisteur.html#getConnection">getConnection</a></li><li data-type='method' style='display: none;'><a href="Resisteur.html#getConnections">getConnections</a></li><li data-type='method' style='display: none;'><a href="Resisteur.html#getTitle">getTitle</a></li><li data-type='method' style='display: none;'><a href="Resisteur.html#getType">getType</a></li><li data-type='method' style='display: none;'><a href="Resisteur.html#inBounds">inBounds</a></li><li data-type='method' style='display: none;'><a href="Resisteur.html#rotate">rotate</a></li></ul></li></ul><h3>Interfaces</h3><ul><li><a href="Composant.html">Composant</a><ul class='methods'><li data-type='method' style='display: none;'><a href="Composant.html#checkConnection">checkConnection</a></li><li data-type='method' style='display: none;'><a href="Composant.html#draw">draw</a></li><li data-type='method' style='display: none;'><a href="Composant.html#getBorne">getBorne</a></li><li data-type='method' style='display: none;'><a href="Composant.html#getConnection">getConnection</a></li><li data-type='method' style='display: none;'><a href="Composant.html#getConnections">getConnections</a></li><li data-type='method' style='display: none;'><a href="Composant.html#getTitle">getTitle</a></li><li data-type='method' style='display: none;'><a href="Composant.html#getType">getType</a></li><li data-type='method' style='display: none;'><a href="Composant.html#inBounds">inBounds</a></li><li data-type='method' style='display: none;'><a href="Composant.html#rotate">rotate</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#AMPOULE">AMPOULE</a></li><li><a href="global.html#BAS">BAS</a></li><li><a href="global.html#BATTERIE">BATTERIE</a></li><li><a href="global.html#CIRCUIT">CIRCUIT</a></li><li><a href="global.html#CONDENSATEUR">CONDENSATEUR</a></li><li><a href="global.html#CREATE">CREATE</a></li><li><a href="global.html#DELETE">DELETE</a></li><li><a href="global.html#DIODE">DIODE</a></li><li><a href="global.html#DROITE">DROITE</a></li><li><a href="global.html#FIL">FIL</a></li><li><a href="global.html#FunctionObject">FunctionObject</a></li><li><a href="global.html#GAUCHE">GAUCHE</a></li><li><a href="global.html#HAUT">HAUT</a></li><li><a href="global.html#MODIFIER">MODIFIER</a></li><li><a href="global.html#NOEUD">NOEUD</a></li><li><a href="global.html#POINT">POINT</a></li><li><a href="global.html#QUADRILLE">QUADRILLE</a></li><li><a href="global.html#QUADRILLEPOINT">QUADRILLEPOINT</a></li><li><a href="global.html#RESISTEUR">RESISTEUR</a></li><li><a href="global.html#addActions">addActions</a></li><li><a href="global.html#ajustementAutomatiqueComposant">ajustementAutomatiqueComposant</a></li><li><a href="global.html#ajustementAutomatiqueFil">ajustementAutomatiqueFil</a></li><li><a href="global.html#ampoule">ampoule</a></li><li><a href="global.html#applyLimitActions">applyLimitActions</a></li><li><a href="global.html#batterie">batterie</a></li><li><a href="global.html#blendBG">blendBG</a></li><li><a href="global.html#composantType">composantType</a></li><li><a href="global.html#condensateur">condensateur</a></li><li><a href="global.html#copyComposant">copyComposant</a></li><li><a href="global.html#couperFil">couperFil</a></li><li><a href="global.html#diode">diode</a></li><li><a href="global.html#draw">draw</a></li><li><a href="global.html#drawComponentsChooser">drawComponentsChooser</a></li><li><a href="global.html#drawComposants">drawComposants</a></li><li><a href="global.html#drawFils">drawFils</a></li><li><a href="global.html#drawGrid">drawGrid</a></li><li><a href="global.html#filStart">filStart</a></li><li><a href="global.html#findGridLock">findGridLock</a></li><li><a href="global.html#getComposantVide">getComposantVide</a></li><li><a href="global.html#getConnectingComposant">getConnectingComposant</a></li><li><a href="global.html#inGrid">inGrid</a></li><li><a href="global.html#initDrag">initDrag</a></li><li><a href="global.html#isElementDrag">isElementDrag</a></li><li><a href="global.html#isElementSelectionner">isElementSelectionner</a></li><li><a href="global.html#lineGrid">lineGrid</a></li><li><a href="global.html#load">load</a></li><li><a href="global.html#mouseDragged">mouseDragged</a></li><li><a href="global.html#mousePressed">mousePressed</a></li><li><a href="global.html#mouseReleased">mouseReleased</a></li><li><a href="global.html#mouseWheel">mouseWheel</a></li><li><a href="global.html#pointGrid">pointGrid</a></li><li><a href="global.html#posAtPercent">posAtPercent</a></li><li><a href="global.html#redo">redo</a></li><li><a href="global.html#resetHistorique">resetHistorique</a></li><li><a href="global.html#resisteur">resisteur</a></li><li><a href="global.html#sauvegarder">sauvegarder</a></li><li><a href="global.html#undo">undo</a></li><li><a href="global.html#updateBouton">updateBouton</a></li><li><a href="global.html#validBoutonActif">validBoutonActif</a></li><li><a href="global.html#validComposantPos">validComposantPos</a></li><li><a href="global.html#validFilBegin">validFilBegin</a></li><li><a href="global.html#validerAction">validerAction</a></li><li><a href="global.html#verifierCouperFil">verifierCouperFil</a></li><li><a href="global.html#windowResized">windowResized</a></li><li><a href="global.html#zoom">zoom</a></li></ul>
+    
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">fil.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Cette classe permet de représenter les fils de notre circuit.
+ * Chaque est linéaire et peut être dans n'importe quelle direction a n'importe quel angle.
+ */
+class Fil{
+  
+  /**
+   * Créer un nouveau fil avec les arguments du **début du fil** et de la 
+   * **fin du fil**. Spécifie aussi un identifiant unique 
+   * @param {number} xi cordonné en x du point initial
+   * @param {number} yi codonné en y du point initial
+   * @param {number} xf cordonné en x du point final
+   * @param {number} yf cordonné en y du point final
+   * @see [Date.now()]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/now} 
+   * Fonction qui produit l'identifiant unique
+   */
+  constructor(xi, yi, xf, yf){
+    this.xi = xi;
+    this.yi = yi;
+    this.xf = xf;
+    this.yf = yf;
+    this.courant = 0;
+    this.id = Date.now();
+    this.type = FIL;
+    
+  }
+
+  /**
+   * Aller voir {@link Composant#draw | Composant.draw()}
+   * @param offX 
+   * @param offY 
+   */
+  draw(offX, offY){
+    push();
+    translate(offX, offY);
+    if(isElementSelectionner(this) &amp;&amp; !isElementSelectionner(drag)){
+      push();
+      strokeWeight(30);
+      stroke('rgba(255, 165, 0, 0.2)');
+      let mul = this.yi >this.yf? -1 : 1;
+      let decalageX = 9 * Math.sin(this.angle()) * mul;
+      let decalageY = 9 * Math.cos(this.angle()) * mul;
+      line(this.xi + decalageX, this.yi + decalageY, 
+           this.xf - decalageX, this.yf - decalageY);
+      pop();
+    }
+    stroke('orange');
+    fill('red')
+    strokeWeight(4);
+    line(this.xi, this.yi, this.xf, this.yf);
+    if(animate){
+      let nbCharge = Math.floor(this.longueur()/grid.tailleCell);
+      let decalageCharge = (percent*(1+Math.floor(this.courant))/nbCharge) % 1
+      for(let i = 0;i &lt; nbCharge;i++){
+        let percentCharge = (decalageCharge + i/nbCharge)% 1;
+        let pos = posAtPercent(this, percentCharge);
+        circle(pos.x,pos.y,10);
+      }
+    }
+    pop();
+  }
+
+  /**
+   * Permet de déterminer si une position se situe dans l'aire de contact du fil.
+   * Le rayon d'approximation permis est toujours de 15 exlu
+   * @param {number} x coordoné en x à tester
+   * @param {number} y coordoné en y à tester
+   * @returns {boolean}
+   * @see {@link Composant#inBounds | Composant.inBounds()}
+   */
+  inBounds(x, y){
+    if(!this.inBoxBounds(x,y)){
+      return false;
+    }
+    let fx = this.getFunction();
+    let xTest = y * 1/fx.pente + fx.ordonneY;
+    let yTest = x * fx.pente + fx.ordonneX;
+    return dist(xTest, y, x, y) &lt; 15 || dist(x, yTest, x, y) &lt; 15;
+  }
+
+  /**
+   * Détermine si une position se situe dans un carré ayant pour borne les coins
+   * du fil +10 partout. Fait un calcul rapide
+   * @param {number} x coordoné en x
+   * @param {number} y coordoné en y
+   * @deprecated Va être bientôt supprimer si il n'y a pas une différence 
+   * de performance substantiel en différence de 
+   * {@link Fil#inBounds | Fil.inBounds()}
+   * @returns {boolean}
+   */
+  inBoxBounds(x, y){
+    let x1 = Math.min(this.xi-10, this.xf-10);
+    let x2 = Math.max(this.xi+10, this.xf+ 10);
+    let y1 = Math.min(this.yi-10, this.yf-10);
+    let y2 = Math.max(this.yi+10, this.yf+10);
+    return x > x1 &amp;&amp; x &lt; x2 &amp;&amp; y > y1 &amp;&amp; y &lt; y2;
+  }
+
+  /**
+   * Calcule la pente du fil
+   * @returns {number}
+   */
+  pente(){
+    return (this.yf-this.yi)/(this.xf-this.xi);
+  }
+  
+  /**
+   * @typedef {Object} FunctionObject Cette objet rassemble la pente et l'ordonné à l'origine d'une fonction 
+   * `f(x) = mx + b`. Aussi, en faisant `1/pente` et en prennant l'ordonne en y, on peut avoir la
+   * fonction `f(y) = my + b`
+   * @property {number} pente La pente de la fonction `f(x)`
+   * @property {number} ordonneX L'ordonné à l'origine pour une fonction `f(x)`
+   * @property {number} ordonneY L'ordonné à l'origine pour une fonction `f(y)`. Paramètre
+   * utile lorsque le fil est vertical
+   */
+
+  /**
+   * Imaginons que l'on remplace le fil par une fonction linéaire continue. La 
+   * seule différence entre les deux droite est que le fil un domaine précis (entre xi et xf).
+   * Cette fonction permet d'avoir les donné pour une droite linéaire.
+   * @returns {FunctionObject} La fonction représentant le fil
+   */
+  getFunction(){
+    let penteFil = this.pente();
+    return {pente:penteFil, ordonneX: this.yi - this.xi * penteFil, 
+      ordonneY: this.xi - this.yi * 1/penteFil};
+  }
+
+  /**
+   * Calcule l'angle d'inclinaison du fil. 
+   * @returns l'angle en radian
+   * @see {@link Fil#pente | Fil.pente()}
+   */
+  angle(){
+    return Math.atan(1/this.pente());
+  }
+
+  /**
+   * Calcule la longueur du fil. La valeur est toujours positive
+   * @returns La longueur du fil
+   */
+  longueur(){
+    return dist(this.xi, this.yi, this.xf, this.yf);
+  }
+
+  /**
+   * Vérifie si un fil se superpose partiellement, complètement ou simplement par 
+   * les bornes.
+   * @param {Fil} fil Le fil qui va être comparer
+   * @return {boolean}
+   * @example 
+   * let fil1 = new Fil(30, 50, 80, 50)
+   * let fil2 = new Fil(70, 50, 100, 50)
+   * fil1.overlap(fil2) //true
+   * let fil3 = new Fil(50, 50, 100, 50)
+   * let fil4 = new Fil(20, 50, 40, 50)
+   * fil3.overlap(fil4) //false
+   * let fil5 = new Fil(390, 210, 510, 270) //xi: 390, yi: 210, xf: 510, yf: 270
+   * let fil6 = new Fil(270, 150, 630, 330) //xi: 270, yi: 150, xf: 630, yf: 330
+   * fil5.overlap(filg) //true
+   */
+  overlap(fil){
+    let f1 = this.getFunction();
+    let f2 = fil.getFunction();
+    if(Math.abs(f1.pente) === Math.abs(f2.pente) &amp;&amp;
+      Math.abs(f1.ordonneX) === Math.abs(f2.ordonneX)){
+      if((f1.pente == 0 &amp;&amp; this.yi===fil.yi)|| Math.abs(f1.pente) != Infinity){
+        return (fil.xi >= this.xi &amp;&amp; fil.xi &lt;= this.xf) || (this.xi >= fil.xi &amp;&amp; this.xi &lt;=fil.xf);
+      }else if (Math.abs(f1.pente) == Infinity &amp;&amp; this.xi===fil.xi){
+        return (fil.yi >= this.yi &amp;&amp; fil.xi &lt;= this.yf) || (this.yi >=fil.yi &amp;&amp; this.yi &lt;= fil.yf);
+      }
+    }
+    else return false;
+  }
+
+  /**
+   * Ordonne les points du plus petit au plus grand selon l'orientation.
+   * - Si l'orientation est vertical (`fil.pente() == Infinity`), trier selon y
+   * - Sinon, trier selon x
+   */
+  trierPoint(){
+    let sortArray = [{x:this.xi, y:this.yi}, {x:this.xf, y:this.yf}];
+    if(Math.abs(this.pente())==Infinity){
+      sortArray.sort((a, b) => a.y - b.y);
+    }else sortArray.sort((a, b) => a.x - b.x);
+    this.xi = sortArray[0].x;
+    this.yi = sortArray[0].y;
+    this.xf = sortArray[1].x;
+    this.yf = sortArray[1].y;
+  }
+
+  /**
+   * Récuperer le type de la classe. Important pour la sérialisation et désérialisation
+   * de la classe
+   * @returns FIL 
+   */
+  getType(){
+    return this.type;
+  }
+}
+
+
+/**
+ * Vérifie si l'on peut commencer un nouveau fil à une position donné. Les critère sont:
+ *  - Le point se situe dans la grille visible
+ *  - Le fil connecte aux borne d'un composant ou touche à un autre fil
+ * @param {number} x la position en x
+ * @param {number} y la position en y
+ * @returns Si un nouveau fil peut commencer à cette position
+ */
+function validFilBegin(x, y){
+  let point = findGridLock(grid.translateX,grid.translateY)
+  if (!inGrid(mouseX/grid.scale, mouseY/grid.scale) || dist(point.x, point.y, x, y)>10){
+    return false;
+  }
+  else {
+    return getConnectingComposant(x,y) != null || filStart(x, y)!=null;
+  }
+}
+
+/**
+ * Calcule la position pour un pourcentage du fil entre 0 et 1
+ * @param {Fil} fil Le fil concerner par le calcul
+ * @param {number} percent Le pourcentage entre 0 et 1 pour sélectionner la position du fil
+ * @returns L'objet contenant la position x, y
+ */
+function posAtPercent(fil, percent) {
+  let dx = fil.xf - fil.xi;
+  let dy = fil.yf - fil.yi;
+  return ({
+      x: fil.xi + dx * percent,
+      y: fil.yi + dy * percent
+  });
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.2</a> on Wed May 10 2023 15:25:54 GMT-0400 (heure avancée de l’Est) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+<script src="scripts/collapse.js" defer></script>
+
+
+</body>
+</html>

@@ -1,0 +1,202 @@
+{
+  "components": [
+    {
+      "id": 1683927105876,
+      "x": 360,
+      "y": 240,
+      "courant": 0,
+      "tension": 0,
+      "orientation": 0,
+      "type": "batterie",
+      "xOffsetDrag": -22,
+      "yOffsetDrag": 0
+    },
+    {
+      "id": 1683927108433,
+      "x": 630,
+      "y": 240,
+      "courant": 0,
+      "tension": 0,
+      "resistance": 0,
+      "orientation": 0,
+      "type": "resisteur",
+      "xOffsetDrag": -4,
+      "yOffsetDrag": -8
+    },
+    {
+      "id": 1683927938045,
+      "x": 540,
+      "y": 300,
+      "courant": 0,
+      "tension": 0,
+      "radius": 19,
+      "orientation": 1.5707963267948966,
+      "type": "diode",
+      "xOffsetDrag": -15,
+      "yOffsetDrag": -25
+    },
+    {
+      "id": 1683927939259,
+      "x": 330,
+      "y": 330,
+      "courant": 0,
+      "tension": 0,
+      "radius": 19,
+      "orientation": 4.71238898038469,
+      "type": "diode",
+      "xOffsetDrag": -74,
+      "yOffsetDrag": -23
+    },
+    {
+      "id": 1683927956609,
+      "x": 480,
+      "y": 240,
+      "courant": 0,
+      "tension": 0,
+      "capacite": 0,
+      "charge": 0,
+      "orientation": 0,
+      "type": "condensateur",
+      "xOffsetDrag": -10,
+      "yOffsetDrag": -17
+    },
+    {
+      "id": 1683927984567,
+      "x": 540,
+      "y": 360,
+      "courant": 0,
+      "tension": 0,
+      "resistance": 0,
+      "orientation": 1.5707963267948966,
+      "type": "resisteur",
+      "xOffsetDrag": 1,
+      "yOffsetDrag": -2
+    },
+    {
+      "id": 1683927992384,
+      "x": 420,
+      "y": 420,
+      "courant": 0,
+      "tension": 0,
+      "resistance": 0,
+      "orientation": 0,
+      "type": "ampoule",
+      "xOffsetDrag": -7,
+      "yOffsetDrag": 8
+    },
+    {
+      "id": 1683928029239,
+      "x": 720,
+      "y": 330,
+      "courant": 0,
+      "tension": 0,
+      "capacite": 0,
+      "charge": 0,
+      "orientation": 1.5707963267948966,
+      "type": "condensateur",
+      "xOffsetDrag": -64,
+      "yOffsetDrag": -25
+    }
+  ],
+  "fils": [
+    {
+      "xi": 390,
+      "yi": 240,
+      "xf": 450,
+      "yf": 240,
+      "courant": 0,
+      "id": 1683927973808,
+      "type": "fil"
+    },
+    {
+      "xi": 510,
+      "yi": 240,
+      "xf": 600,
+      "yf": 240,
+      "courant": 0,
+      "id": 1683927973808,
+      "type": "fil"
+    },
+    {
+      "xi": 540,
+      "yi": 240,
+      "xf": 540,
+      "yf": 270,
+      "courant": 0,
+      "id": 1683927983339,
+      "type": "fil"
+    },
+    {
+      "xi": 540,
+      "yi": 390,
+      "xf": 540,
+      "yf": 420,
+      "courant": 0,
+      "id": 1683927983339,
+      "type": "fil"
+    },
+    {
+      "xi": 330,
+      "yi": 420,
+      "xf": 390,
+      "yf": 420,
+      "courant": 0,
+      "id": 1683927993357,
+      "type": "fil"
+    },
+    {
+      "xi": 450,
+      "yi": 420,
+      "xf": 720,
+      "yf": 420,
+      "courant": 0,
+      "id": 1683927994943,
+      "type": "fil"
+    },
+    {
+      "xi": 660,
+      "yi": 240,
+      "xf": 720,
+      "yf": 240,
+      "courant": 0,
+      "id": 1683928001104,
+      "type": "fil"
+    },
+    {
+      "xi": 720,
+      "yi": 240,
+      "xf": 720,
+      "yf": 300,
+      "courant": 0,
+      "id": 1683928033539,
+      "type": "fil"
+    },
+    {
+      "xi": 720,
+      "yi": 360,
+      "xf": 720,
+      "yf": 420,
+      "courant": 0,
+      "id": 1683928033539,
+      "type": "fil"
+    },
+    {
+      "xi": 330,
+      "yi": 240,
+      "xf": 330,
+      "yf": 300,
+      "courant": 0,
+      "id": 1683928037465,
+      "type": "fil"
+    },
+    {
+      "xi": 330,
+      "yi": 360,
+      "xf": 330,
+      "yf": 420,
+      "courant": 0,
+      "id": 1683928037465,
+      "type": "fil"
+    }
+  ]
+}

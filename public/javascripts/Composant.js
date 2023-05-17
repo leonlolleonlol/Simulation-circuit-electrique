@@ -1,25 +1,67 @@
-/**
- * Cette classe est la classe mère de toutes les autres composantes. Elle donne les variables et quelque méthodes
- * importante pour chaque composante.
+
+
+/** Cet interface permet de définir tout les méthode nécéssaire pour le programme
+ * @interface
  */
 class Composant {
+
+  /**
+   * Créer un composant avec une position, des valeurs mathématique =0 et un identifiant unique
+   * @param {number} x 
+   * @param {number} y 
+   */
   constructor(x, y){
+    this.id = Date.now();// Donne un identifiant unique à chaque composant
     this.x = x;
     this.y = y;
+    // on crée automatiquement une classe de tension
     this.courant = 0;
     this.tension = 0;
     this.prochaineComposante = [];
     this.composantePrecedente = [];
     this.dejaPasser = false;
   }
-  
 
-  draw(offX, offY) {
-    throw "La méthode draw est appelé dans la class mère";//todo préciser l'erreur
+  /**
+   * Dessine un composant quelconque sur le canvas. Utilise la librairie p5.js pour le faire. 
+   * Chaque implémentation doit toujours commencer avec un `push()` et finir avec un `pop()` pour 
+   * que chaque modification des attributs de dessin soit annuler à la sortie de la méthode.
+   * @abstract
+   * @todo offsetX et offsetY à retirer
+   */
+  draw() {
+    throw new Error('Cette fonction ne peut pas être appelé de l\'interface');
   }
+
+  /**
+   * Permet de calculer si un cordonné (x, y) se situe dans le périmètre de contact 
+   * du composant.
+   * @abstract
+   * @param {number} x cordonné x
+   * @param {number} y cordonné y
+   * @returns {boolean}
+   */
+  inBounds(x, y) {
+    throw new Error('Cette fonction ne peut pas être appelé de l\'interface');
+  }
+
+  /**
+   * Chaque composant possède deux borne opposé qui sont les connections avec les fils. Cette fonction 
+   * permet de faire vérfifier si une position entre en contact avec une des bornes.
+   * @param {number} x cordonné x
+   * @param {number} y cordonné y
+   * @param {number} approximation rayon d'approximation permis
+   * @returns {boolean} si une borne est touché par le point
+   * @see Composant#getBorne simplification de la fonction
+   */
   checkConnection(x, y, approximation){
     return this.getBorne(x,y,approximation)!=null;
   }
+  /**
+   * Fonction qui permet de récupérer les positions x et y des bornes. Cette fonction dépend 
+   * de l'orientation du composant.
+   * @returns Les positions des bornes trier en ordre de grandeur du composant
+   */
   getConnections(){
     let pos;
     if(this.orientation % PI == 0){
@@ -31,11 +73,26 @@ class Composant {
     }
     return pos;
   }
+
+  /**
+   * Cette fonction est équivalente avec getConnections sauf que tu peux préciser une
+   * borne spécifique à récupérer.
+   * @param {Pos} borne Une borne spécifique (HAUT, BAS, GAUCHE, DROITE)
+   * @returns La position de la connexion
+   */
   getConnection(borne){
-    let connections = this.getConnection();
+    let connections = this.getConnections();
     return (borne == GAUCHE || borne ==HAUT)
     ? connections[0] : connections[1];
   }
+
+  /**
+   * 
+   * @param {number} x 
+   * @param {number} y 
+   * @param {number} approximation 
+   * @returns La borne que le position touche ou null
+   */
   getBorne(x, y, approximation){
     if(this.orientation % PI == 0){
       if(dist(this.x + 60/2, this.y, x, y) < approximation)
@@ -50,23 +107,20 @@ class Composant {
     }
   }
 
+  /**
+   * 
+   * @param {boolean} inverse 
+   */
   rotate(inverse){
     this.orientation = (this.orientation + (inverse?-HALF_PI:HALF_PI)) % TWO_PI
   }
 
-  /**
-     * Retourne les valeurs importantes à montrer à l'utilisateur dans une array
-     * @returns 
-     */
+
+ /** Retourne les valeurs importantes à montrer à l'utilisateur dans une array
+  * @returns 
+  */
   getMenu(){
     throw "getMenu est appelé dans la class mère";
-  }
-
-  /**
-   * Retourne le type de la composante
-   */
-  getType() {
-    throw "getType est appelé dans la class mère";
   }
   /**
    * Donne à prochaineComposante la valeur passée en paramètre
@@ -83,31 +137,40 @@ class Composant {
   getProchaineComposante(){
     return this.prochaineComposante[0];
   }
+  
+  /** Getter pour le type de composant
+   * @returns le type de composant
+   */
+  getType() {
+    return this.type;
+  }
+
+  /**
+   * 
+   */
+  getTitle(){
+    throw new Error('Cette fonction ne peut pas être appelé de l\'interface');
+  }
 } 
 
-/**
- * La class contient la valeur de résistance de cette composante. Elle est passée dans le constructeur pour le moment, donc
- * l'utilisateur ne peut pas choisir la résistance pour le moment.
+/** 
+ * @extends Composant 
  */
 class Resisteur extends Composant {
-    constructor(x, y, resistance, orientation) {
-        super(x, y);
-	      this.resistance = resistance;
-        this.orientation = orientation??0;
-    }
-
-    inBounds(x, y) {
-      if(this.orientation % PI === 0)
-        return x >= this.x - 60 / 2 && x <= this.x + 60 / 2 &&
-            y >= this.y - 25 / 2 && y <= this.y + 25 / 2;
-      else
-        return x >= this.x - 25 / 2 && x <= this.x + 25 / 2 &&
-            y >= this.y - 60 / 2 && y <= this.y + 60 / 2;
-    }
-
-    draw(offX, offY) {
-        resisteur(this.x + offX,this.y + offY,this.orientation, isElementSelectionner(this));
-    }
+  constructor(x, y, resistance, orientation) {
+      super(x, y);
+      this.resistance = resistance;
+      this.orientation = orientation??0;
+      this.type = RESISTEUR;
+  }
+  inBounds(x, y) {
+    if(this.orientation % PI === 0)
+      return x >= this.x - 60 / 2 && x <= this.x + 60 / 2 &&
+          y >= this.y - 25 / 2 && y <= this.y + 25 / 2;
+    else
+      return x >= this.x - 25 / 2 && x <= this.x + 25 / 2 &&
+          y >= this.y - 60 / 2 && y <= this.y + 60 / 2;
+  }
 
     getMenu(){
       return ["DeltaV: " + this.tension, "Courant: " + this.courant, "Résistance: " + this.resistance];
@@ -116,142 +179,199 @@ class Resisteur extends Composant {
       return (sens?'-':'')+this.resistance+this.symbole;
     }
 
-    getType() {
-      return RESISTEUR;
-    }
+  /**
+   * @inheritdoc
+   */
+  draw(offX, offY) {
+      resisteur(this.x + offX,this.y + offY,this.orientation, isElementSelectionner(this));
+  }
+
+  /**
+   * @inheritdoc
+   */
+  getTitle(){
+    return 'Résisteur';
+  }
 }
 
 
+/**
+ * Représentation d'une ampoule
+ * @extends Resisteur 
+ */
 class Ampoule extends Resisteur {
-    constructor(x, y, resistance, orientation) {
-        super(x, y);
-        this.resistance = resistance;
-        this.orientation = orientation;
-    }
-    inBounds(x, y) {
-      if(this.orientation % PI === 0)
-        return x >= this.x - 60 / 2 && x <= this.x + 60 / 2 &&
-            y >= this.y - 22 / 2 && y <= this.y + 22 / 2;
-      else
-        return x >= this.x - 22 / 2 && x <= this.x + 22 / 2 &&
-            y >= this.y - 60 / 2 && y <= this.y + 60 / 2;
-    }
+  constructor(x, y, resistance, orientation) {
+      super(x, y, resistance, orientation);
+      this.type = AMPOULE;
+  }
+  inBounds(x, y) {
+    if(this.orientation % PI === 0)
+      return x >= this.x - 60 / 2 && x <= this.x + 60 / 2 &&
+          y >= this.y - 22 / 2 && y <= this.y + 22 / 2;
+    else
+      return x >= this.x - 22 / 2 && x <= this.x + 22 / 2 &&
+          y >= this.y - 60 / 2 && y <= this.y + 60 / 2;
+  }
 
-    draw(offX, offY) {
-        ampoule(this.x + offX,this.y + offY, this.orientation, isElementDrag(this));
-    }
+ /**
+  * @inheritdoc
+  */
+  draw(offX, offY) {
+      ampoule(this.x + offX,this.y + offY, this.orientation, isElementSelectionner(this));
+  }
+  getMenu(){
+    return ["Position x: " + this.x, "Position y: " + this.y, "DeltaV: " + this.tension, "Courant: " + this.courant, "Résistance: " + this.resistance];
+  }
 
-    getMenu(){
-      return ["Position x: " + this.x, "Position y: " + this.y, "DeltaV: " + this.tension, "Courant: " + this.courant, "Résistance: " + this.resistance];
-    }
-
-    getType() {
-        return AMPOULE;
-    }
+ /**
+  * @inheritdoc
+  */
+  getTitle(){
+    return 'Ampoule';
+  }
 }
 
+/**
+ * Représentation du condensateur
+ * @extends Composant 
+ * @deprecated Cet objet n'est **PAS** implémenter à cause du problème des circuits RC
+ */
 class Condensateur extends Composant {
-    constructor(x, y, capacite, orientation) {
+  constructor(x, y, capacite, orientation) {
+    super(x, y);
+    this.capacite = capacite;
+    this.charge = 0;
+    this.orientation = orientation??0;
+    this.type = CONDENSATEUR;
+  }
+  inBounds(x, y) {
+    if(this.orientation % PI === 0)
+      return x >= this.x - 60 / 2 && x <= this.x + 60 / 2 &&
+        y >= this.y - 30 / 2 && y <= this.y + 30 / 2;
+    else
+      return x >= this.x - 30 / 2 && x <= this.x + 30 / 2 &&
+          y >= this.y - 60 / 2 && y <= this.y + 60 / 2;
+}
+  
+  /**
+   * @inheritdoc
+   */
+  draw(offsetX, offsetY) {
+    condensateur(this.x + offsetX, this.y + offsetY, this.orientation, isElementSelectionner(this));
+  }
+
+  /**
+   * @inheritdoc
+   */
+  getTitle(){
+    return 'Condensateur';
+  }
+}
+
+/**
+ * Représentation d'une source de courant (batterie)
+ * @extends Composant 
+ */
+class Batterie extends Composant {
+  constructor(x, y, tension, orientation) {
       super(x, y);
-	    this.capacite = capacite;
-      this.charge = 0;
+      this.tension = tension;
       this.orientation = orientation??0;
-    }
-    inBounds(x, y) {
-      if(this.orientation % PI === 0)
-        return x >= this.x - 60 / 2 && x <= this.x + 60 / 2 &&
+      this.type = BATTERIE;
+  }
+  inBounds(x, y) {
+    if(this.orientation % PI === 0)
+      return x >= this.x - 60 / 2 && x <= this.x + 60 / 2 &&
           y >= this.y - 30 / 2 && y <= this.y + 30 / 2;
-      else
-        return x >= this.x - 30 / 2 && x <= this.x + 30 / 2 &&
+    else
+      return x >= this.x - 30 / 2 && x <= this.x + 30 / 2 &&
             y >= this.y - 60 / 2 && y <= this.y + 60 / 2;
   }
-    
-    // offsetX et offsetY à retirer
-    draw(offsetX, offsetY) {
-      condensateur(this.x + offsetX, this.y + offsetY, this.orientation, isElementSelectionner(this));
-    }
-
-    getMenu(){
-      return ["Position x: " + this.x, "Position y: " + this.y, "DeltaV: " + this.tension, "Charge: " + this.charge, "Capacité: " + this.capacite];
-    }
-    
-    getType() {
-        return CONDENSATEUR;
-    }
-  }
-
-  class Batterie extends Composant {
-    constructor(x, y, tension, orientation) {
-        super(x, y);
-	      this.tension = tension;
-        this.orientation = orientation??0;
-    }
-    inBounds(x, y) {
-      if(this.orientation % PI === 0)
-        return x >= this.x - 60 / 2 && x <= this.x + 60 / 2 &&
-            y >= this.y - 30 / 2 && y <= this.y + 30 / 2;
-      else
-        return x >= this.x - 30 / 2 && x <= this.x + 30 / 2 &&
-            y >= this.y - 60 / 2 && y <= this.y + 60 / 2;
-    }
-
-    draw(offX, offY) {
-        batterie(this.x + offX,this.y + offY, this.orientation, isElementDrag(this));
-    }
-
-    getMenu(){
-      return ["Position x: " + this.x, "Position y: " + this.y, "DeltaV: " + this.tension];
-    }
-    getEq(sens){
-      if(sens){
-        if(this.orientation % PI ===0){
-          return -this.tension
-        }else{
-          return this.tension
-        }
-      }else {
-        if(this.orientation % PI ===0){
-          return this.tension
-        }else{
-          return -this.tension
-        }
+  getEq(sens){
+    if(sens){
+      if(this.orientation % PI ===0){
+        return -this.tension
+      }else{
+        return this.tension
+      }
+    }else {
+      if(this.orientation % PI ===0){
+        return this.tension
+      }else{
+        return -this.tension
       }
     }
+  }
+    
+  getMenu(){
+    return ["Position x: " + this.x, "Position y: " + this.y, "DeltaV: " + this.tension, "Charge: " + this.charge, "Capacité: " + this.capacite];
+  }
+    
 
-    getType() {
-      return BATTERIE;
-    }
+
+  /**
+   * @inheritdoc
+   */
+  draw(offX, offY) {
+      batterie(this.x + offX, this.y + offY, this.orientation, isElementSelectionner(this));
+  }
+
+  /**
+   * @inheritdoc
+   */
+  getTitle(){
+    return 'Batterie';
+  }
 }
 
+/**
+ * Représentation d'une diode
+ * @extends Composant 
+ * @deprecated Pour l'instant l'objet n'est **PAS** accessible puisque les calculs se complexifie
+ * beaucoup si on implémentait la diode
+ */
 class Diode extends Composant {
-    constructor(x, y, orientation) {
-      super(x, y);
-      this.radius = 19;
-      this.orientation = orientation??0;
-    }
-    inBounds(x, y) {
-      return x >= this.x - this.radius && x <= this.x + this.radius && 
-        y >= this.y - this.radius && y <= this.y + this.radius;
-
+  constructor(x, y, orientation) {
+    super(x, y);
+    this.radius = 19;
+    this.orientation = orientation??0;
+    this.type = DIODE;
   }
-    
-    draw(offX, offY) {
-      diode(this.x + offX,this.y + offY, this.orientation, isElementSelectionner(this));
-    }
-    
-    draw(offX, offY) {
-      diode(this.x + offX,this.y + offY, this.orientation, isElementDrag(this));
-    }
-    
-    getMenu(){
-      return ["Position x: " + this.x, "Position y: " + this.y, "Sens: " + this.orientation];
-    }
+  inBounds(x, y) {
+    return x >= this.x - this.radius && x <= this.x + this.radius && 
+      y >= this.y - this.radius && y <= this.y + this.radius;
 
-    getType() {
-        return DIODE;
-    }
+}
+  
+  /**
+   * @inheritdoc
+   */
+  draw(offX, offY) {
+    diode(this.x + offX,this.y + offY, this.orientation, isElementSelectionner(this));
+  }
+  
+  /**
+   * @inheritdoc
+   */
+  getMenu(){
+    return ["Position x: " + this.x, "Position y: " + this.y, "Sens: " + this.orientation];
   }
 
+  /**
+   * @inheritdoc
+   */
+  getTitle(){
+    return 'Diode';
+
+  }
+}
+
+/**
+ * Cette classe est une représentation mathématique de la dérivation de brache (branche en parallèle). 
+ * Elle rassemble donc toute les branches en parallèle et cela permet de faire les calculs 
+ * d'équivalence du circuit et autre.
+ * @extends Composant 
+ */
 class Noeuds extends Composant {
   constructor(x, y){
     super(x, y);
@@ -269,6 +389,7 @@ class Noeuds extends Composant {
     this.valide = false; //On assume que c'est faux, mais si une des branches est valide, on le met vrai.
   }
 
+
   /**
    * Ajoute un circuit dans l'array de circuit du noeud.
    * @param {*} composant 
@@ -283,16 +404,15 @@ class Noeuds extends Composant {
  /**
   * Sert à faire les calculs reliés au noeud. Donc les calculs pour les circuits en parallèle se font ici.
   */
+
  trouverEq(){
     for (const circuit of this.circuitsEnParallele){ 
       circuit.trouverEq();
       if(circuit.valide){
-        this.valide = true;
       }
     }
 
     this.trouverTypeDeCircuit();
-    
     switch (this.type){
         case SEULEMENTR:
           let resistanceTemp = 0;
@@ -310,7 +430,6 @@ class Noeuds extends Composant {
             //C'est là que c'est difficile
             break;
     }
-
   }
 
   /**
@@ -382,5 +501,17 @@ class Noeuds extends Composant {
   getType() {
     return NOEUD;
   }
+}
+/**
+ * Vérifie si un nouveau composant ou un composant que l'on a modifier a une position valide. 
+ * Les critères sont que le composant se situe dans la grille et qu'il ne connecte pas
+ * avec les bornes d'un composant
+ * @param {Composant} composant Le composant que l'on veut valider la position
+ * @returns Si la position du composant est valide
+ */
+function validComposantPos(composant){
+  if (!inGrid(composant.x + grid.translateX, composant.y + grid.translateY))
+    return false;
+  return !components.some(element =>element.checkConnection(composant.x,composant.y,1) || composant.checkConnection(element.x,element.y,1));
 }
   
