@@ -213,7 +213,6 @@ function draw() {
   if (origin != null) {
     drag.draw(grid.translateX, grid.translateY);
   }
-  text('Temps passé: ' +Math.floor(millis()/60000)+' min '+ Math.round(millis()/1000)%60+' s', 5, 750);
 }
 
 /**
@@ -222,6 +221,7 @@ function draw() {
 function drawComponentsChooser() {
   push();
   scale(1/grid.scale);
+  text('Temps passé: ' +Math.floor(millis()/60000)+' min '+ Math.round(millis()/1000)%60+' s', 5, 750);
   noStroke();
   textAlign(CENTER);
   fill(backgroundColor);
@@ -770,8 +770,13 @@ function windowResized(){
  * système à zéro.
  */
 function refresh() {
-  initComponents();
-  resetHistorique();
+  while(undo_list.length !=0){
+    undo()
+  } 
+  redo_list.length =0;
+  drag = null;
+  selection = null;
+  origin = null;
 }
 
 
@@ -862,54 +867,30 @@ function getComposantVide(type){
 async function sauvegarder() {
   let data = getStringData();
   // envoi de la requête
-  await fetch('users/sauvegarderCircuit', {
+  await fetch('/query', {
       method: "POST",
-      mode: "cors",
       cache: "no-cache",
-      credentials: "same-origin",
       headers: {
         "Content-Type": "application/json",
       },
-      redirect: "follow",
       referrerPolicy: "no-referrer",
       body: data,
     }).then(function(response){
       //les actions à faire lorsque notre action réussis
-      saveJsonData(data);
+      console.log('JSON data saved successfully');
    }).catch(function() {
     alert('Votre sauvegarde a échouer');
   }); 
-}
-function saveJsonData(jsonString) {
-  // Create a new XMLHttpRequest object
-  const xhr = new XMLHttpRequest();
-
-  // Define the request method, URL, and content type
-  xhr.open('POST', '/query', true);
-  xhr.setRequestHeader('Content-Type', 'application/json');
-
-  // Define a callback function to handle the response
-  xhr.onreadystatechange = function() {
-    if (xhr.readyState === XMLHttpRequest.DONE) {
-      if (xhr.status === 200) {
-        console.log('JSON data saved successfully');
-      } else {
-        console.error('Error: ' + xhr.status);
-      }
-    }
-  };
-
-  // Send the request with the JSON string as the payload
-  xhr.send(JSON.stringify({ json: jsonString }));
 }
 
 /**
  * Fait une requête au serveur pour récupérer un des circuits test qui est 
  * enregistrer dans sur le serveur (pas dans la base de donné) et load le circuit
+ * @param {string} Le nom du fichier json contenant le circuit demander. Par défaut le circuit de base
  * @see baseCircuit Le nom du circuit à récupérer
  */
-async function loadLocalCircuit(){
-  fetch('test/circuit/'+baseCircuit)
+async function loadLocalCircuit(circuit = baseCircuit){
+  fetch('test/circuit/'+circuit)
     .then((response) => response.json())
     .then((json) => load(json));
 
@@ -921,13 +902,13 @@ async function loadLocalCircuit(){
 function telecharger(){
   let data = [getStringData()];
   const blob = new Blob(data, {type: "application/json"});
-  var isIE = false || !!document.documentMode;
+  let isIE = false || !!document.documentMode;
   if (isIE) {
     window.navigator.msSaveBlob(blob, "circuit.json");
   } else {
-    var url = window.URL || window.webkitURL;
-    link = url.createObjectURL(blob);
-    var a = document.createElement("a");
+    let url = window.URL || window.webkitURL;
+    let link = url.createObjectURL(blob);
+    let a = document.createElement("a");
     a.download = "circuit.json";
     a.href = link;
     a.click();
@@ -935,7 +916,7 @@ function telecharger(){
 }
 
 function upload(){
-  var input = document.createElement("input");
+  let input = document.createElement("input");
   input.type = "file";
   input.addEventListener("change", function(){
     if(this.files[0]!=null){
