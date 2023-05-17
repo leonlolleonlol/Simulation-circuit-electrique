@@ -32,6 +32,11 @@ FIL = 'fil';
 /** @const {ComposantType} CIRCUIT */
 CIRCUIT = 'circuit';
 
+
+SEULEMENTR = "seulementR";
+SEULEMENTC = "seulementC";
+RC = "RC";
+
 /**
  * @typedef {ActionType} 
  * @global
