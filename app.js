@@ -43,12 +43,6 @@ app.get('/users/register', checkAuthenticated, function(req, res) {
 });
 app.post('/users/register', async(req, res)=>{
   let { name, prenom,  email, password, password2 } = req.body;
-  console.log({
-    name,
-    email,
-    password,
-    password2
-  });
   let errors = [];
   if (!name || !prenom || !email || !password || !password2) {
     errors.push({ message: "Please enter all fields" });
@@ -111,19 +105,20 @@ app.post(
     failureFlash: true
   })
 );
-app.post('/query', (req, res) => {
-  const { json } = req.body;
-
-  // Define the INSERT query
-  const query = {
-    text: 'INSERT INTO my_table (json_data) VALUES ($1)',
-    values: [json],
-  };
-
-  // Execute the query using the pg pool
-  pool.query(query)
-    .then(() => res.sendStatus(200))
-    .catch(error => console.error(error));
+let currentEmail;
+app.post('/query', async(req, res) => {
+  let string=JSON.stringify(req.body).replace(/([a-zA-Z0-9_]+?):/g, '"$1":');
+  try {
+    const result = await pool.query(
+      'UPDATE users SET details = $1 WHERE email = $2',
+      [string,req.user.email]
+    );
+    res.sendStatus(200); // Send a success response to the client
+  } catch (err) {
+    console.error('Error:', err.message);
+    console.error('Stack trace:', err.stack);
+    res.sendStatus(500);
+  }
 });
 
 app.get("/users/logout", async (req, res) => {
