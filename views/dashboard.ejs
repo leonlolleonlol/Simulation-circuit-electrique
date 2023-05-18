@@ -10,7 +10,6 @@
 </head>
 <body>
     <div id="user-info">
-        <span><%=user.name%></span>
         <a href="/users/logout" class="w3-bar-item w3-button">
             <img src="../images/icons/log-out.svg" alt="Déconnexion"/>
         </a>
@@ -21,7 +20,9 @@
         </button>
     </a>
         <br></br>
-    <h1>Bonjour <%= user.prenom %></h1>
+    <div id="user-info">
+        <h1> Bonjour <%= user.prenom %> !</h1>
+    </div>
     <br>
     <h2>Projets</h2>
     <% if(user.projets!=null){ %>

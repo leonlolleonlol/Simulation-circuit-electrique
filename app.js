@@ -132,6 +132,7 @@ app.get('/users/dashboard', checkNotAuthenticated, function(req, res) {
   res.render("dashboard", {user:{
     id:req.user.name,//bientôt req.user.id
     name:req.user.name,
+    prenom:req.user.prenom
     //projets:req.user.projets,
   } });
 });
@@ -155,7 +156,10 @@ function checkAuthenticated(req, res, next) {
 }
 function checkAuthenticatedForEditor(req, res) {
   if (req.isAuthenticated())
-    return res.render('editeur', req.body);
+    return res.render("editeur", {user:{
+      name:req.user.name,
+      prenom:req.user.prenom
+    } });
   else
     return res.redirect(path.join(__dirname, '/'));
 }
