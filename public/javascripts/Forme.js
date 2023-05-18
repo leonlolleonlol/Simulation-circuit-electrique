@@ -10,28 +10,13 @@ function resisteur(x, y, orientation, selection) {
   rectMode(CENTER);
   strokeWeight(2);
 
-  //transformation
-  translate(x, y);
-  rotate(orientation);
+  appliquerTransformation(x, y, orientation);
+  if(selection)
+    selectionBox('rgba(255,165,108,0.2)', blendBG('rgba(255,165,0,0.4)'), 80, 45);
 
-  if(selection){
-    push();
-    stroke(blendBG('rgba(255,165,0,0.4)'));
-    fill('rgba(255,165,108,0.2)');
-    rect(0,0,80,45,10);
-    pop();
-  }
-
-  // Gradients
-  let fillGrad = drawingContext.createLinearGradient(-25, -10, 25, 10);
-  fillGrad.addColorStop(0, blendBG("rgba(241,39,17,0.6)"));
-  fillGrad.addColorStop(1, blendBG("rgba(245,175,25,0.6)"));
-  let strokeGrad = drawingContext.createLinearGradient(-25, -10, 25, 10);
-  strokeGrad.addColorStop(0, "rgb(241,39,17)");
-  strokeGrad.addColorStop(1, "rgb(245,175,25)");
-
-  drawingContext.fillStyle = fillGrad;
-  drawingContext.strokeStyle = strokeGrad;
+  createColorGradient(-25, -10, 25, 10,
+    {stop:0, color:'rgb(241,39,17)'}, 
+    {stop:1, color:'rgb(245,175,25)'});
 
   // Embout du résisteur
   quad(-20, -10, -30, -4, -30, 4, -20, 10);
@@ -54,32 +39,15 @@ function batterie(x, y, orientation, selection) {
   rectMode(CENTER);
   strokeWeight(2);
 
-  //transformation
-  translate(x, y);
-  rotate(orientation);
+  appliquerTransformation(x, y, orientation);
+  if(selection)
+    selectionBox('rgba(0,255,0,0.2)', blendBG('rgba(0,0,0,0.4)'), 80, 40);
+  createColorGradient(-25, -10, 25, -10,
+   {stop:0, color:'rgb(0,0,0)'}, 
+   {stop:0.35, color:'rgb(0,0,0)'}, 
+   {stop:0.85, color:'rgb(0,255,0)'},
+   {stop:1, color:'rgb(0,255,0)'});
 
-  if(selection){
-    push();
-    stroke(blendBG('rgba(0,0,0,0.4)'));
-    fill('rgba(0,255,0,0.2)');
-    rect(0,0,80,40,10);
-    pop();
-  }
-
-  // Gradients
-  let fillGrad = drawingContext.createLinearGradient(-25, -10, 25, -10);
-  fillGrad.addColorStop(0, blendBG("rgba(0,0,0,0.6)"));
-  fillGrad.addColorStop(0.35, blendBG("rgba(0,0,0,0.6)"));
-  fillGrad.addColorStop(0.85, blendBG("rgba(0,255,0,0.6)"));
-  fillGrad.addColorStop(1, blendBG("rgba(0,255,0,0.6)"));
-  let strokeGrad = drawingContext.createLinearGradient(-25, -10, 25, -10);
-  strokeGrad.addColorStop(0, "#000000");
-  strokeGrad.addColorStop(0.35, "#000000");
-  strokeGrad.addColorStop(0.85, "#00FF00");
-  strokeGrad.addColorStop(1, "#00FF00");
-  drawingContext.fillStyle = fillGrad;
-  drawingContext.strokeStyle = strokeGrad;
-  
   rect(0, 0, 60, 20, 7.5);
   pop();
 }
@@ -95,29 +63,14 @@ function condensateur(x, y, orientation, selection) {
   push();
   rectMode(CENTER);
   strokeWeight(2);
-  //transformation
-  translate(x, y);
-  rotate(orientation);
+  appliquerTransformation(x, y, orientation);
+  if(selection)
+    selectionBox('rgba(54,209,220,0.2)', blendBG('rgba(54,209,220,0.4)'), 80, 50);
 
-  if(selection){
-    push();
-    stroke(blendBG('rgba(54,209,220,0.4)'));
-    fill('rgba(54,209,220,0.2)');
-    rect(0,0,80,50,10);
-    pop();
-  }
-
-  // Gradients
-  let fillGrad = drawingContext.createLinearGradient(-25, -10, 25, 10);
-  fillGrad.addColorStop(0, blendBG("rgba(54,209,220,0.6)"));
-  fillGrad.addColorStop(0.5, blendBG("rgba(91,134,229,0.6)"));
-  fillGrad.addColorStop(1, blendBG("rgba(54,209,220,0.6)"));
-  let strokeGrad = drawingContext.createLinearGradient(-25, -10, 25, 10);
-  strokeGrad.addColorStop(0, "rgb(54,209,220)");
-  strokeGrad.addColorStop(0.5, "rgb(91,134,229)");
-  strokeGrad.addColorStop(1, "rgb(54,209,220)");
-  drawingContext.fillStyle = fillGrad;
-  drawingContext.strokeStyle = strokeGrad;
+  createColorGradient(-25, -10, 25, -10,
+   {stop:0, color:'rgb(54,209,220)'}, 
+   {stop:0.5, color:'rgb(91,134,229)'}, 
+   {stop:1, color:'rgb(54,209,220)'});
 
   const taille = 15;
   rect(-taille + taille / 5, 0, taille, taille * 2, taille / 4);
@@ -139,17 +92,10 @@ function diode(x, y, orientation, selection) {
   rectMode(CENTER);
   strokeWeight(2);
 
-  //transformation
-  translate(x, y);
-  rotate(orientation);
+  appliquerTransformation(x, y, orientation);
 
-  if(selection){
-    push();
-    stroke(blendBG('rgba(32,189,255,0.4)'));
-    fill('rgba(32,189,255,0.2)');
-    rect(0,0,50,50,10);
-    pop();
-  }
+  if(selection)
+    selectionBox('rgba(32,189,255,0.2)', blendBG('rgba(32,189,255,0.4)'), 50, 50);
 
   let gradCercle = drawingContext.createLinearGradient(-15, -10, 15, 10);
   gradCercle.addColorStop(1, "rgb(252,70,107)");
@@ -195,39 +141,20 @@ function ampoule(x, y, orientation, selection) {
   push();
   strokeWeight(2);
   rectMode(CENTER);
+  appliquerTransformation(x, y, orientation);
 
-  //transformation
-  translate(x, y);
-  rotate(orientation);
+  if(selection)
+    selectionBox('rgba(255,255,0,0.2)', blendBG('rgba(255,255,0,0.4)'), 80, 45);
 
-  if(selection){
-    push();
-    stroke(blendBG('rgba(255,255,0,0.4)'));
-    fill('rgba(255,255,0,0.2)');
-    rect(0,0,80,44,10);
-    pop();
-  }
-
-  let grad = drawingContext.createLinearGradient(-30, -10, -13, -10);
-  grad.addColorStop(0, "rgb(62, 81, 81)");
-  grad.addColorStop(1, "rgb(222, 203, 164)");
-  let grad1 = drawingContext.createLinearGradient(-30, -10, -13, -10);
-  grad1.addColorStop(0, blendBG("rgba(62, 81, 81,0.6)"));
-  grad1.addColorStop(1, blendBG("rgba(222, 203, 164,0.6)"));
-  drawingContext.strokeStyle = grad;
-  drawingContext.fillStyle = grad1;
+  let couleurs = [{stop:0, color:'rgb(62, 81, 81)'}, {stop:1, color:'rgb(222, 203, 164)'}];
+  createColorGradient(-30, -10, -13, -10, couleurs);
   rect(-17, 0, 6, 22, 0, 8, 8, 0);
   rect(-25, 0, 10, 7);
-  let grad2 = drawingContext.createLinearGradient(30, -10, 13, -10);
-  grad2.addColorStop(0, "rgb(62, 81, 81)");
-  grad2.addColorStop(1, "rgb(222, 203, 164)");
-  let grad3 = drawingContext.createLinearGradient(30, -10, 13, -10);
-  grad3.addColorStop(0, blendBG("rgba(62, 81, 81,0.6)"));
-  grad3.addColorStop(1, blendBG("rgba(222, 203, 164,0.6)"));
-  drawingContext.strokeStyle = grad2;
-  drawingContext.fillStyle = grad3;
+
+  createColorGradient(-30, -10, 13, -10, couleurs);
   rect(17, 0, 6, 22, 8, 0, 0, 8);
   rect(25, 0, 10, 7);
+
   noStroke();
   let grad4 = drawingContext.createLinearGradient(-12.5, 0, 12.5, 5);
   grad4.addColorStop(0, "#F7971E");
@@ -274,6 +201,58 @@ function lineGrid(color) {
     line(grid.offsetX, offsetY + j, width/grid.scale, offsetY + j);
   }
   pop();
+}
+
+
+/**
+ * Applique une transformation général de positionement et de rotation
+ * avec les attributs de p5.js
+ * @param {number} x valeur décalage en x
+ * @param {number} y valeur décalage en y
+ * @param {number} orientation angle de rotation (en radians)
+ * @see https://p5js.org/reference/#group-Transform
+ */
+function appliquerTransformation(x, y, orientation){
+  translate(x, y);
+  rotate(orientation);
+}
+
+/**
+ * Dessine une boîte de sélection
+ * @param {string} innerColor La couleur intérieur de la boîte
+ * @param {string} borderColor La couleur de bordure
+ * @param {number} width La largeur de la boîte de sélection
+ * @param {number} height La hauteur de la boîte de sélection
+ */
+function selectionBox(innerColor, borderColor, width, height) {
+  push();  
+  fill(innerColor);
+  stroke(borderColor);
+  rect(0,0,width,height,10);
+  pop();
+}
+
+/**
+ * Cette fonction permet d'instaurer de créer deux gradient pour le dessin que l'on veut effectuer.
+ * Le premier gradient va être la couleur originel et va servir à faire le style pour les 
+ * contour de notre dessin. Le deuxième gradient va ajouter un alpha de 0.6 à la couleur
+ * et va mettre définir la couleur de fill avec ce gradient.
+ * @param {number} x0 Cordonné x du début du gradient
+ * @param {number} y0 Cordonné y du début du gradient
+ * @param {number} x1 Cordonné x de la fin du gradient
+ * @param {number} y1 Cordonné y de la fin du gradient
+ */
+function createColorGradient(x0, y0, x1, y1, ...couleurs) {
+  let fillGradient = drawingContext.createLinearGradient(x0, y0, x1, y1);
+  let strokeGradient = drawingContext.createLinearGradient(x0, y0, x1, y1);
+  for (const colorStop of couleurs) {
+    strokeGradient.addColorStop(colorStop.stop, colorStop.color);
+    let nColor = color(colorStop.color);
+    nColor.setAlpha(0.6);
+    fillGradient.addColorStop(colorStop.stop, blendBG(nColor));
+  }
+  drawingContext.strokeStyle = strokeGradient;
+  drawingContext.fillStyle = fillGradient;
 }
 
 //-------------------------------------------------------------------
