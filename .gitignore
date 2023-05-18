@@ -1,6 +1,4 @@
 node_modules
-public/javascripts/lib
 package-lock.json
 yarn.lock
-documentation
 .vscode

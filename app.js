@@ -1,5 +1,4 @@
 const express = require('express');
-const fs = require('fs');
 const { pool } = require("./dbConfig");
 const bcrypt = require("bcrypt");
 const session=require("express-session");
@@ -15,10 +14,11 @@ initializePassport(passport);
 app.use(bodyParser.json());
 const port = 3000;
 const path = require('path')
-var nerdamer = require('nerdamer'); 
+require('nerdamer'); 
 // Load additional modules. These are not required.  
 require('nerdamer/Solve');
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname,'public')));
+app.use(express.static(path.join(__dirname,'public/javascripts')));
 app.listen(port, () => {
   var url = `http://localhost:${port}`
   console.log('Server listen on '+url);
@@ -36,7 +36,6 @@ app.use(passport.session());
 app.use(flash());
 app.get('/', function(req, res) {
   res.sendFile(path.join(__dirname, '/acceuil.html'));
-  //res.render("index");
 });
 app.get('/users/register', checkAuthenticated, function(req, res) {
   res.render('register');
@@ -143,30 +142,6 @@ app.get('/acceuil', function(req, res) {
 });
 app.get('/nerdamer/all.min.js', function(req, res) {
   res.sendFile(path.join(__dirname, 'node_modules/nerdamer/all.min.js'));
-});
-app.get('/sketch.js', function(req, res) {
-  res.sendFile(path.join(__dirname, 'public/javascripts/sketch.js'));
-});
-app.get('/Forme.js', function(req, res) {
-  res.sendFile(path.join(__dirname, 'public/javascripts/Forme.js'));
-});
-app.get('/constantes.js', function(req, res) {
-  res.sendFile(path.join(__dirname, 'public/javascripts/constantes.js'));
-});
-app.get('/Historique.js', function(req, res) {
-  res.sendFile(path.join(__dirname, 'public/javascripts/Historique.js'));
-});
-app.get('/Circuit.js', function(req, res) {
-  res.sendFile(path.join(__dirname, 'public/javascripts/Circuit.js'));
-});
-app.get('/p5.min.js', function(req, res) {
-  res.sendFile(path.join(__dirname, 'public/javascripts/lib/p5.min.js'));
-});
-app.get('/fil.js', function(req, res){
-  res.sendFile(path.join(__dirname, 'public/javascripts/fil.js'));
-})
-app.get('/Composant.js', function(req, res) {
-  res.sendFile(path.join(__dirname, 'public/javascripts/Composant.js'));
 });
 app.get('/editeur', checkAuthenticatedForEditor,function(req, res) {
 });
