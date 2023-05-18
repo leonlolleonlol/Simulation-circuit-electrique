@@ -27,12 +27,9 @@ class Fil{
 
   /**
    * Aller voir {@link Composant#draw | Composant.draw()}
-   * @param offX 
-   * @param offY 
    */
-  draw(offX, offY){
+  draw(){
     push();
-    translate(offX, offY);
     if(isElementSelectionner(this) && !isElementSelectionner(drag)){
       push();
       strokeWeight(30);

@@ -211,7 +211,10 @@ function draw() {
   drawComposants();
   drawComponentsChooser();
   if (origin != null) {
-    drag.draw(grid.translateX, grid.translateY);
+    push();
+    translate(grid.translateX, grid.translateY);
+    drag.draw();
+    pop();
   }
 }
 
@@ -239,7 +242,7 @@ function drawComponentsChooser() {
     stroke("rgba(52,52,52,0.78)");
     rect(composant.x, composant.y + 10, 120, 60);
     if (composant != origin)
-      composant.draw(0, 0);
+      composant.draw();
     noStroke();
     fill('black');
     textSize(16);
@@ -276,18 +279,24 @@ function drawGrid(){
  * @see {@link Fil#draw | Fil.prototype.draw()}
  */
 function drawFils() {
+  push();
+  translate(grid.translateX, grid.translateY);
   for (let element of fils){
-    element.draw(grid.translateX, grid.translateY);
+    element.draw();
   }
+  pop();
 }
 
 /**
  * Dessine tout les composants dans la liste avec p5
  */
 function drawComposants(){
+  push();
+  translate(grid.translateX, grid.translateY);
   for (let element of components) {
-    element.draw(grid.translateX, grid.translateY);
+    element.draw();
   }
+  pop();
 }
 
 /**

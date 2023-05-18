@@ -23,7 +23,6 @@ class Composant {
    * Chaque implémentation doit toujours commencer avec un `push()` et finir avec un `pop()` pour 
    * que chaque modification des attributs de dessin soit annuler à la sortie de la méthode.
    * @abstract
-   * @todo offsetX et offsetY à retirer
    */
   draw() {
     throw new Error('Cette fonction ne peut pas être appelé de l\'interface');
@@ -186,8 +185,8 @@ class Ampoule extends Resisteur {
  /**
   * @inheritdoc
   */
-  draw(offX, offY) {
-      ampoule(this.x + offX,this.y + offY, this.orientation, isElementSelectionner(this));
+  draw() {
+      ampoule(this.x,this.y, this.orientation, isElementSelectionner(this));
   }
 
  /**
@@ -223,8 +222,8 @@ class Condensateur extends Composant {
   /**
    * @inheritdoc
    */
-  draw(offsetX, offsetY) {
-    condensateur(this.x + offsetX, this.y + offsetY, this.orientation, isElementSelectionner(this));
+  draw() {
+    condensateur(this.x, this.y, this.orientation, isElementSelectionner(this));
   }
 
   /**
@@ -258,8 +257,8 @@ class Batterie extends Composant {
   /**
    * @inheritdoc
    */
-  draw(offX, offY) {
-      batterie(this.x + offX, this.y + offY, this.orientation, isElementSelectionner(this));
+  draw() {
+      batterie(this.x, this.y, this.orientation, isElementSelectionner(this));
   }
 
   /**
@@ -292,8 +291,8 @@ class Diode extends Composant {
   /**
    * @inheritdoc
    */
-  draw(offX, offY) {
-    diode(this.x + offX,this.y + offY, this.orientation, isElementSelectionner(this));
+  draw() {
+    diode(this.x, this.y, this.orientation, isElementSelectionner(this));
   }
 
   /**
