@@ -337,6 +337,17 @@ function drawFils() {
   for (let element of fils){
     element.draw();
   }
+  if(animate){
+    for (let element of fils){
+      let nbCharge = Math.floor(element.longueur()/grid.tailleCell);
+      let decalageCharge = (percent*(1+Math.floor(element.courant))/nbCharge) % 1
+      for(let i = 0;i < nbCharge;i++){
+        let percentCharge = (decalageCharge + i/nbCharge)% 1;
+        let pos = posAtPercent(element, percentCharge);
+        circle(pos.x,pos.y,10);
+      }
+    }
+  }
   pop();
 }
 
@@ -398,13 +409,17 @@ function inGrid(x, y){
 
 /**
  * Vérifie si un point en x et y connecte au borne d'un composant sur la grille et 
- * retourne ce composant si c'est le cas.
+ * retourne ce composant si c'est le cas. On peut spécifier l'option de retourner tout les 
+ * composants qui connecte
  * @param {number} x la position en x
  * @param {number} y la position en y
+ * @param {boolean} [first] Retourne soit le premier élément trouver, soit tout les éléments
  * @returns Le composant trouvé ou null
  */
-function getConnectingComposant(x, y){
-  return components.find(element => element.checkConnection(x, y, 10))
+function getConnectingComposant(x, y, first=true){
+  let isConnecting = element => element.checkConnection(x, y, 10);
+  return first ? [components.find(isConnecting)] : components.filter(isConnecting);
+  //return list.map(element =>{ return {element, borne:element.getBorne(x, y, 10)};})
 }
 
 /**
@@ -412,19 +427,30 @@ function getConnectingComposant(x, y){
  * retourne ce fil si c'est le cas
  * @param {number} x la position en x
  * @param {number} y la position en y
+ * @param {boolean} [first] Retourne soit le premier élément trouver, soit tout les éléments
  * @returns Le fil trouvé qui connecte ou null
  */
-function filStart(x, y){
+function filStart(x, y, first = true){
+  let connections = [];
   for (const fil of fils) {
     if(fil.yi!=fil.yf && fil.xi!=fil.xf){
       if(dist(fil.xi, fil.yi, x, y)<10 ||
-         dist(fil.xf, fil.yf, x, y)<10)
-        return fil;
+         dist(fil.xf, fil.yf, x, y)<10){
+        if(!first)
+          connections.push(fil);
+        else return fil;
+      }
     } else if(fil.inBoxBounds(x, y)){
-      return fil;
+      if(!first)
+        connections.push(fil);
+      else return fil;
     }
   }
-  return null;
+  return !first ? connections : null;
+}
+
+function getPossibleConnections(x, y, first = false) {
+  return filStart(x, y, false).concat(getConnectingComposant(x, y, false));
 }
 
 

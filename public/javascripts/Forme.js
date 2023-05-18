@@ -3,17 +3,12 @@
  * @param {number} x coordoné en x du composant
  * @param {number} y coordoné en y du composant
  * @param {number} orientation rotation du composant en radians
- * @param {boolean} selection Dessiner la boîte de sélectionnement
  */
-function resisteur(x, y, orientation, selection) {
+function resisteur(x, y, orientation) {
   push();
   rectMode(CENTER);
   strokeWeight(2);
-
   appliquerTransformation(x, y, orientation);
-  if(selection)
-    selectionBox('rgba(255,165,108,0.2)', blendBG('rgba(255,165,0,0.4)'), 80, 45);
-
   createColorGradient(-25, -10, 25, 10,
     {stop:0, color:'rgb(241,39,17)'}, 
     {stop:1, color:'rgb(245,175,25)'});
@@ -32,16 +27,12 @@ function resisteur(x, y, orientation, selection) {
  * @param {number} x coordoné en x du composant
  * @param {number} y coordoné en y du composant
  * @param {number} orientation rotation du composant en radians
- * @param {boolean} selection Dessiner la boîte de sélectionnement
  */
-function batterie(x, y, orientation, selection) {
+function batterie(x, y, orientation) {
   push();
   rectMode(CENTER);
   strokeWeight(2);
-
   appliquerTransformation(x, y, orientation);
-  if(selection)
-    selectionBox('rgba(0,255,0,0.2)', blendBG('rgba(0,0,0,0.4)'), 80, 40);
   createColorGradient(-25, -10, 25, -10,
    {stop:0, color:'rgb(0,0,0)'}, 
    {stop:0.35, color:'rgb(0,0,0)'}, 
@@ -57,26 +48,21 @@ function batterie(x, y, orientation, selection) {
  * @param {number} x coordoné en x du composant
  * @param {number} y coordoné en y du composant
  * @param {number} orientation rotation du composant en radians
- * @param {boolean} selection Dessiner la boîte de sélectionnement
  */
-function condensateur(x, y, orientation, selection) {
+function condensateur(x, y, orientation) {
   push();
   rectMode(CENTER);
   strokeWeight(2);
   appliquerTransformation(x, y, orientation);
-  if(selection)
-    selectionBox('rgba(54,209,220,0.2)', blendBG('rgba(54,209,220,0.4)'), 80, 50);
-
   createColorGradient(-25, -10, 25, -10,
    {stop:0, color:'rgb(54,209,220)'}, 
    {stop:0.5, color:'rgb(91,134,229)'}, 
    {stop:1, color:'rgb(54,209,220)'});
 
-  const taille = 15;
-  rect(-taille + taille / 5, 0, taille, taille * 2, taille / 4);
-  rect(taille - taille / 5, 0, taille, taille * 2, taille / 4);
-  rect(-2 * taille + taille / 5 + 5 / 2, 0, 10, taille / 2);
-  rect(2 * taille - taille / 5 - 5 / 2, 0, 10, taille / 2);
+  rect(-12, 0, 15, 30, 3.75);
+  rect(12, 0, 15, 30, 3.75);
+  rect(-24.5, 0, 10, 7.5);
+  rect(24.5, 0, 10, 7.5);
   pop();
 }
 
@@ -85,18 +71,13 @@ function condensateur(x, y, orientation, selection) {
  * @param {number} x coordoné en x du composant
  * @param {number} y coordoné en y du composant
  * @param {number} orientation rotation du composant en radians
- * @param {boolean} selection Dessiner la boîte de sélectionnement
  */
-function diode(x, y, orientation, selection) {
+function diode(x, y, orientation) {
   push();
   rectMode(CENTER);
   strokeWeight(2);
 
   appliquerTransformation(x, y, orientation);
-
-  if(selection)
-    selectionBox('rgba(32,189,255,0.2)', blendBG('rgba(32,189,255,0.4)'), 50, 50);
-
   let gradCercle = drawingContext.createLinearGradient(-15, -10, 15, 10);
   gradCercle.addColorStop(1, "rgb(252,70,107)");
   gradCercle.addColorStop(0, "rgb(63,94,251)");
@@ -135,17 +116,12 @@ function diode(x, y, orientation, selection) {
  * @param {number} x coordoné en x du composant
  * @param {number} y coordoné en y du composant
  * @param {number} orientation rotation du composant en radians
- * @param {boolean} selection Dessiner la boîte de sélectionnement
  */
-function ampoule(x, y, orientation, selection) {
+function ampoule(x, y, orientation) {
   push();
   strokeWeight(2);
   rectMode(CENTER);
   appliquerTransformation(x, y, orientation);
-
-  if(selection)
-    selectionBox('rgba(255,255,0,0.2)', blendBG('rgba(255,255,0,0.4)'), 80, 45);
-
   let couleurs = [{stop:0, color:'rgb(62, 81, 81)'}, {stop:1, color:'rgb(222, 203, 164)'}];
   createColorGradient(-30, -10, -13, -10, ...couleurs);
   rect(-17, 0, 6, 22, 0, 8, 8, 0);
@@ -217,6 +193,12 @@ function appliquerTransformation(x, y, orientation){
   rotate(orientation);
 }
 
+function getAlphaColor(c, alpha){
+  let copy = color(c);
+  copy.setAlpha(alpha);
+  return copy;
+}
+
 /**
  * Dessine une boîte de sélection
  * @param {string} innerColor La couleur intérieur de la boîte
@@ -224,11 +206,13 @@ function appliquerTransformation(x, y, orientation){
  * @param {number} width La largeur de la boîte de sélection
  * @param {number} height La hauteur de la boîte de sélection
  */
-function selectionBox(innerColor, borderColor, width, height) {
-  push();  
+function selectionBox(x, y, width, height, innerColor, borderColor) {
+  push();
+  rectMode(CENTER);
+  strokeWeight(2);
   fill(innerColor);
-  stroke(borderColor);
-  rect(0,0,width,height,10);
+  stroke(borderColor==null ? blendBG(getAlphaColor(innerColor, 0.4)) : borderColor);
+  rect(x, y, width,height, 10);
   pop();
 }
 
@@ -247,9 +231,7 @@ function createColorGradient(x0, y0, x1, y1, ...couleurs) {
   let strokeGradient = drawingContext.createLinearGradient(x0, y0, x1, y1);
   for (const colorStop of couleurs) {
     strokeGradient.addColorStop(colorStop.stop, colorStop.color);
-    let nColor = color(colorStop.color);
-    nColor.setAlpha(0.6);
-    fillGradient.addColorStop(colorStop.stop, blendBG(nColor));
+    fillGradient.addColorStop(colorStop.stop, blendBG(getAlphaColor(colorStop.color, 0.6)));
   }
   drawingContext.strokeStyle = strokeGradient;
   drawingContext.fillStyle = fillGradient;

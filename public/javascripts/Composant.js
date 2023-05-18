@@ -1,19 +1,23 @@
 
 
-/** Cet interface permet de définir tout les méthode nécéssaire pour le programme
- * @interface
+/** 
+ * Cet interface permet de définir tout les méthode nécéssaire pour le programme
  */
 class Composant {
 
   /**
    * Créer un composant avec une position, des valeurs mathématique =0 et un identifiant unique
    * @param {number} x 
-   * @param {number} y 
+   * @param {number} y
+   * @param {number} width
+   * @param {number} height
    */
-  constructor(x, y){
+  constructor(x, y, width, height){
     this.id = Date.now();// Donne un identifiant unique à chaque composant
     this.x = x;
     this.y = y;
+    this.width = width;
+    this.height = height;
     // on crée automatiquement une classe de tension
     this.courant = 0;
     this.tension = 0;
@@ -41,7 +45,12 @@ class Composant {
    * @returns {boolean}
    */
   inBounds(x, y) {
-    throw new Error('Cette fonction ne peut pas être appelé de l\'interface');
+    if(this.orientation % PI === 0)
+      return x >= this.x - this.width / 2 && x <= this.x + this.width / 2 &&
+          y >= this.y - this.height / 2 && y <= this.y + this.height / 2;
+    else
+      return x >= this.x - this.height / 2 && x <= this.x + this.height / 2 &&
+          y >= this.y - this.width / 2 && y <= this.y + this.width / 2;
   }
 
   /**
@@ -148,7 +157,7 @@ class Composant {
    * 
    */
   getTitle(){
-    throw new Error('Cette fonction ne peut pas être appelé de l\'interface');
+    return this.titre;
   }
 } 
 
@@ -157,18 +166,11 @@ class Composant {
  */
 class Resisteur extends Composant {
   constructor(x, y, resistance, orientation) {
-      super(x, y);
+      super(x, y, 60, 25);
       this.resistance = resistance;
       this.orientation = orientation??0;
       this.type = RESISTEUR;
-  }
-  inBounds(x, y) {
-    if(this.orientation % PI === 0)
-      return x >= this.x - 60 / 2 && x <= this.x + 60 / 2 &&
-          y >= this.y - 25 / 2 && y <= this.y + 25 / 2;
-    else
-      return x >= this.x - 25 / 2 && x <= this.x + 25 / 2 &&
-          y >= this.y - 60 / 2 && y <= this.y + 60 / 2;
+      this.titre = 'Résisteur';
   }
 
     getMenu(){
@@ -181,15 +183,10 @@ class Resisteur extends Composant {
   /**
    * @inheritdoc
    */
-  draw(offX, offY) {
-      resisteur(this.x + offX,this.y + offY,this.orientation, isElementSelectionner(this));
-  }
-
-  /**
-   * @inheritdoc
-   */
-  getTitle(){
-    return 'Résisteur';
+  draw() {
+    if(isElementSelectionner(this)) 
+      selectionBox(this.x, this.y, 80, 45, 'rgba(255,165,108,0.2)');
+    resisteur(this.x, this.y, this.orientation);
   }
 }
 
@@ -201,32 +198,21 @@ class Resisteur extends Composant {
 class Ampoule extends Resisteur {
   constructor(x, y, resistance, orientation) {
       super(x, y, resistance, orientation);
+      this.height = 22;
       this.type = AMPOULE;
-  }
-  inBounds(x, y) {
-    if(this.orientation % PI === 0)
-      return x >= this.x - 60 / 2 && x <= this.x + 60 / 2 &&
-          y >= this.y - 22 / 2 && y <= this.y + 22 / 2;
-    else
-      return x >= this.x - 22 / 2 && x <= this.x + 22 / 2 &&
-          y >= this.y - 60 / 2 && y <= this.y + 60 / 2;
+      this.titre = 'Ampoule';
   }
 
  /**
   * @inheritdoc
   */
   draw() {
-      ampoule(this.x,this.y, this.orientation, isElementSelectionner(this));
+    if(isElementSelectionner(this))
+      selectionBox(this.x, this.y, 80, 45, 'rgba(255,255,0,0.2)');
+    ampoule(this.x,this.y, this.orientation);
   }
   getMenu(){
     return ["Position x: " + this.x, "Position y: " + this.y, "DeltaV: " + this.tension, "Courant: " + this.courant, "Résistance: " + this.resistance];
-  }
-
- /**
-  * @inheritdoc
-  */
-  getTitle(){
-    return 'Ampoule';
   }
 }
 
@@ -237,33 +223,21 @@ class Ampoule extends Resisteur {
  */
 class Condensateur extends Composant {
   constructor(x, y, capacite, orientation) {
-    super(x, y);
+    super(x, y, 60, 30);
     this.capacite = capacite;
     this.charge = 0;
     this.orientation = orientation??0;
     this.type = CONDENSATEUR;
+    this.titre = 'Condensateur';
   }
-  inBounds(x, y) {
-    if(this.orientation % PI === 0)
-      return x >= this.x - 60 / 2 && x <= this.x + 60 / 2 &&
-        y >= this.y - 30 / 2 && y <= this.y + 30 / 2;
-    else
-      return x >= this.x - 30 / 2 && x <= this.x + 30 / 2 &&
-          y >= this.y - 60 / 2 && y <= this.y + 60 / 2;
-}
   
   /**
    * @inheritdoc
    */
   draw() {
-    condensateur(this.x, this.y, this.orientation, isElementSelectionner(this));
-  }
-
-  /**
-   * @inheritdoc
-   */
-  getTitle(){
-    return 'Condensateur';
+    if(isElementSelectionner(this)) 
+      selectionBox(this.x, this.y, 80, 50, 'rgba(54,209,220,0.2)');
+    condensateur(this.x, this.y, this.orientation);
   }
 }
 
@@ -273,18 +247,11 @@ class Condensateur extends Composant {
  */
 class Batterie extends Composant {
   constructor(x, y, tension, orientation) {
-      super(x, y);
+      super(x, y, 60, 30);
       this.tension = tension;
       this.orientation = orientation??0;
       this.type = BATTERIE;
-  }
-  inBounds(x, y) {
-    if(this.orientation % PI === 0)
-      return x >= this.x - 60 / 2 && x <= this.x + 60 / 2 &&
-          y >= this.y - 30 / 2 && y <= this.y + 30 / 2;
-    else
-      return x >= this.x - 30 / 2 && x <= this.x + 30 / 2 &&
-            y >= this.y - 60 / 2 && y <= this.y + 60 / 2;
+      this.titre = 'Batterie';
   }
   getEq(sens){
     if(sens){
@@ -305,21 +272,14 @@ class Batterie extends Composant {
   getMenu(){
     return ["Position x: " + this.x, "Position y: " + this.y, "DeltaV: " + this.tension, "Charge: " + this.charge, "Capacité: " + this.capacite];
   }
-    
-
 
   /**
    * @inheritdoc
    */
   draw() {
-      batterie(this.x, this.y, this.orientation, isElementSelectionner(this));
-  }
-
-  /**
-   * @inheritdoc
-   */
-  getTitle(){
-    return 'Batterie';
+    if(isElementSelectionner(this)) 
+      selectionBox(this.x, this.y, 80, 40, 'rgba(0,255,0,0.2)', blendBG('rgba(0,0,0,0.4)'));
+    batterie(this.x, this.y, this.orientation);
   }
 }
 
@@ -331,10 +291,11 @@ class Batterie extends Composant {
  */
 class Diode extends Composant {
   constructor(x, y, orientation) {
-    super(x, y);
+    super(x, y, 38, 38);
     this.radius = 19;
     this.orientation = orientation??0;
     this.type = DIODE;
+    this.titre = 'Diode';
   }
   inBounds(x, y) {
     return x >= this.x - this.radius && x <= this.x + this.radius && 
@@ -346,7 +307,9 @@ class Diode extends Composant {
    * @inheritdoc
    */
   draw() {
-    diode(this.x, this.y, this.orientation, isElementSelectionner(this));
+    if(isElementSelectionner(this))
+      selectionBox(this.x, this.y, 50, 50, 'rgba(32,189,255,0.2)');
+    diode(this.x, this.y, this.orientation);
   }
   
   /**
@@ -354,14 +317,6 @@ class Diode extends Composant {
    */
   getMenu(){
     return ["Position x: " + this.x, "Position y: " + this.y, "Sens: " + this.orientation];
-  }
-
-  /**
-   * @inheritdoc
-   */
-  getTitle(){
-    return 'Diode';
-
   }
 }
 
@@ -373,7 +328,7 @@ class Diode extends Composant {
  */
 class Noeuds extends Composant {
   constructor(x, y){
-    super(x, y);
+    super(x, y, 0, 0);
     this.circuitsEnParallele = []; //Array de Circuit qui sont en parallèle (Ceux en série sont dans la class Circuit())
 
     //C'est variable sont utile pour calculer l'équivalence du noeud
@@ -383,6 +338,7 @@ class Noeuds extends Composant {
 
     //Sert stocker le type de circuit. AKA -> seulement des résistances, seulement des condensateurs ou RC.
     this.type;
+    this.titre = 'Nœud'
 
     //Indique si le courant à un chemin pour passer dans au moins une des branches
     this.valide = false; //On assume que c'est faux, mais si une des branches est valide, on le met vrai.
