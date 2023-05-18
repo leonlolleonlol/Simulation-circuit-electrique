@@ -45,12 +45,22 @@
     <img class="icon" src = "images/icons/refresh.svg" alt="effacer tout"/>
     <span class="tooltip top" id="reset-tip">Recommencer</span>
   </button>
+  <% if(user!=null){ %>
+    <span><%= user.name %></span>
   <a href="/users/logout">
-    <button id="logout" class="button-jump">
+    <button id="logout" >
       <img class="icon" src = "images/icons/log-out.svg" alt="Déconnexion"/>
       <span class="tooltip bottom" id="logout-tip">Déconnexion</span>
     </button>
   </a>
+  <% }else{ %>
+  <a href="/users/login">
+      <button id="noUser">
+        <img class="icon" src = "images/icons/user-circle.svg" alt="Inconnus"/>
+        <span class="tooltip bottom" id="logout-tip">Connection</span>
+      </button>
+  </a>
+  <% } %>
   <button id="animate">
     <img class="icon" id="animate_image" src = "images/icons/square.svg" alt="Animation"/>
     <span class="tooltip bottom" id="animation-tip">Arrêter l'animation</span>

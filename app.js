@@ -178,10 +178,10 @@ function checkAuthenticated(req, res, next) {
 }
 function checkAuthenticatedForEditor(req, res) {
   if (req.isAuthenticated())
-    return res.sendFile(path.join(__dirname, '/editeur.html'));
+    return res.render('editeur', req.body);
   else
     return res.redirect(path.join(__dirname, '/'));
-} 
+}
 
 function checkNotAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
