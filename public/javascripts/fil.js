@@ -27,12 +27,9 @@ class Fil{
 
   /**
    * Aller voir {@link Composant#draw | Composant.draw()}
-   * @param offX 
-   * @param offY 
    */
-  draw(offX, offY){
+  draw(){
     push();
-    translate(offX, offY);
     if(isElementSelectionner(this) && !isElementSelectionner(drag)){
       push();
       strokeWeight(30);
@@ -48,15 +45,6 @@ class Fil{
     fill('red')
     strokeWeight(4);
     line(this.xi, this.yi, this.xf, this.yf);
-    if(animate){
-      let nbCharge = Math.floor(this.longueur()/grid.tailleCell);
-      let decalageCharge = (percent*(1+Math.floor(this.courant))/nbCharge) % 1
-      for(let i = 0;i < nbCharge;i++){
-        let percentCharge = (decalageCharge + i/nbCharge)% 1;
-        let pos = posAtPercent(this, percentCharge);
-        circle(pos.x,pos.y,10);
-      }
-    }
     pop();
   }
 
@@ -69,7 +57,7 @@ class Fil{
    * @see {@link Composant#inBounds | Composant.inBounds()}
    */
   inBounds(x, y){
-    if(!this.inBoxBounds(x,y)){
+    if(!this.inBoxBounds(x, y)){
       return false;
     }
     let fx = this.getFunction();
@@ -83,17 +71,14 @@ class Fil{
    * du fil +10 partout. Fait un calcul rapide
    * @param {number} x coordoné en x
    * @param {number} y coordoné en y
-   * @deprecated Va être bientôt supprimer si il n'y a pas une différence 
-   * de performance substantiel en différence de 
    * {@link Fil#inBounds | Fil.inBounds()}
    * @returns {boolean}
    */
   inBoxBounds(x, y){
-    let x1 = Math.min(this.xi-10, this.xf-10);
-    let x2 = Math.max(this.xi+10, this.xf+ 10);
-    let y1 = Math.min(this.yi-10, this.yf-10);
-    let y2 = Math.max(this.yi+10, this.yf+10);
-    return x > x1 && x < x2 && y > y1 && y < y2;
+    return x > Math.min(this.xi - 10, this.xf - 10) && 
+    x < Math.max(this.xi + 10, this.xf + 10) && 
+    y > Math.min(this.yi - 10, this.yf - 10) && 
+    y < Math.max(this.yi + 10, this.yf + 10);
   }
 
   /**
@@ -217,7 +202,7 @@ function validFilBegin(x, y){
     return false;
   }
   else {
-    return getConnectingComposant(x,y) != null || filStart(x, y)!=null;
+    return getConnectingComposant(x, y) != null || filStart(x, y)!=null;
   }
 }
 

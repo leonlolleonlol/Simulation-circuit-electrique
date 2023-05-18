@@ -59,7 +59,6 @@ function undo(){
  * Refaire la dernière action ou liste d'action annuler par l'utilisateur
  */
 function redo(){
-  // Enlever toute les actions qui suivent
   if(redo_list.length > 0){
     let actions = redo_list.pop();
     undo_list.push(actions);

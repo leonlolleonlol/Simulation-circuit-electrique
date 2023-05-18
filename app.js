@@ -1,5 +1,4 @@
 const express = require('express');
-const fs = require('fs');
 const { pool } = require("./dbConfig");
 const bcrypt = require("bcrypt");
 const session=require("express-session");
@@ -15,10 +14,11 @@ initializePassport(passport);
 app.use(bodyParser.json());
 const port = 3000;
 const path = require('path')
-var nerdamer = require('nerdamer'); 
+require('nerdamer'); 
 // Load additional modules. These are not required.  
 require('nerdamer/Solve');
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname,'public')));
+app.use(express.static(path.join(__dirname,'public/javascripts')));
 app.listen(port, () => {
   var url = `http://localhost:${port}`
   console.log('Server listen on '+url);
@@ -36,15 +36,14 @@ app.use(passport.session());
 app.use(flash());
 app.get('/', function(req, res) {
   res.sendFile(path.join(__dirname, '/acceuil.html'));
-  //res.render("index");
 });
 app.get('/users/register', checkAuthenticated, function(req, res) {
   res.render('register');
 });
 app.post('/users/register', async(req, res)=>{
-  let { name, email, password, password2 } = req.body;
+  let { name, prenom,  email, password, password2 } = req.body;
   let errors = [];
-  if (!name || !email || !password || !password2) {
+  if (!name || !prenom || !email || !password || !password2) {
     errors.push({ message: "Please enter all fields" });
   }
 
@@ -71,14 +70,14 @@ app.post('/users/register', async(req, res)=>{
         if (results.rows.length > 0||errors.length > 0) {
           if(errors.length<1)
             errors.push({ message: "Email already registered!" });
-          return res.status(404).render("register", { errors, name, email, password, password2 });
+          return res.status(404).render("register", { errors, name, prenom , email, password, password2 });
         }
         else{
           pool.query(
-            `INSERT INTO users (name, email, password)
-                VALUES ($1, $2, $3)
+            `INSERT INTO users (name, prenom, email, password)
+                VALUES ($1, $2, $3, $4)
                 RETURNING id, password`,
-            [name, email, hashedPassword],
+            [name, prenom, email, hashedPassword],
             (err, results) => {
               if (err) {
                 throw err;
@@ -92,7 +91,6 @@ app.post('/users/register', async(req, res)=>{
       }
       );
     }
-  //res.end();
 });
 
 app.get('/users/login', checkAuthenticated, function(req, res) {
@@ -106,10 +104,10 @@ app.post(
     failureFlash: true
   })
 );
+
 let currentEmail;
 app.post('/query', async(req, res) => {
   let string=JSON.stringify(req.body).replace(/([a-zA-Z0-9_]+?):/g, '"$1":');
-
   try {
     const result = await pool.query(
       'UPDATE users SET details = $1 WHERE email = $2',
@@ -131,7 +129,12 @@ app.get("/users/logout", async (req, res) => {
   });
 });
 app.get('/users/dashboard', checkNotAuthenticated, function(req, res) {
-  res.render("dashboard", {user: req.user.name});
+  res.render("dashboard", {user:{
+    id:req.user.name,//bientôt req.user.id
+    name:req.user.name,
+    prenom:req.user.prenom
+    //projets:req.user.projets,
+  } });
 });
 
 app.get('/test/circuit/:fileName', function(req, res) {
@@ -143,30 +146,6 @@ app.get('/acceuil', function(req, res) {
 app.get('/nerdamer/all.min.js', function(req, res) {
   res.sendFile(path.join(__dirname, 'node_modules/nerdamer/all.min.js'));
 });
-app.get('/sketch.js', function(req, res) {
-  res.sendFile(path.join(__dirname, 'public/javascripts/sketch.js'));
-});
-app.get('/Forme.js', function(req, res) {
-  res.sendFile(path.join(__dirname, 'public/javascripts/Forme.js'));
-});
-app.get('/constantes.js', function(req, res) {
-  res.sendFile(path.join(__dirname, 'public/javascripts/constantes.js'));
-});
-app.get('/Historique.js', function(req, res) {
-  res.sendFile(path.join(__dirname, 'public/javascripts/Historique.js'));
-});
-app.get('/Circuit.js', function(req, res) {
-  res.sendFile(path.join(__dirname, 'public/javascripts/Circuit.js'));
-});
-app.get('/p5.min.js', function(req, res) {
-  res.sendFile(path.join(__dirname, 'public/javascripts/lib/p5.min.js'));
-});
-app.get('/fil.js', function(req, res){
-  res.sendFile(path.join(__dirname, 'public/javascripts/fil.js'));
-})
-app.get('/Composant.js', function(req, res) {
-  res.sendFile(path.join(__dirname, 'public/javascripts/Composant.js'));
-});
 app.get('/editeur', checkAuthenticatedForEditor,function(req, res) {
 });
 function checkAuthenticated(req, res, next) {
@@ -177,10 +156,13 @@ function checkAuthenticated(req, res, next) {
 }
 function checkAuthenticatedForEditor(req, res) {
   if (req.isAuthenticated())
-    return res.sendFile(path.join(__dirname, '/editeur.html'));
+    return res.render("editeur", {user:{
+      name:req.user.name,
+      prenom:req.user.prenom
+    } });
   else
     return res.redirect(path.join(__dirname, '/'));
-} 
+}
 
 function checkNotAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {

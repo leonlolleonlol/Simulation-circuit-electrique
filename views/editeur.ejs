@@ -2,10 +2,11 @@
 <html>
 <head>
   <link rel="stylesheet" href="editeurStyle.css">
-  <link rel="icon" type="image/svaf" href="/images/icons/cpu.svg">
+  <link rel="icon" type="image/svg" href="/images/icons/cpu.svg">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.css"/>
 </head>
 <body>
-  <script src="p5.min.js"></script>
+  <script src="lib/p5.min.js"></script>
   <script src="nerdamer/all.min.js"></script>
   <script src="constantes.js"></script>
   <script src="Historique.js"></script>
@@ -45,27 +46,37 @@
     <img class="icon" src = "images/icons/refresh.svg" alt="effacer tout"/>
     <span class="tooltip top" id="reset-tip">Recommencer</span>
   </button>
-  <a href="/users/logout">
-    <button id="logout" class="button-jump">
-      <img class="icon" src = "images/icons/log-out.svg" alt="Déconnexion"/>
-      <span class="tooltip bottom" id="logout-tip">Déconnexion</span>
+<% if(user.name!=null){ %>
+  <span><%= user.name %></span>
+<a href="/users/logout">
+  <button id="logout" >
+    <img class="icon" src = "images/icons/log-out.svg" alt="Déconnexion"/>
+    <span class="tooltip bottom" id="logout-tip">Déconnexion</span>
+  </button>
+</a>
+<% }else{ %>
+<a href="/users/login">
+    <button id="noUser">
+      <img class="icon" src = "images/icons/user-circle.svg" alt="Inconnus"/>
+      <span class="tooltip bottom" id="logout-tip">Connection</span>
     </button>
-  </a>
-  <button id="animate">
-    <img class="icon" id="animate_image" src = "images/icons/square.svg" alt="Animation"/>
-    <span class="tooltip bottom" id="animation-tip">Arrêter l'animation</span>
-  </button>
-  <button id="line-grid">
-   <img class="icon" src = "images/icons/line-grid.svg" alt="Grid line choice"/>
-   <span class="tooltip top" id="line-grid-tip">Grid line</span>
-  </button>
-  <button id="point-grid">
-   <img class="icon" src = "images/icons/dot-grid.svg" alt="Grid point choice"/>
-   <span class="tooltip top" id="point-grid-tip">Grid point</span>
-  </button>
-  <button id="point-line-grid">
-   <img class="icon" src = "images/icons/point-line-grid.svg" alt="Grid point line choice"/>
-   <span class="tooltip top" id="pointLine-grid-tip">Grid point & line</span>
-  </button>
+</a>
+<% } %>
+<button id="animate">
+  <img class="icon" id="animate_image" src = "images/icons/square.svg" alt="Animation"/>
+  <span class="tooltip bottom" id="animation-tip">Arrêter l'animation</span>
+</button>
+<button id="line-grid">
+ <img class="icon" src = "images/icons/line-grid.svg" alt="Grid line choice"/>
+ <span class="tooltip top" id="line-grid-tip">Grid line</span>
+</button>
+<button id="point-grid">
+ <img class="icon" src = "images/icons/dot-grid.svg" alt="Grid point choice"/>
+ <span class="tooltip top" id="point-grid-tip">Grid point</span>
+</button>
+<button id="point-line-grid">
+ <img class="icon" src = "images/icons/point-line-grid.svg" alt="Grid point line choice"/>
+ <span class="tooltip top" id="pointLine-grid-tip">Grid point & line</span>
+</button>
 </body>
 </html>

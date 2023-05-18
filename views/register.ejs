@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/svaf" href="/images/icons/cpu.svg">
+    <link rel="icon" type="image/svg" href="/images/icons/cpu.svg">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.css"/>
     <style>body { 
          width: 100%;
@@ -45,16 +45,19 @@
 
     <Form action="/users/register" method="POST">
     <div>
-        <input type="text" id="name" name ="name" placeholder="Name" required/>
+        <input type="text" id="name" name ="name" placeholder="Nom" required/>
     </div>
     <div>
-        <input type="email" id="email" name ="email" placeholder="Email" required/>
+        <input type="text" id="prenom" name ="prenom" placeholder="Prénom" required/>
     </div>
     <div>
-        <input type="password" id="password" name ="password" placeholder="Password" required/>
+        <input type="email" id="email" name ="email" placeholder="Adresse email" required/>
     </div>
     <div>
-        <input type="password" id="password2" name ="password2" placeholder="Confirm password" required/>
+        <input type="password" id="password" name ="password" placeholder="Mot de passe" required/>
+    </div>
+    <div>
+        <input type="password" id="password2" name ="password2" placeholder="Confirmer le mot de passe" required/>
     </div>
     <div>
         <input type="submit" value="Register"/>
