@@ -185,6 +185,9 @@ class Fil{
     this.xf = sortArray[1].x;
     this.yf = sortArray[1].y;
   }
+  UsePrint(){
+    print("trying new thing");
+  }
 
   /**
    * Récuperer le type de la classe. Important pour la sérialisation et désérialisation

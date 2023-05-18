@@ -87,28 +87,40 @@ function setup() {
   setTooltip(animation_button,'#animation-tip');
   setTooltip(logout_button,'#logout-tip');
   c1 = new Circuit(true);
-  loadLocalCircuit();
 
-  //test();
+  loadLocalCircuit();
+  test();
+
 }
 
-
 function test(){
-  c1.ajouterComposanteALaFin(new Batterie(0, 0, 10));
-  n1 = new Noeuds();
-
+  p1 = new Batterie(0, 0, 12);
+  r1 = new Resisteur(0, 0, 500)
   
-  c2 = new Circuit(false);
-  c2.ajouterComposanteALaFin(new Resisteur(0, 0, 30));
-  c2.ajouterComposanteALaFin(new Resisteur(0, 0, 40));
-  n1.ajouterComposanteALaFin(c2);
-/*
+  n1 = new Noeuds();
+  
+  c2 = new Circuit();
+  c3 = new Circuit();
+
+  r2 = new Resisteur(0, 0, 800);
+  r3 = new Resisteur(0, 0, 1100);
+  r4 = new Resisteur(0, 0, 450); 
+  
+
+  r5 = new Resisteur(0, 0, 400);
+  r6 = new Resisteur(0, 0, 250);
+  r7 = new Resisteur(0, 0, 100);
+  c4 = new Circuit();
+  c5 = new Circuit();
   n2 = new Noeuds();
-  c4 = new Circuit(false);
-  c4.ajouterComposanteALaFin(new Condensateur(0, 0, 15));
-  c4.ajouterComposanteALaFin(new Condensateur(0, 0, 25));
-  c4.ajouterComposanteALaFin(new Condensateur(0, 0, 35));
-  n2.ajouterComposanteALaFin(c4);
+  n3 = new Noeuds();
+  n4 = new Noeuds();
+  /*
+  c4.ajouterComposante(r5);
+  c4.ajouterComposante(r6);
+  c5.ajouterComposante(r7);
+  n2.ajouterComposante(c4);
+  n2.ajouterComposante(c5);
 
   c3 = new Circuit(false);
   c3.ajouterComposanteALaFin(new Condensateur(0, 0, 90));
@@ -117,11 +129,52 @@ function test(){
   
   c1.ajouterComposanteALaFin(n1);
   */
-  c1.ajouterComposanteALaFin(new Resisteur(0, 0, 10))
   
+  /*
+  c1.ajouterComposante(n1);
+  c1.ajouterComposante(r1);
+  c1.ajouterComposante(n2);
+  c1.ajouterComposante(r4);
+  c1.ajouterComposante(r3);
+  */
+
+  c1.ajouterComposante(p1);
+  
+  c1.connectComposante(p1, n1);
+  c1.connectComposante(n1, n2);
+  c1.connectComposante(n1, r4);
+
+  c1.connectComposante(n2, r2);
+  c1.connectComposante(n2, r1);
+
+  c1.connectComposante(r2, r3);
+
+  c1.connectComposante(r3, n3);
+  c1.connectComposante(r1, n3);
+
+  c1.connectComposante(n3, n4);
+  c1.connectComposante(r4, n4);
+
+  c1.connectComposante(n4, r5);
+  c1.connectComposante(r5, r6);
+  c1.connectComposante(r6, p1);
   c1.update();
-  print(c1.circuit[1].courant);
-  print(c1.circuit[2].courant);
+
+  print("r1: i = " + r1.courant.round(5) + "A; DeltaV = " + r1.tension.round(2) + "V");
+  print("r2: i = " + r2.courant.round(5) + "A; DeltaV = " + r2.tension.round(2) + "V");
+  print("r3: i = " + r3.courant.round(5) + "A; DeltaV = " + r3.tension.round(2) + "V");
+  print("r4: i = " + r4.courant.round(5) + "A; DeltaV = " + r4.tension.round(2) + "V");
+  print("r5: i = " + r5.courant.round(5) + "A; DeltaV = " + r5.tension.round(2) + "V");
+  print("r6: i = " + r6.courant.round(5) + "A; DeltaV = " + r6.tension.round(2) + "V");
+  print("r7: i = " + r7.courant.round(5) + "A; DeltaV = " + r7.tension.round(2) + "V");
+ 
+  
+  //c1.solveCourrantkirchhoff();
+}
+
+//Source: https://stackoverflow.com/questions/11832914/how-to-round-to-at-most-2-decimal-places-if-necessary 
+Number.prototype.round = function(places) {
+  return +(Math.round(this + "e+" + places)  + "e-" + places);
 }
 
 function initComponents(){
@@ -585,6 +638,25 @@ function mousePressed() {
   if(inGrid(mouseX/grid.scale,mouseY/grid.scale))
     drag = grid;
 }
+function creatNoeud(fil){
+  //Pas besoin de cette fonction, les points on déjà été trier
+  fil.trierPoint();
+  f1 = new Fil(fil.xi, fil.yi,fil.xf,fil.yf);
+  // étape 1 : vérifier les deux cas de présence de noeud 
+  for (const nfil of fils) {
+    if(nfil !== fil){
+      if((fil.yi - nfil.yi) * (fil.yi-nfil.yf) <= 0 && (fil.yi !== nfil.yi && nfil.yi !== nfil.yf)){
+        f1.UsePrint();
+      }
+    }
+  }
+  for(let i = 0; i < fils.length - 1; i++){
+      if(fils[i].xi === fils[i+1].xi || fils[i].yi === fils[i+1].yi){
+        //if(fil.yi != fils[i].yi && fil.yf != fils[i].yf){
+        }
+   // }  
+  }
+}
 
 /**
  * Met à jour les informations des éléments drag sur notre grille
@@ -635,7 +707,8 @@ function mouseReleased() {
     } else if (drag.getType()==FIL) {
       if(drag.longueur()>0){
         let actions = [{type:CREATE, objet:drag}]
-        let actionsSup = ajustementAutomatiqueFil(drag, actions);
+        ajustementAutomatiqueFil(drag, actions);
+        creatNoeud(drag);
         addActions(actions);
       }else {
         let fil = fils.pop();

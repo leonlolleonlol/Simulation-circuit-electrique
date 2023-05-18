@@ -1,5 +1,6 @@
-/**
- * Cet interface permet de définir tout les méthode nécéssaire pour le programme
+
+
+/** Cet interface permet de définir tout les méthode nécéssaire pour le programme
  * @interface
  */
 class Composant {
@@ -16,6 +17,9 @@ class Composant {
     // on crée automatiquement une classe de tension
     this.courant = 0;
     this.tension = 0;
+    this.prochaineComposante = [];
+    this.composantePrecedente = [];
+    this.dejaPasser = false;
   }
 
   /**
@@ -110,8 +114,30 @@ class Composant {
     this.orientation = (this.orientation + (inverse?-HALF_PI:HALF_PI)) % TWO_PI
   }
 
+
+ /** Retourne les valeurs importantes à montrer à l'utilisateur dans une array
+  * @returns 
+  */
+  getMenu(){
+    throw "getMenu est appelé dans la class mère";
+  }
   /**
-   * Getter pour le type de composant
+   * Donne à prochaineComposante la valeur passée en paramètre
+   * @param {*} composante 
+   */
+  setProchaineComposante(composante){
+    this.prochaineComposante = composante;
+  }
+
+  /**
+   * Retourne la valeur de la prochaine composante à la position 0 de l'array prochaineComposante.
+   * @returns 
+   */
+  getProchaineComposante(){
+    return this.prochaineComposante[0];
+  }
+  
+  /** Getter pour le type de composant
    * @returns le type de composant
    */
   getType() {
@@ -126,8 +152,7 @@ class Composant {
   }
 } 
 
-/**
- * 
+/** 
  * @extends Composant 
  */
 class Resisteur extends Composant {
@@ -137,8 +162,6 @@ class Resisteur extends Composant {
       this.orientation = orientation??0;
       this.type = RESISTEUR;
   }
-
-
   inBounds(x, y) {
     if(this.orientation % PI === 0)
       return x >= this.x - 60 / 2 && x <= this.x + 60 / 2 &&
@@ -147,6 +170,13 @@ class Resisteur extends Composant {
       return x >= this.x - 25 / 2 && x <= this.x + 25 / 2 &&
           y >= this.y - 60 / 2 && y <= this.y + 60 / 2;
   }
+
+    getMenu(){
+      return ["DeltaV: " + this.tension, "Courant: " + this.courant, "Résistance: " + this.resistance];
+    }
+    getEq(sens){
+      return (sens?'-':'')+this.resistance+this.symbole;
+    }
 
   /**
    * @inheritdoc
@@ -187,6 +217,9 @@ class Ampoule extends Resisteur {
   */
   draw() {
       ampoule(this.x,this.y, this.orientation, isElementSelectionner(this));
+  }
+  getMenu(){
+    return ["Position x: " + this.x, "Position y: " + this.y, "DeltaV: " + this.tension, "Courant: " + this.courant, "Résistance: " + this.resistance];
   }
 
  /**
@@ -251,8 +284,29 @@ class Batterie extends Composant {
           y >= this.y - 30 / 2 && y <= this.y + 30 / 2;
     else
       return x >= this.x - 30 / 2 && x <= this.x + 30 / 2 &&
-          y >= this.y - 60 / 2 && y <= this.y + 60 / 2;
+            y >= this.y - 60 / 2 && y <= this.y + 60 / 2;
   }
+  getEq(sens){
+    if(sens){
+      if(this.orientation % PI ===0){
+        return -this.tension
+      }else{
+        return this.tension
+      }
+    }else {
+      if(this.orientation % PI ===0){
+        return this.tension
+      }else{
+        return -this.tension
+      }
+    }
+  }
+    
+  getMenu(){
+    return ["Position x: " + this.x, "Position y: " + this.y, "DeltaV: " + this.tension, "Charge: " + this.charge, "Capacité: " + this.capacite];
+  }
+    
+
 
   /**
    * @inheritdoc
@@ -294,12 +348,20 @@ class Diode extends Composant {
   draw() {
     diode(this.x, this.y, this.orientation, isElementSelectionner(this));
   }
+  
+  /**
+   * @inheritdoc
+   */
+  getMenu(){
+    return ["Position x: " + this.x, "Position y: " + this.y, "Sens: " + this.orientation];
+  }
 
   /**
    * @inheritdoc
    */
   getTitle(){
     return 'Diode';
+
   }
 }
 
@@ -310,10 +372,9 @@ class Diode extends Composant {
  * @extends Composant 
  */
 class Noeuds extends Composant {
-  constructor(x, y, courant, tension){
-    //super(courant, tension);
+  constructor(x, y){
     super(x, y);
-    this.circuitsEnParallele = []; //Array de Circuit qui sont en parallèle
+    this.circuitsEnParallele = []; //Array de Circuit qui sont en parallèle (Ceux en série sont dans la class Circuit())
 
     //C'est variable sont utile pour calculer l'équivalence du noeud
     this.capaciteEQ = 0;
@@ -327,7 +388,12 @@ class Noeuds extends Composant {
     this.valide = false; //On assume que c'est faux, mais si une des branches est valide, on le met vrai.
   }
 
-  ajouterComposanteALaFin(composant){
+
+  /**
+   * Ajoute un circuit dans l'array de circuit du noeud.
+   * @param {*} composant 
+   */
+  ajouterComposante(composant){
     this.circuitsEnParallele.push(composant);
   }
 
@@ -335,75 +401,102 @@ class Noeuds extends Composant {
     this.circuitsEnParallele.splice(position, 1);
   }
  /**
-  * Sert à trouver le circuit équivalent en série
+  * Sert à faire les calculs reliés au noeud. Donc les calculs pour les circuits en parallèle se font ici.
   */
-  trouverEq(){
-    for (let i = 0; i < this.circuitsEnParallele.length; i++){ 
-      this.circuitsEnParallele[i].trouverEq();
-      if(this.circuitsEnParallele[i].valide){
-        this.valide = true;
+
+ trouverEq(){
+    for (const circuit of this.circuitsEnParallele){ 
+      circuit.trouverEq();
+      if(circuit.valide){
       }
     }
 
     this.trouverTypeDeCircuit();
     switch (this.type){
-      case circuitType.seulementR:
-        let resistanceTemp = 0;
-          for (let i = 0; i < this.circuitsEnParallele.length; i++){ 
-            resistanceTemp += 1 / this.circuitsEnParallele[i].resistanceEQ;
-          }
-          this.resistanceEQ = 1 / resistanceTemp;
-          break;
-      case circuitType.seulementC:
-          for (let i = 0; i < this.circuitsEnParallele.length; i++){ 
-            this.capaciteEQ += this.circuitsEnParallele[i].capaciteEQ;
-          }
-          break;
-      case circuitType.RC:
-          //C'est là que c'est difficile
-          break;
+        case SEULEMENTR:
+          let resistanceTemp = 0;
+            for (const circuit of this.circuitsEnParallele){ 
+              resistanceTemp += 1 / circuit.resistanceEQ;
+            }
+            this.resistanceEQ = (1 / resistanceTemp).round(2);
+            break;
+        case SEULEMENTC:
+            for (const circuit of this.circuitsEnParallele){ 
+              this.capaciteEQ += circuit.capaciteEQ;
+            }
+            break;
+        case RC:
+            //C'est là que c'est difficile
+            break;
     }
   }
 
+  /**
+   * Trouve le type du noeud et le garde en mémoire dans la variable "type" du noeud
+   */
   trouverTypeDeCircuit(){
-    let circuitR = false;
-    let circuitC = false;
-    let circuitRC = false;
-
-    for (let i = 0; i < this.circuitsEnParallele.length; i++){ 
-        switch(this.circuitsEnParallele[i].getTypeCalcul()){
-            case circuitType.seulementR:
-              circuitR = true;
-              break;
-            case circuitType.seulementC:
-              circuitC = true;
-              break;
-            case circuitType.RC:
-              circuitRC = true;
-              break;
-        }
-    }
+    let circuitR = this.circuitsEnParallele.some(circuit => circuit.getTypeDeCircuit() === SEULEMENTR);
+    let circuitC = this.circuitsEnParallele.some(circuit => circuit.getTypeDeCircuit() === SEULEMENTC);
+    let circuitRC = this.circuitsEnParallele.some(circuit => circuit.getTypeDeCircuit() === RC);
 
     if((circuitR && circuitC) || circuitRC){
-        this.type = circuitType.RC;
+        this.type = RC;
     }else if (circuitC){
-        this.type = circuitType.seulementC;
-    }else{
-        this.type = circuitType.seulementR;
-    }
+        this.type = SEULEMENTC;
+    }else this.type = SEULEMENTR;
   }
 
   checkConnection(x, y, aproximation){
     return false;
   }
 
+  /**
+   * Pour chaque circuit dans l'array de circuit en parallèle, on calcul le nouveau courant et on le distribut dans les résistances
+   */
   remplirResisteursAvecDifTension(){
-    for (let i = 0; i < this.circuitsEnParallele.length; i++){
-      this.circuitsEnParallele[i].courant = this.tensionEQ / this.circuitsEnParallele[i].resistanceEQ;
-      this.circuitsEnParallele[i].remplirResisteursAvecCourant();
+    for (const circuit of this.circuitsEnParallele){
+      circuit.courant = this.tensionEQ / circuit.resistanceEQ;
+      circuit.remplirResisteursAvecCourant();
     }
   }
 
+  /**
+   * Pour chaque circuit dans l'array de circuit en parallèle, on calcul la nouvelle charge et on le distribut dans les condensateurs
+   */
+  remplirCondensateursAvecTension(){
+    for (const circuit of this.circuitsEnParallele){
+      circuit.charge = circuit.capaciteEQ * this.tensionEQ;
+      circuit.remplirCondensateursAvecCharge();
+    }
+  }
+
+  /**
+   * Continue la maille écrite en séparant la maille pour toute ses branches. Aussi, fait l'inventaire
+   * des mailles internes
+   * @param {Circuit} composants Liste de composante globale
+   * @param {Array} mailles Liste de mailles qui va enregistrer les mailles au fur et à mesure de
+   * l'itération dans la branche ou noeud.
+   * @param {Array} maille Maille présentement écrite
+   * @param {number} index L'index du noeud dans le circuit parent
+   */
+  maille(composants, mailles, maille, index, inverse){
+    for (const element of this.circuitsEnParallele) {
+      circuitMaille(element.circuit.concat(composants.slice(index+1)), mailles, 
+      [...maille], inverse, -1);
+    }
+    // Trouver les mailles interne
+    for (let i = 0; i < this.circuitsEnParallele.length - 1; i++) {
+      const branch = this.circuitsEnParallele[i].circuit;
+      for (let j = i + 1; j < this.circuitsEnParallele.length; j++) {
+        const reverseBranch = this.circuitsEnParallele[j].circuit.reverse();
+        circuitMaille(branch.concat(reverseBranch), mailles, [], !inverse, branch.length );
+      }
+    }
+  }
+  /**
+   * Retourne le type de l'objet
+   * @returns 
+   */
   getType() {
     return NOEUD;
   }
