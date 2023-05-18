@@ -105,7 +105,6 @@ app.post(
     failureFlash: true
   })
 );
-let currentEmail;
 app.post('/query', async(req, res) => {
   let string=JSON.stringify(req.body).replace(/([a-zA-Z0-9_]+?):/g, '"$1":');
   try {
