@@ -147,11 +147,11 @@ function ampoule(x, y, orientation, selection) {
     selectionBox('rgba(255,255,0,0.2)', blendBG('rgba(255,255,0,0.4)'), 80, 45);
 
   let couleurs = [{stop:0, color:'rgb(62, 81, 81)'}, {stop:1, color:'rgb(222, 203, 164)'}];
-  createColorGradient(-30, -10, -13, -10, couleurs);
+  createColorGradient(-30, -10, -13, -10, ...couleurs);
   rect(-17, 0, 6, 22, 0, 8, 8, 0);
   rect(-25, 0, 10, 7);
 
-  createColorGradient(-30, -10, 13, -10, couleurs);
+  createColorGradient(30, -10, 13, -10, ...couleurs);
   rect(17, 0, 6, 22, 8, 0, 0, 8);
   rect(25, 0, 10, 7);
 
