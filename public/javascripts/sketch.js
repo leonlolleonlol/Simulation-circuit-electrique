@@ -221,13 +221,17 @@ function draw() {
 function drawComponentsChooser() {
   push();
   scale(1/grid.scale);
-  text('Temps passé: ' +Math.floor(millis()/60000)+' min '+ Math.round(millis()/1000)%60+' s', 5, 750);
   noStroke();
   textAlign(CENTER);
   fill(backgroundColor);
   // Pour cacher les composants hors de la grille
   rect(0, 0, grid.offsetX * grid.scale, height);
   rect(0, 0, width, grid.offsetY * grid.scale);
+  push();
+  stroke('black');
+  noFill();
+  text('Temps passé: ' +Math.floor(millis()/60000)+' min '+ Math.round(millis()/1000)%60+' s', 70, 500);
+  pop();
   rectMode(CENTER);
   for (const composant of composants_panneau) {
     fill("rgba(128,128,128,0.59)");

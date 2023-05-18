@@ -42,7 +42,7 @@ app.get('/users/register', checkAuthenticated, function(req, res) {
   res.render('register');
 });
 app.post('/users/register', async(req, res)=>{
-  let { name, email, password, password2 } = req.body;
+  let { name, prenom,  email, password, password2 } = req.body;
   console.log({
     name,
     email,
@@ -50,7 +50,7 @@ app.post('/users/register', async(req, res)=>{
     password2
   });
   let errors = [];
-  if (!name || !email || !password || !password2) {
+  if (!name || !prenom || !email || !password || !password2) {
     errors.push({ message: "Please enter all fields" });
   }
 
@@ -77,14 +77,14 @@ app.post('/users/register', async(req, res)=>{
         if (results.rows.length > 0||errors.length > 0) {
           if(errors.length<1)
             errors.push({ message: "Email already registered!" });
-          return res.status(404).render("register", { errors, name, email, password, password2 });
+          return res.status(404).render("register", { errors, name, prenom , email, password, password2 });
         }
         else{
           pool.query(
-            `INSERT INTO users (name, email, password)
-                VALUES ($1, $2, $3)
+            `INSERT INTO users (name, prenom, email, password)
+                VALUES ($1, $2, $3, $4)
                 RETURNING id, password`,
-            [name, email, hashedPassword],
+            [name, prenom, email, hashedPassword],
             (err, results) => {
               if (err) {
                 throw err;
@@ -98,7 +98,6 @@ app.post('/users/register', async(req, res)=>{
       }
       );
     }
-  //res.end();
 });
 
 app.get('/users/login', checkAuthenticated, function(req, res) {
@@ -135,7 +134,11 @@ app.get("/users/logout", async (req, res) => {
   });
 });
 app.get('/users/dashboard', checkNotAuthenticated, function(req, res) {
-  res.render("dashboard", {user: req.user.name});
+  res.render("dashboard", {user:{
+    id:req.user.name,//bientôt req.user.id
+    name:req.user.name,
+    //projets:req.user.projets,
+  } });
 });
 
 app.get('/test/circuit/:fileName', function(req, res) {
