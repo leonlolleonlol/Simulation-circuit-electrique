@@ -105,7 +105,6 @@ app.post(
   })
 );
 
-let currentEmail;
 app.post('/query', async(req, res) => {
   let string=JSON.stringify(req.body).replace(/([a-zA-Z0-9_]+?):/g, '"$1":');
   try {
@@ -128,11 +127,25 @@ app.get("/users/logout", async (req, res) => {
     res.redirect("/");
   });
 });
-app.get('/users/dashboard', checkNotAuthenticated, function(req, res) {
+app.get('/users/dashboard', checkNotAuthenticated, async(req, res)=> {
+  let obtainedRow=0;
+  try {
+    const result = await pool.query(
+      'SELECT * FROM users WHERE details is null AND email = $1',
+      [req.user.email]
+    );
+    if(result.rows.length>0)
+      obtainedRow=1;
+  } catch (err) {
+    console.error('Error:', err.message);
+    console.error('Stack trace:', err.stack);
+    res.sendStatus(500);
+  }
   res.render("dashboard", {user:{
     id:req.user.name,//bientôt req.user.id
     name:req.user.name,
-    prenom:req.user.prenom
+    prenom:req.user.prenom,
+    details: obtainedRow
     //projets:req.user.projets,
   } });
 });
