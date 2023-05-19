@@ -26,7 +26,6 @@ let projet_name;
 let undo_tip;
 let redo_tip;
 let reset_tip;
-let logout_tip;
 let animation_tip;
 
 let baseCircuit = 'circuit3';
@@ -52,12 +51,11 @@ function setup() {
   undo_button = select('#undo');
   redo_button = select('#redo')
   reset_button = select('#reset');
-  logout_button = select('#logout');
+  logout_button = select('#logout')??select('#noUser');
   animation_button= select('#animate');
   undo_tip = select('#undo-tip');
   redo_tip = select('#redo-tip');
   reset_tip = select('#reset-tip');
-  logout_tip = select('#logout-tip');
   animation_tip = select('#animation-tip');
   let animate_image = select('#animate_image');
   //----------------------------------------
@@ -70,6 +68,7 @@ function setup() {
       projet_name.elt.blur()
     }
   });
+  projet_name.changed(()=>{name = projet_name.value();})
   name = projet_name.value();
   animation_button.mousePressed(() => {
     animate=!animate;
@@ -107,7 +106,7 @@ function setup() {
   }else{
     loadLocalCircuit();
   }
-  test();
+  //test();
 
 }
 
@@ -204,7 +203,7 @@ function initComponents(){
   origin = null;
   percent=0;
   grid = {
-    offsetY: 30,
+    offsetY: 40,
     tailleCell: 30,
     translateX: 0,
     translateY: 0,
@@ -1163,7 +1162,9 @@ function telecharger(){
     let url = window.URL || window.webkitURL;
     let link = url.createObjectURL(blob);
     let a = document.createElement("a");
-    a.download = "circuit.json";
+    if(name!='Circuit inconnus')
+      a.download = name+".json";
+    else a.download = "circuit.json";
     a.href = link;
     a.click();
   }
