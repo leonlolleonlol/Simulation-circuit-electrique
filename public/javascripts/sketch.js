@@ -1,5 +1,5 @@
 let drag; // L'élement qui est déplacer
-let draggedAnchor;
+let draggedAnchor;// Les qui s'ont accroché à un composant en mouvement
 let selection;
 let origin; // variable qui permet de savoir lorsque l'on crée un nouveau élément.
 //Lorsque l'on ajoute un composant, le composant sélectionner disparaît dans le sélectionneur
@@ -422,8 +422,7 @@ function inGrid(x, y){
  */
 function getConnectingComposant(x, y, first=true){
   let isConnecting = element => element.checkConnection(x, y, 10);
-  return first ? [components.find(isConnecting)] : components.filter(isConnecting);
-  //return list.map(element =>{ return {element, borne:element.getBorne(x, y, 10)};})
+  return first ? components.find(isConnecting) : components.filter(isConnecting);
 }
 
 /**
@@ -644,9 +643,10 @@ function mousePressed() {
       initDrag(element, element.x, element.y);
       drag.pastPos = {x:drag.x, y:drag.y};
       let connections = element.getConnections();
-      draggedAnchor = {};
-      draggedAnchor.left = filStart(connections[0].x, connections[0].y, false);
-      draggedAnchor.right = filStart(connections[1].x, connections[1].y, false);
+      draggedAnchor = {
+        left: filStart(connections[0].x, connections[0].y, false),
+        right: filStart(connections[1].x, connections[1].y, false);
+      };
       return;
     }
   }
@@ -714,10 +714,11 @@ function mouseDragged() {
     } else{
       cursor('grabbing');
       let point = findGridLock(drag.xOffsetDrag, drag.yOffsetDrag);
-      let pastConnect = drag.getConnections();
+      let pastConnect = drag.getConnections();//connection précédente
       drag.x = point.x;
       drag.y = point.y
-      let connections = drag.getConnections();
+      let connections = drag.getConnections();//connection avec le nouveau changement
+      //se base sur la précédente position pour trouver la bonne borne du fil à modifier
       let changeFil = function name(array, a, b) {
         for (const element of array) {
           if(element.xi == a.x && element.yi == a.y){
