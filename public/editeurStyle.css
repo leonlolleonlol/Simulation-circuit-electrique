@@ -63,6 +63,10 @@ a {
     text-decoration: none;
 }
 
+#side-user{
+  float: right;
+}
+
 #acceuil {
     position:absolute;
     top: 10px;
@@ -131,11 +135,6 @@ a {
     position:absolute;
     top:150px;
     left: 88px;
-}
-#logout {
-  position:absolute;
-    top: 10px;
-    left: 190px;
 }
   
 .icon {

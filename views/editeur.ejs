@@ -3,7 +3,6 @@
 <head>
   <link rel="stylesheet" href="editeurStyle.css">
   <link rel="icon" type="image/svg" href="/images/icons/cpu.svg">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.css"/>
 </head>
 <body>
   <script src="lib/p5.min.js"></script>
@@ -47,13 +46,16 @@
     <span class="tooltip top" id="reset-tip">Recommencer</span>
   </button>
 <% if(user.name!=null){ %>
-  <span><%= user.name %></span>
-<a href="/users/logout">
-  <button id="logout" >
-    <img class="icon" src = "images/icons/log-out.svg" alt="Déconnexion"/>
-    <span class="tooltip bottom" id="logout-tip">Déconnexion</span>
-  </button>
-</a>
+  <div id="side-user">
+      <span><%= user.name %></span>
+      <a href="/users/logout">
+        <button id="logout" >
+          <img class="icon" src = "images/icons/log-out.svg" alt="Déconnexion"/>
+          <span class="tooltip bottom" id="logout-tip">Déconnexion</span>
+        </button>
+      </a>
+  </div>
+
 <% }else{ %>
 <a href="/users/login">
     <button id="noUser">

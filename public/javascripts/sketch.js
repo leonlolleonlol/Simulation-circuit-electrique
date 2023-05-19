@@ -1,4 +1,5 @@
 let drag; // L'élement qui est déplacer
+let draggedAnchor;// Les qui s'ont accroché à un composant en mouvement
 let selection;
 let origin; // variable qui permet de savoir lorsque l'on crée un nouveau élément.
 //Lorsque l'on ajoute un composant, le composant sélectionner disparaît dans le sélectionneur
@@ -338,6 +339,9 @@ function drawFils() {
     element.draw();
   }
   if(animate){
+    stroke('orange');
+    fill('red')
+    strokeWeight(4);
     for (let element of fils){
       let nbCharge = Math.floor(element.longueur()/grid.tailleCell);
       let decalageCharge = (percent*(1+Math.floor(element.courant))/nbCharge) % 1
@@ -418,8 +422,7 @@ function inGrid(x, y){
  */
 function getConnectingComposant(x, y, first=true){
   let isConnecting = element => element.checkConnection(x, y, 10);
-  return first ? [components.find(isConnecting)] : components.filter(isConnecting);
-  //return list.map(element =>{ return {element, borne:element.getBorne(x, y, 10)};})
+  return first ? components.find(isConnecting) : components.filter(isConnecting);
 }
 
 /**
@@ -639,6 +642,11 @@ function mousePressed() {
     if (element.inBounds(x, y)) {
       initDrag(element, element.x, element.y);
       drag.pastPos = {x:drag.x, y:drag.y};
+      let connections = element.getConnections();
+      draggedAnchor = {
+        left: filStart(connections[0].x, connections[0].y, false),
+        right: filStart(connections[1].x, connections[1].y, false)
+      };
       return;
     }
   }
@@ -705,9 +713,25 @@ function mouseDragged() {
       drag.yf = point.y;
     } else{
       cursor('grabbing');
-      let point = findGridLock(drag.xOffsetDrag, drag.yOffsetDrag)
+      let point = findGridLock(drag.xOffsetDrag, drag.yOffsetDrag);
+      let pastConnect = drag.getConnections();//connection précédente
       drag.x = point.x;
       drag.y = point.y
+      let connections = drag.getConnections();//connection avec le nouveau changement
+      //se base sur la précédente position pour trouver la bonne borne du fil à modifier
+      let changeFil = function name(array, a, b) {
+        for (const element of array) {
+          if(element.xi == a.x && element.yi == a.y){
+            element.xi = b.x;
+            element.yi = b.y;
+          }else{
+            element.xf = b.x;
+            element.yf = b.y;
+          }
+        }
+      }
+      changeFil(draggedAnchor.left, pastConnect[0], connections[0]);
+      changeFil(draggedAnchor.right, pastConnect[1], connections[1]);
     }
     
   }
@@ -754,6 +778,7 @@ function mouseReleased() {
           drag.x = drag.pastPos.x;
           drag.y = drag.pastPos.y;
         }
+      draggedAnchor = null;
     }
     drag = null;
   }

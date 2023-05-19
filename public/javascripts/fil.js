@@ -42,7 +42,6 @@ class Fil{
       pop();
     }
     stroke('orange');
-    fill('red')
     strokeWeight(4);
     line(this.xi, this.yi, this.xf, this.yf);
     pop();
