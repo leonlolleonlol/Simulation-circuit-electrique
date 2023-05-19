@@ -67,6 +67,15 @@ a {
   float: right;
 }
 
+#projet-name {
+  position: absolute;
+  margin-left: auto;
+  margin-right: auto;
+  left: 0;
+  right: 0;
+  text-align: center;
+  }
+
 #projet-input {
   width: 175px;
   height:30px;
