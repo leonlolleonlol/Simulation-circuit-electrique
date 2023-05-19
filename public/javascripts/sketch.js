@@ -7,6 +7,7 @@ let origin; // variable qui permet de savoir lorsque l'on crée un nouveau élé
 let components;// Liste de composants du circuit
 let fils;// Liste des fils du circuit
 let name;
+let id;
 
 // Variable nécessaire pour placer la grille
 let grid;
@@ -100,7 +101,12 @@ function setup() {
   setTooltip(logout_button,'#logout-tip');
   c1 = new Circuit(true);
 
-  loadLocalCircuit();
+  let projet = select('#circuit');
+  if(projet!=null){
+    load(JSON.parse(projet.value()));
+  }else{
+    loadLocalCircuit();
+  }
   test();
 
 }
@@ -1036,7 +1042,8 @@ function refresh() {
  * @param {object} data Un objet représentant nos données
  */
 function load(data){
-  name = data.name??'Circuit inconnus';
+  id = data.id;
+  name = data.name??('Circuit inconnus ' +id);
   let tempElements = data.components.concat(data.fils);
   components.length = fils.length = 0;
   let map = new Map();
@@ -1073,7 +1080,7 @@ function load(data){
  * @returns {string}
  */
 function getStringData(){
-  let informations = {name, components, fils};
+  let informations = {id, name, components, fils};
   let caches = [];// permet d'enregistrer un objet une fois et d'utiliser des numéros d'identification les autres fois
   return JSON.stringify(informations, function(key, value){
     if(value instanceof Composant || value instanceof Fil){

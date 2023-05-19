@@ -109,6 +109,27 @@ app.post('/query', async(req, res) => {
   let string=JSON.stringify(req.body).replace(/([a-zA-Z0-9_]+?):/g, '"$1":');
   try {
     const result = await pool.query(
+      `SELECT projets
+       FROM users 
+       WHERE email = $1`,
+       [req.body.user.email] 
+    );
+    let projets = result.rows[0];
+    let index = projets.indexOf(element => element.id = req.body.id)
+    if(index!=-1){
+      await pool.query(
+        `UPDATE users
+         SET projets[$3]= $1 
+         WHERE email = $2`, [req.body.projet, req.body.user.email, index] 
+      );
+    }else{
+      await pool.query(
+        `UPDATE users
+         SET projets=array_append(projets, $1) 
+         WHERE email = $2`, [req.body.projet, req.body.user.email] 
+      );
+    }
+    const result = await pool.query(
       'UPDATE users SET details = $1 WHERE email = $2',
       [string,req.user.email]
     );
@@ -172,7 +193,7 @@ function checkAuthenticatedForEditor(req, res) {
   if (req.isAuthenticated())
     return res.render("editeur", {user:{
       name:req.user.name,
-      prenom:req.user.prenom
+      prenom:req.user.prenom,
     } });
   else
     return res.redirect(path.join(__dirname, '/'));

@@ -25,11 +25,25 @@
     </div>
     <br>
     <h2>Projets</h2>
+    <!--<% for (const projet of user.projets) {%>
+        <a onclick(<%= projet %>, <%= user %>)><%= projet.name %></a>
+    <% } %>-->
     <% if (user.details>0) { %>
         <h3>Vous n'avez jamais sauvegardé des circuits.</h3>
       <% } else { %>
         <h3>Votre dernier circuit est sauvegardé!</h3>
       <% } %>
+    <script>
+        function sendSaveCircuit(projet, user){
+            fetch('/editeur', {
+                method: 'POST',
+                body: user,
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+        }
+    </script>
     
 </body>
 </html>
