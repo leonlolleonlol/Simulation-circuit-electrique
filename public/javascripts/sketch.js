@@ -645,7 +645,7 @@ function mousePressed() {
       let connections = element.getConnections();
       draggedAnchor = {
         left: filStart(connections[0].x, connections[0].y, false),
-        right: filStart(connections[1].x, connections[1].y, false);
+        right: filStart(connections[1].x, connections[1].y, false)
       };
       return;
     }
