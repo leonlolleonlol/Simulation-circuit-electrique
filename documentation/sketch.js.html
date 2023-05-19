@@ -534,7 +534,7 @@ function mousePressed() {
   for (let element of components) {
     if (element.inBounds(x, y)) {
       initDrag(element, element.x, element.y);
-      drag.pastPos = {x:drag.x, y:drag.y};
+      drag.pastAttribute = {x:drag.x, y:drag.y};
       return;
     }
   }
@@ -619,16 +619,16 @@ function mouseReleased() {
         }
       }
     } else if(drag instanceof Composant) {
-        if(validComposantPos(drag) &amp;&amp; dist(drag.pastPos.x, drag.pastPos.y, drag.x, drag.y) > 0){
+        if(validComposantPos(drag) &amp;&amp; dist(drag.pastAttribute.x, drag.pastAttribute.y, drag.x, drag.y) > 0){
           let actions = [{type:MODIFIER, objet:drag, changements:[
-            	{attribut:'x', ancienne_valeur:drag.pastPos.x, nouvelle_valeur:drag.x},
-              {attribut:'y', ancienne_valeur:drag.pastPos.y, nouvelle_valeur:drag.y}]}];
+            	{attribut:'x', ancienne_valeur:drag.pastAttribute.x, nouvelle_valeur:drag.x},
+              {attribut:'y', ancienne_valeur:drag.pastAttribute.y, nouvelle_valeur:drag.y}]}];
           ajustementAutomatiqueComposant(drag, actions);
           addActions(actions);
         } else{
           // Annuler le mouvement
-          drag.x = drag.pastPos.x;
-          drag.y = drag.pastPos.y;
+          drag.x = drag.pastAttribute.x;
+          drag.y = drag.pastAttribute.y;
         }
     }
     drag = null;

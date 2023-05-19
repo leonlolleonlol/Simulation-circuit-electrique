@@ -536,16 +536,26 @@ function couperFil(fil, composant, actions){
       return false;
     }else if(piInBound && !pfInBound){
       //Raccourcir le fil pour le point initial
-      actions.push({type:MODIFIER, objet:fil, changements:[
-        {attribut:'xi', ancienne_valeur:fil.xi, nouvelle_valeur:borne2.x},
-        {attribut:'yi', ancienne_valeur:fil.yi, nouvelle_valeur:borne2.y}]});
+      actions.push({
+        type:MODIFIER, 
+        objet:fil, 
+        changements:[
+          {attribut:'xi', ancienne_valeur:fil.xi, nouvelle_valeur:borne2.x},
+          {attribut:'yi', ancienne_valeur:fil.yi, nouvelle_valeur:borne2.y}
+        ]
+      });
       fil.xi = borne2.x;
       fil.yi = borne2.y;
     }else if(!piInBound && pfInBound){
       //raccourcir le fil pour le point final
-      actions.push({type:MODIFIER, objet:fil, changements:[
-        {attribut:'xf', ancienne_valeur:fil.xf, nouvelle_valeur:borne1.x},
-        {attribut:'yf', ancienne_valeur:fil.yf, nouvelle_valeur:borne1.y}]});
+      actions.push({
+        type:MODIFIER, 
+        objet:fil, 
+        changements:[
+          {attribut:'xf', ancienne_valeur:fil.xf, nouvelle_valeur:borne1.x},
+          {attribut:'yf', ancienne_valeur:fil.yf, nouvelle_valeur:borne1.y}
+        ]
+      });
       fil.xf = borne1.x;
       fil.yf = borne1.y;
     }else if(fil.inBoxBounds(composant.x,composant.y)){
@@ -641,8 +651,8 @@ function mousePressed() {
   for (let element of components) {
     if (element.inBounds(x, y)) {
       initDrag(element, element.x, element.y);
-      drag.pastPos = {x:drag.x, y:drag.y};
       let connections = element.getConnections();
+      drag.pastAttribute = {x:drag.x, y:drag.y, bornes:connections};
       draggedAnchor = {
         left: filStart(connections[0].x, connections[0].y, false),
         right: filStart(connections[1].x, connections[1].y, false)
@@ -767,16 +777,59 @@ function mouseReleased() {
         }
       }
     } else if(drag instanceof Composant) {
-        if(validComposantPos(drag) && dist(drag.pastPos.x, drag.pastPos.y, drag.x, drag.y) > 0){
-          let actions = [{type:MODIFIER, objet:drag, changements:[
-            	{attribut:'x', ancienne_valeur:drag.pastPos.x, nouvelle_valeur:drag.x},
-              {attribut:'y', ancienne_valeur:drag.pastPos.y, nouvelle_valeur:drag.y}]}];
+        if(validComposantPos(drag) && dist(drag.pastAttribute.x, drag.pastAttribute.y, drag.x, drag.y) > 0){
+          let actions = [{
+            type:MODIFIER, 
+            objet:drag, 
+            changements:[
+            	{attribut:'x', ancienne_valeur:drag.pastAttribute.x, nouvelle_valeur:drag.x},
+              {attribut:'y', ancienne_valeur:drag.pastAttribute.y, nouvelle_valeur:drag.y}
+            ]
+          }];
           ajustementAutomatiqueComposant(drag, actions);
+          let newConnect = drag.getConnections();
+          let addActionFil = function(array, a, b, actions) {
+            for (const element of array) {
+              let x;
+              let y;
+              if(element.xi == a.x && element.yi == a.y){
+                x = 'xi';
+                y = 'yi';
+              }else{
+                x = 'xf';
+                y = 'yf';
+              }
+              actions.push({
+                type:MODIFIER, 
+                objet:element, 
+                changements:[
+                  {attribut:x, ancienne_valeur:b.x, nouvelle_valeur:a.x},
+                  {attribut:y, ancienne_valeur:b.y, nouvelle_valeur:a.y}
+                ]
+              });
+            }
+          }
+          addActionFil(draggedAnchor.left, newConnect[0], drag.pastAttribute.bornes[0], actions);
+          addActionFil(draggedAnchor.right, newConnect[1], drag.pastAttribute.bornes[1], actions);
           addActions(actions);
         } else{
           // Annuler le mouvement
-          drag.x = drag.pastPos.x;
-          drag.y = drag.pastPos.y;
+          let newConnect = drag.getConnections();
+          drag.x = drag.pastAttribute.x;
+          drag.y = drag.pastAttribute.y;
+          let changeFil = function(array, a, b) {
+            for (const element of array) {
+              if(element.xi == a.x && element.yi == a.y){
+                element.xi = b.x;
+                element.yi = b.y;
+              }else{
+                element.xf = b.x;
+                element.yf = b.y;
+              }
+            }
+          }
+          changeFil(draggedAnchor.left, newConnect[0], drag.pastAttribute.bornes[0]);
+          changeFil(draggedAnchor.right, newConnect[1], drag.pastAttribute.bornes[1]);
         }
       draggedAnchor = null;
     }
@@ -858,11 +911,58 @@ function keyPressed() {
       return false;
     } else if(keyCode === 84 && selection!=null){
       if(selection instanceof Composant){
+        let pastConnect = selection.getConnections();
+        let left = filStart(pastConnect[0].x, pastConnect[0].y, false);
+        let right = filStart(pastConnect[1].x, pastConnect[1].y, false);
         let pRotate = selection.orientation;
         selection.rotate(keyIsDown(SHIFT));
         if(validComposantPos(selection)){
-          addActions({type:MODIFIER, objet:selection, changements:[
-          {attribut:'orientation', ancienne_valeur:pRotate, nouvelle_valeur:selection.orientation}]});
+          let newConnect = selection.getConnections();
+          let changeFil = function(array, a, b) {
+            for (const element of array) {
+              if(element.xi == a.x && element.yi == a.y){
+                element.xi = b.x;
+                element.yi = b.y;
+              }else{
+                element.xf = b.x;
+                element.yf = b.y;
+              }
+            }
+          }
+          changeFil(left, pastConnect[0], newConnect[0]);
+          changeFil(right, pastConnect[1], newConnect[1]);
+          let addActionFil = function(array, a, b, actions) {
+            for (const element of array) {
+              let x;
+              let y;
+              if(element.xi == a.x && element.yi == a.y){
+                x = 'xi';
+                y = 'yi';
+              }else{
+                x = 'xf';
+                y = 'yf';
+              }
+              actions.push({
+                type:MODIFIER,
+                objet:element,
+                changements:[
+                  {attribut:x, ancienne_valeur:b.x, nouvelle_valeur:a.x},
+                  {attribut:y, ancienne_valeur:b.y, nouvelle_valeur:a.y}
+                ]
+              });
+            }
+          }
+          let actions = [{
+            type:MODIFIER, 
+            objet:selection, 
+            changements:[
+              {attribut:'orientation', ancienne_valeur:pRotate, nouvelle_valeur:selection.orientation}
+            ]
+          }];
+          addActionFil(left, newConnect[0], pastConnect[0], actions);
+          addActionFil(right, newConnect[1], pastConnect[1], actions);
+          addActions(actions);
+
         } else{
           selection.orientation = pRotate;
         }
