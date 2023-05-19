@@ -6,6 +6,7 @@ let origin; // variable qui permet de savoir lorsque l'on crée un nouveau élé
 // et pour cela, on doit savoir quel composant panneau de choix est l'origine
 let components;// Liste de composants du circuit
 let fils;// Liste des fils du circuit
+let name;
 
 // Variable nécessaire pour placer la grille
 let grid;
@@ -19,6 +20,7 @@ let redo_button;
 let reset_button;
 let logout_button;
 let animation_button;
+let projet_name;
 
 let undo_tip;
 let redo_tip;
@@ -44,6 +46,8 @@ function setup() {
   let telecharger_button = select('#download');
   let upload_button = select('#upload');
   let sauvegarder_button = select('#save');
+  
+  projet_name = select('#projet-input');
   undo_button = select('#undo');
   redo_button = select('#redo')
   reset_button = select('#reset');
@@ -59,6 +63,13 @@ function setup() {
   reset_button.mousePressed(refresh);
   undo_button.mousePressed(undo);
   redo_button.mousePressed(redo);
+  projet_name.elt.addEventListener('keyup',function(e){
+    if (e.key === 'Enter' || e.keyCode === 13) {
+      name = projet_name.value();
+      projet_name.elt.blur()
+    }
+  });
+  name = projet_name.value();
   animation_button.mousePressed(() => {
     animate=!animate;
     if(animate){
@@ -967,7 +978,6 @@ function keyPressed() {
           selection.orientation = pRotate;
         }
       }
-      return false;
     } else if(keyCode === 82 || keyCode === 83 || keyCode === 65
         /*|| keyCode === 67 || keyCode === 68*/){
       let point = findGridLock(grid.translateX, grid.translateY);
@@ -988,7 +998,6 @@ function keyPressed() {
         //circuit.ajouterComposante(newC);
         addActions(actions);
       }
-      return false;
     }
   }
 }
@@ -1027,6 +1036,7 @@ function refresh() {
  * @param {object} data Un objet représentant nos données
  */
 function load(data){
+  name = data.name??'Circuit inconnus';
   let tempElements = data.components.concat(data.fils);
   components.length = fils.length = 0;
   let map = new Map();
@@ -1063,7 +1073,7 @@ function load(data){
  * @returns {string}
  */
 function getStringData(){
-  let informations = {components, fils};
+  let informations = {name, components, fils};
   let caches = [];// permet d'enregistrer un objet une fois et d'utiliser des numéros d'identification les autres fois
   return JSON.stringify(informations, function(key, value){
     if(value instanceof Composant || value instanceof Fil){

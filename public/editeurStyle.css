@@ -67,6 +67,24 @@ a {
   float: right;
 }
 
+#projet-input {
+  width: 175px;
+  height:30px;
+  background: #A9A9A9;
+  border-radius: 5px;
+  border-color: transparent;
+  font-family: Cascadia Code ExtraLight;
+  font-size: 15px;
+  text-align:center;
+}
+#projet-input:focus{
+  outline-style: none;
+  box-shadow: none;
+  background-color: #A9A9A9;
+  border: solid 2px #696969;
+
+}
+
 #acceuil {
     position:absolute;
     top: 10px;
