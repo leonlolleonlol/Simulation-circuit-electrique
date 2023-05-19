@@ -338,6 +338,9 @@ function drawFils() {
     element.draw();
   }
   if(animate){
+    stroke('orange');
+    fill('red')
+    strokeWeight(4);
     for (let element of fils){
       let nbCharge = Math.floor(element.longueur()/grid.tailleCell);
       let decalageCharge = (percent*(1+Math.floor(element.courant))/nbCharge) % 1

@@ -63,6 +63,10 @@ a {
     text-decoration: none;
 }
 
+#side-user{
+  float: right;
+}
+
 #acceuil {
     position:absolute;
     top: 10px;
