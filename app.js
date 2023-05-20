@@ -134,6 +134,17 @@ app.post('/query', async(req, res) => {
     console.error('Stack trace:', err.stack);
     res.sendStatus(500);
   }
+  //A chaque qu'on save, on s'assure qu'on n'avait pas save le meme circuit precedemment
+  try {
+    const resultTwo = await pool.query(
+      'UPDATE users SET details=(SELECT array_agg(DISTINCT element) FROM unnest(details) AS element) WHERE email=$1',
+      [req.user.email]
+    );
+  } catch (err) {
+    console.error('Error:', err.message);
+    console.error('Stack trace:', err.stack);
+    res.sendStatus(500);
+  }
 });
 
 app.get("/users/logout", async (req, res) => {
