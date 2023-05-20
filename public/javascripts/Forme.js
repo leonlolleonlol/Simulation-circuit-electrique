@@ -213,7 +213,7 @@ function selectionBox(x, y, width, height, orientation, innerColor, borderColor)
   strokeWeight(2);
   fill(innerColor);
   stroke(borderColor==null ? blendBG(getAlphaColor(innerColor, 0.4)) : borderColor);
-  rect(x, y, width,height, 10);
+  rect(0, 0, width,height, 10);
   pop();
 }
 

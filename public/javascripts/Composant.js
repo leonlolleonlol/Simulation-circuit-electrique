@@ -185,7 +185,7 @@ class Resisteur extends Composant {
    */
   draw() {
     if(isElementSelectionner(this)) 
-      selectionBox(this.x, this.y, 80, 45, 'rgba(255,165,108,0.2)');
+      selectionBox(this.x, this.y, 80, 45, this.orientation, 'rgba(255,165,108,0.2)');
     resisteur(this.x, this.y, this.orientation);
   }
 }
