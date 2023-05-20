@@ -591,6 +591,66 @@ function couperFil(fil, composant, actions){
 }
 
 /**
+ * Fonctionnalité permettant de colé la position d'un fil avec celle des bornes d'un composant.
+ * Cette fonction va spécifiquement mettre à jour la position de chaque fil associé aux bornes
+ * d'un composant en prennant em compte la précédente connection qu'il y avait avant le modification
+ * du composant
+ * @param {Array} borneG Tout les fils qui connecte avec la borne négative du composant
+ * @param {Array} borneD Tout les fils qui connecte avec la borne postive du composant
+ * @param {object} posReference Les bornes positives et négative précédente. 
+ * Cette position sert à trouver quel borne du fil exactement il faut modifier (inital ou final)
+ * @param {object} posUpdate Les bornes positives et négative mise-à-jour. Ce sont les valeurs
+ * de positions que l'on veut mettre à jour dans les fils
+ */
+function updateFilPos(borneG, borneD, posReference, posUpdate){
+  let changeFil = (array, a, b) => {
+    for (const element of array) {
+      if(element.xi == a.x && element.yi == a.y){
+        element.xi = b.x;
+        element.yi = b.y;
+      }else{
+        element.xf = b.x;
+        element.yf = b.y;
+      }
+    }
+  }
+  changeFil(borneG, posReference[0], posUpdate[0]);
+  changeFil(borneD, posReference[1], posUpdate[1]);
+}
+
+/**
+ * Enregistre dans une liste d'actions les changements effectuer sur les fils en liens avec
+ * la fonctionnalité des fils ancré
+ * @param {Array} borneG Tout les fils qui connecte avec la borne négative du composant
+ * @param {Array} borneD Tout les fils qui connecte avec la borne postive du composant
+ * @param {object} posReference Les bornes positives et négative précédente. 
+ * Cette position sert à trouver quel borne du fil exactement a été modifier (inital ou final)
+ * @param {object} posUpdate Les bornes positives et négative mise-à-jour. Ce sont les valeurs
+ * de positions que l'on veut mettre à jour dans les fils
+ * @param {Array} actions La liste d'action qui va être enregistrer dans {@link addActions}
+ * @see updateFilPos 
+ */
+function setModificationFilPos(borneG, borneD, posReference, posUpdate, actions){
+  let addActionFil = function(array, a, b, actions) {
+    for (const element of array) {
+      let leftMod = element.xi == a.x && element.yi == a.y;
+      let x = leftMod ? 'xi' : 'xf';
+      let y = leftMod ? 'yi' : 'yf';
+      actions.push({
+        type:MODIFIER, 
+        objet:element, 
+        changements:[
+          {attribut:x, ancienne_valeur:b.x, nouvelle_valeur:a.x},
+          {attribut:y, ancienne_valeur:b.y, nouvelle_valeur:a.y}
+        ]
+      });
+    }
+  }
+  addActionFil(borneG, posUpdate[0], posReference[0], actions);
+  addActionFil(borneD, posUpdate[1], posReference[1], actions);
+}
+
+/**
  * Cette fonction est l'équivalent de ajustementAutomatiqueFil, mais pour les composants.
  * Les actions qui peuvent être effectuer sont de remplacer un composant si deux composants
  * sont à la même position (remplacer le plus ancien par le nouveau) et de recouper les fils
@@ -743,23 +803,8 @@ function mouseDragged() {
       let pastConnect = drag.getConnections();//connection précédente
       drag.x = point.x;
       drag.y = point.y
-      let connections = drag.getConnections();//connection avec le nouveau changement
-      //se base sur la précédente position pour trouver la bonne borne du fil à modifier
-      let changeFil = function name(array, a, b) {
-        for (const element of array) {
-          if(element.xi == a.x && element.yi == a.y){
-            element.xi = b.x;
-            element.yi = b.y;
-          }else{
-            element.xf = b.x;
-            element.yf = b.y;
-          }
-        }
-      }
-      changeFil(draggedAnchor.left, pastConnect[0], connections[0]);
-      changeFil(draggedAnchor.right, pastConnect[1], connections[1]);
+      updateFilPos(draggedAnchor.left, draggedAnchor.right, pastConnect, drag.getConnections());
     }
-    
   }
 }
 
@@ -803,49 +848,14 @@ function mouseReleased() {
             ]
           }];
           ajustementAutomatiqueComposant(drag, actions);
-          let newConnect = drag.getConnections();
-          let addActionFil = function(array, a, b, actions) {
-            for (const element of array) {
-              let x;
-              let y;
-              if(element.xi == a.x && element.yi == a.y){
-                x = 'xi';
-                y = 'yi';
-              }else{
-                x = 'xf';
-                y = 'yf';
-              }
-              actions.push({
-                type:MODIFIER, 
-                objet:element, 
-                changements:[
-                  {attribut:x, ancienne_valeur:b.x, nouvelle_valeur:a.x},
-                  {attribut:y, ancienne_valeur:b.y, nouvelle_valeur:a.y}
-                ]
-              });
-            }
-          }
-          addActionFil(draggedAnchor.left, newConnect[0], drag.pastAttribute.bornes[0], actions);
-          addActionFil(draggedAnchor.right, newConnect[1], drag.pastAttribute.bornes[1], actions);
+          setModificationFilPos(draggedAnchor.left, draggedAnchor.right,
+            drag.getConnections(), drag.pastAttribute.bornes, actions);
           addActions(actions);
         } else{
           // Annuler le mouvement
-          let newConnect = drag.getConnections();
+          updateFilPos(draggedAnchor.left, draggedAnchor.right, drag.getConnections(), drag.pastAttribute.bornes);
           drag.x = drag.pastAttribute.x;
           drag.y = drag.pastAttribute.y;
-          let changeFil = function(array, a, b) {
-            for (const element of array) {
-              if(element.xi == a.x && element.yi == a.y){
-                element.xi = b.x;
-                element.yi = b.y;
-              }else{
-                element.xf = b.x;
-                element.yf = b.y;
-              }
-            }
-          }
-          changeFil(draggedAnchor.left, newConnect[0], drag.pastAttribute.bornes[0]);
-          changeFil(draggedAnchor.right, newConnect[1], drag.pastAttribute.bornes[1]);
         }
       draggedAnchor = null;
     }
@@ -933,41 +943,7 @@ function keyPressed() {
         let pRotate = selection.orientation;
         selection.rotate(keyIsDown(SHIFT));
         if(validComposantPos(selection)){
-          let newConnect = selection.getConnections();
-          let changeFil = function(array, a, b) {
-            for (const element of array) {
-              if(element.xi == a.x && element.yi == a.y){
-                element.xi = b.x;
-                element.yi = b.y;
-              }else{
-                element.xf = b.x;
-                element.yf = b.y;
-              }
-            }
-          }
-          changeFil(left, pastConnect[0], newConnect[0]);
-          changeFil(right, pastConnect[1], newConnect[1]);
-          let addActionFil = function(array, a, b, actions) {
-            for (const element of array) {
-              let x;
-              let y;
-              if(element.xi == a.x && element.yi == a.y){
-                x = 'xi';
-                y = 'yi';
-              }else{
-                x = 'xf';
-                y = 'yf';
-              }
-              actions.push({
-                type:MODIFIER,
-                objet:element,
-                changements:[
-                  {attribut:x, ancienne_valeur:b.x, nouvelle_valeur:a.x},
-                  {attribut:y, ancienne_valeur:b.y, nouvelle_valeur:a.y}
-                ]
-              });
-            }
-          }
+          updateFilPos(left, right, pastConnect, selection.getConnections());
           let actions = [{
             type:MODIFIER, 
             objet:selection, 
@@ -975,8 +951,7 @@ function keyPressed() {
               {attribut:'orientation', ancienne_valeur:pRotate, nouvelle_valeur:selection.orientation}
             ]
           }];
-          addActionFil(left, newConnect[0], pastConnect[0], actions);
-          addActionFil(right, newConnect[1], pastConnect[1], actions);
+          setModificationFilPos(left, right, selection.getConnections(), pastConnect, actions);
           addActions(actions);
 
         } else{
@@ -1031,7 +1006,7 @@ function refresh() {
 }
 
 
-// BackEnd connection
+// BACKEND--------------------------------------------
 
 /**
  * Cette fonction permet de load un circuit à partir de donnée Json. Cette fonction est très
