@@ -221,6 +221,12 @@ function initPosition(){
 
 //DOM -------------------------------
 
+/**
+ * Applique une animation au tooltip. Cette animation consiste à attendre 1 seconde
+ * avant que le tooltip s'affiche
+ * @param {p5.Button} button Le bouton associé avec le tooltip
+ * @param {string} tooltipId l'identifiant du tooltip
+ */
 function setTooltip(button,tooltipId){
   //http://jsfiddle.net/xaliber/TxxQh/
   let tooltip = select(tooltipId);
@@ -386,7 +392,11 @@ function drawComposants(){
   pop();
 }
 
+/**
+ * Dessine les noeuds et les connections
+ */
 function drawNoeuds() {
+  updateNoeud();
   push();
   rectMode(CENTER);
   translate(grid.translateX, grid.translateY);
@@ -401,8 +411,8 @@ function drawNoeuds() {
       square(0, 0, 5.5);
     }else{
       strokeWeight(2);
-      stroke('black');
-      fill('gray');
+      stroke('#00308F');
+      fill('#007FFF');
       circle(0, 0, 5);
     }
     pop();
@@ -448,7 +458,7 @@ function isElementSelectionner(element){
  * Cette vérification ne prend en compte que le décalage de la grille par rapport au canvas
  * @param {number} x la position en y (doit inclure translateX si nécéssaire)
  * @param {number} y la position en x (doit inclure translateY si nécéssaire)
- * @returns boolean si notre point se situe dans la grille
+ * @returns {boolean} Le point se situe dans la grille
  */
 function inGrid(x, y){
   return x > grid.offsetX && y > grid.offsetY
@@ -495,8 +505,18 @@ function filStart(x, y, first = true){
   return !first ? connections : null;
 }
 
+/**
+ * Permet de récupérer tout les fils et composants dont l'une de leurs bornes 
+ * à la même position qu'un coordonné x et y. 
+ * **ATTENTION**: Elle inclut aussi la position du composant qui a les coordonés
+ * @param {number} x coordoné en x 
+ * @param {number} y coordoné en y
+ * @param {boolean} first Condition s'y l'on veut que s'arrêter au premier composant trouvé
+ * Ce paramètre est seulement important si l'on veut vérifier la précence ou l'absence de connection
+ * @returns {Array} Tout les éléments qui sont connecter à cette position. 
+ */
 function getPossibleConnections(x, y, first = false) {
-  return filStart(x, y, false).concat(getConnectingComposant(x, y, false));
+  return filStart(x, y, first).concat(getConnectingComposant(x, y, first));
 }
 
 
@@ -505,6 +525,7 @@ function getPossibleConnections(x, y, first = false) {
  * 1. Ordonner les points initiaux et finaux plus petit au plus grand (xi doit être < que xf)
  * 2. Unir certains fils possible en un seul fil
  * 3. Coupe le fil dépendant des composants par lequel il passe
+ * 4. Coupe le fil pour respecter les noeuds
  * @param {Fil} fil Le nouveau fil
  * @param {Array} actions La liste d'actions ou l'on va enregistrer les actions interne 
  * effectuer dans la fonction
@@ -546,11 +567,16 @@ function verifierCouperFil(fil, actions){
     for (const composant of components) {
       let continuer = couperFil(fil, composant, actions);
       if(!continuer)
-        return;
+      return; 
     }
   }
 }
 
+/**
+ * Vérifie si un fil à besoin d'être coupé pour connecter à un composant ou un autre fil.
+ * @param {Fil} fil Le fil à vérifier
+ * @param {Array} actions La liste d'action à enregistrer dans l'historique
+ */
 function verifierCouperNoeud(fil, actions){
   for (let index = 0; index < fils.length; index++) {
     const element = fils[index];
@@ -559,25 +585,14 @@ function verifierCouperNoeud(fil, actions){
       if(pointIntersect!=null){
         if(!((element.xi ==pointIntersect.x && element.yi ==pointIntersect.y) || 
         (element.xf ==pointIntersect.x && element.yf ==pointIntersect.y))){
-          let fil1 = new Fil(element.xi, element.yi, pointIntersect.x, pointIntersect.y);
-          let fil2 = new Fil(pointIntersect.x, pointIntersect.y, element.xf, element.yf);
-          fils.splice(index,1);
-          fils.push(fil1, fil2);
-          actions.push({type:DELETE,objet:element,index},
-            {type:CREATE,objet:fil1}, {type:CREATE,objet:fil2});
+          splitFil(element, actions, pointIntersect);
           index--;
         }
         if(!((fil.xi ==pointIntersect.x && fil.yi ==pointIntersect.y) || 
         (fil.xf ==pointIntersect.x && fil.yf ==pointIntersect.y))){
-          let fil1 = new Fil(fil.xi, fil.yi, pointIntersect.x, pointIntersect.y);
-          let fil2 = new Fil(pointIntersect.x, pointIntersect.y, fil.xf, fil.yf);
-          let i = fils.indexOf(fil);
-          fils.splice(i,1);
-          fils.push(fil1, fil2);
-          actions.push({type:DELETE,objet:fil,index:i},
-            {type:CREATE,objet:fil1}, {type:CREATE,objet:fil2});
-          verifierCouperNoeud(fil1, actions);
-          verifierCouperNoeud(fil2, actions);
+          let newFils = splitFil(fil, actions, pointIntersect);
+          verifierCouperNoeud(newFils[0], actions);
+          verifierCouperNoeud(newFils[1], actions);
           return;
         }
       }
@@ -585,38 +600,52 @@ function verifierCouperNoeud(fil, actions){
   }
 }
 
+/**
+ * Après la modification ou la création d'un composant, coupe tout les fil qui sont connecter
+ * avec le composant. Cette méthode complète {@link couperFil} pour toute les situations où un
+ * composant n'est pas perpendiculaire avec le fil
+ * @param {Composant} composant 
+ * @param {Array} actions 
+ */
 function verifierSplitNewComposant(composant, actions) {
   let connections = composant.getConnections();
   let left = filStart(connections[0].x, connections[0].y, false);
   let right = filStart(connections[1].x, connections[1].y, false);
-  if(left!=null){
-    for (const element of left) {
-      if(!((element.xi ==connections[0].x && element.yi ==connections[0].y) || 
-      (element.xf ==connections[0].x && element.yf ==connections[0].y))){
-        let fil1 = new Fil(element.xi, element.yi, connections[0].x, connections[0].y);
-        let fil2 = new Fil(connections[0].x, connections[0].y, element.xf, element.yf);
-        let index = fils.indexOf(element);
-        fils.splice(index, 1);
-        fils.push(fil1, fil2);
-        actions.push({type:DELETE,objet:element,index},
-          {type:CREATE,objet:fil1}, {type:CREATE,objet:fil2});
+  let bornes = [left, right];
+  for (let index = 0; index < bornes.length; index++) {
+    const borne = bornes[index];
+    const connection = connections[index];
+    if(borne!=null){
+      for (const element of borne) {
+        if(!((element.xi ==connection.x && element.yi ==connection.y) || 
+        (element.xf ==connection.x && element.yf ==connection.y))){
+          splitFil(element, actions, connection);
+        }
       }
     }
   }
-  if(right!=null){
-    for (const element of right) {
-      if(!((element.xi ==connections[1].x && element.yi ==connections[1].y) || 
-      (element.xf ==connections[1].x && element.yf ==connections[1].y))){
-        let fil1 = new Fil(element.xi, element.yi, connections[1].x, connections[1].y);
-        let fil2 = new Fil(connections[1].x, connections[1].y, element.xf, element.yf);
-        let index = fils.indexOf(element);
-        fils.splice(index, 1);
-        fils.push(fil1, fil2);
-        actions.push({type:DELETE,objet:element,index},
-          {type:CREATE,objet:fil1}, {type:CREATE,objet:fil2});
-      }
-    }
-  }
+}
+
+
+/**
+ * Coupe un fil en deux nouveau fils. Supprime aussi l'ancien fil du répertoire
+ * @param {Fil} fil 
+ * @param {Array} actions 
+ * @param {object} borneSeparation1 Borne de fin du nouveau fil 1. Peut aussi servir de borne
+ * de début du deuxième fil
+ * @param {object} [borneSeparation2] Borne optionnel du début du nouveau fil 2. 
+ * @return {Array} Les nouveaux fils
+ */
+function splitFil(fil, actions, borneSeparation1, borneSeparation2){
+  borneSeparation2 ??= borneSeparation1;
+  let fil1 = new Fil(fil.xi, fil.yi, borneSeparation1.x, borneSeparation1.y);
+  let fil2 = new Fil(borneSeparation2.x, borneSeparation2.y, fil.xf, fil.yf);
+  let index = fils.indexOf(fil);
+  fils.splice(index, 1);
+  fils.push(fil1, fil2);
+  actions.push({type:DELETE,objet:fil,index},
+    {type:CREATE,objet:fil1}, {type:CREATE,objet:fil2});
+  return [fil1, fil2];
 }
 
 /**
@@ -671,15 +700,9 @@ function couperFil(fil, composant, actions){
       fil.xf = borne1.x;
       fil.yf = borne1.y;
     }else if(fil.inBoxBounds(composant.x,composant.y)){
-      // couper le fil en deux nouveaux fils
-      let fil1 = new Fil(fil.xi, fil.yi, borne1.x, borne1.y);
-      let fil2 = new Fil(borne2.x,borne2.y, fil.xf, fil.yf);
-      fils.splice(index,1);
-      fils.push(fil1, fil2);
-      actions.push({type:DELETE,objet:fil,index},
-        {type:CREATE,objet:fil1}, {type:CREATE,objet:fil2});
-      verifierCouperFil(fil1, actions);
-      verifierCouperFil(fil2, actions);
+      let newFils = splitFil(fil, actions, borne1, borne2);
+      verifierCouperFil(newFils[0], actions);
+      verifierCouperFil(newFils[1], actions);
       return false;
     }
   }
@@ -746,6 +769,31 @@ function setModificationFilPos(borneG, borneD, posReference, posUpdate, actions)
   addActionFil(borneD, posReference[1], posUpdate[1], actions);
 }
 
+/**
+ * @typedef {Connection}
+ * @property {Array} connections - La liste de tout les composant relier sur une cordonné x et y.
+ * @property {number} x - La cordonné en x de la connection
+ * @property {number} y - La cordonné en y de la connection.
+ */
+
+/**
+ * @typedef {ConnectionPair} 
+ * @global
+ * @property {Connection} left - La connection de gauche du composant.
+ * @property {Connection} right - La connection de droite du composant.
+ */
+
+
+/**
+ * Récupère toute les connections qui sont relier au cordonné d'un composant ou d'un fil.
+ * Pour un composant, ce sont par contre les cordonné des bornes qui sont récupérer. En fait,
+ * cette méthode est une dérivé de {@link getPossibleConnections} puisqu'elle ne fait qu'assembler
+ * les résultats fournis en un seul objet.
+ * @param {(Composant|Fil)} element L'élément du circuit que l'on veut récupérer les connections
+ * @returns {ConnectionPair} Les connections pour chaqu'une des bornes de l'élément (2 bornes)
+ * @see getConnections Pour récupérer position borne
+ * @see getPossibleConnections C'est la méthode qui récupère vraiment les connections
+ */
 function getAllConnection(element){
   let initial;
   let final;
@@ -765,6 +813,10 @@ function getAllConnection(element){
   };
 }
 
+
+/**
+ * Met à jour les positions des noeuds et des connections.
+ */
 function updateNoeud(){
   noeuds.length = 0;
   let joinElement = fils.concat(components)
@@ -892,25 +944,6 @@ function mousePressed() {
   // vérification d'un déplacement de la grille
   if(inGrid(mouseX/grid.scale,mouseY/grid.scale))
     drag = grid;
-}
-function creatNoeud(fil){
-  //Pas besoin de cette fonction, les points on déjà été trier
-  fil.trierPoint();
-  f1 = new Fil(fil.xi, fil.yi,fil.xf,fil.yf);
-  // étape 1 : vérifier les deux cas de présence de noeud 
-  for (const nfil of fils) {
-    if(nfil !== fil){
-      if((fil.yi - nfil.yi) * (fil.yi-nfil.yf) <= 0 && (fil.yi !== nfil.yi && nfil.yi !== nfil.yf)){
-        f1.UsePrint();
-      }
-    }
-  }
-  for(let i = 0; i < fils.length - 1; i++){
-      if(fils[i].xi === fils[i+1].xi || fils[i].yi === fils[i+1].yi){
-        //if(fil.yi != fils[i].yi && fil.yf != fils[i].yf){
-        }
-   // }  
-  }
 }
 
 /**
@@ -1080,15 +1113,15 @@ function keyPressed() {
         if(validComposantPos(selection)){
           updateFilPos(left, right, pastConnect, selection.getConnections());
           if(drag==null){
-            let actions = [{
-              type:MODIFIER, 
-              objet:selection, 
-              changements:[
-                {attribut:'orientation', ancienne_valeur:pRotate, nouvelle_valeur:selection.orientation}
-              ]
-            }];
-            setModificationFilPos(left, right, selection.getConnections(), pastConnect, actions);
-            addActions(actions);
+          let actions = [{
+            type:MODIFIER, 
+            objet:selection, 
+            changements:[
+              {attribut:'orientation', ancienne_valeur:pRotate, nouvelle_valeur:selection.orientation}
+            ]
+          }];
+          setModificationFilPos(left, right, selection.getConnections(), pastConnect, actions);
+          addActions(actions);
           }
         } else{
           selection.orientation = pRotate;
@@ -1182,7 +1215,6 @@ function load(data){
       }
     }
   }
-  updateNoeud();
 }
 
 /**
