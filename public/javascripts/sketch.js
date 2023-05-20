@@ -529,6 +529,7 @@ function ajustementAutomatiqueFil(fil, actions){
     }
   }  
   verifierCouperFil(fil,actions);
+  verifierCouperNoeud(fil, actions);
 }
 
 /**
@@ -548,32 +549,71 @@ function verifierCouperFil(fil, actions){
         return;
     }
   }
+}
+
+function verifierCouperNoeud(fil, actions){
   for (let index = 0; index < fils.length; index++) {
     const element = fils[index];
-    let pointIntersect = element.intersection(fil);
-    if(pointIntersect!=null){
-      if(!((element.xi ==pointIntersect.x && element.yi ==pointIntersect.y) || 
-      (element.xf ==pointIntersect.x && element.yf ==pointIntersect.y))){
-        let fil1 = new Fil(element.xi, element.yi, pointIntersect.x, pointIntersect.y);
-        let fil2 = new Fil(pointIntersect.x, pointIntersect.y, element.xf, element.yf);
-        fils.splice(index,1);
+    if(element!=fil){
+      let pointIntersect = element.intersection(fil);
+      if(pointIntersect!=null){
+        if(!((element.xi ==pointIntersect.x && element.yi ==pointIntersect.y) || 
+        (element.xf ==pointIntersect.x && element.yf ==pointIntersect.y))){
+          let fil1 = new Fil(element.xi, element.yi, pointIntersect.x, pointIntersect.y);
+          let fil2 = new Fil(pointIntersect.x, pointIntersect.y, element.xf, element.yf);
+          fils.splice(index,1);
+          fils.push(fil1, fil2);
+          actions.push({type:DELETE,objet:element,index},
+            {type:CREATE,objet:fil1}, {type:CREATE,objet:fil2});
+          index--;
+        }
+        if(!((fil.xi ==pointIntersect.x && fil.yi ==pointIntersect.y) || 
+        (fil.xf ==pointIntersect.x && fil.yf ==pointIntersect.y))){
+          let fil1 = new Fil(fil.xi, fil.yi, pointIntersect.x, pointIntersect.y);
+          let fil2 = new Fil(pointIntersect.x, pointIntersect.y, fil.xf, fil.yf);
+          let i = fils.indexOf(fil);
+          fils.splice(i,1);
+          fils.push(fil1, fil2);
+          actions.push({type:DELETE,objet:fil,index:i},
+            {type:CREATE,objet:fil1}, {type:CREATE,objet:fil2});
+          verifierCouperNoeud(fil1, actions);
+          verifierCouperNoeud(fil2, actions);
+          return;
+        }
+      }
+    }
+  }
+}
+
+function verifierSplitNewComposant(composant, actions) {
+  let connections = composant.getConnections();
+  let left = filStart(connections[0].x, connections[0].y, false);
+  let right = filStart(connections[1].x, connections[1].y, false);
+  if(left!=null){
+    for (const element of left) {
+      if(!((element.xi ==connections[0].x && element.yi ==connections[0].y) || 
+      (element.xf ==connections[0].x && element.yf ==connections[0].y))){
+        let fil1 = new Fil(element.xi, element.yi, connections[0].x, connections[0].y);
+        let fil2 = new Fil(connections[0].x, connections[0].y, element.xf, element.yf);
+        let index = fils.indexOf(element);
+        fils.splice(index, 1);
         fils.push(fil1, fil2);
         actions.push({type:DELETE,objet:element,index},
           {type:CREATE,objet:fil1}, {type:CREATE,objet:fil2});
-        verifierCouperFil(fil1, actions);
-        verifierCouperFil(fil2, actions);
-        index--;
       }
-      if(!((fil.xi ==pointIntersect.x && fil.yi ==pointIntersect.y) || 
-      (fil.xf ==pointIntersect.x && fil.yf ==pointIntersect.y))){
-        let fil1 = new Fil(fil.xi, fil.yi, pointIntersect.x, pointIntersect.y);
-        let fil2 = new Fil(pointIntersect.x, pointIntersect.y, fil.xf, fil.yf);
-        let index = fils.indexOf(fil);
-        actions.push({type:DELETE,objet:fil,index},
+    }
+  }
+  if(right!=null){
+    for (const element of right) {
+      if(!((element.xi ==connections[1].x && element.yi ==connections[1].y) || 
+      (element.xf ==connections[1].x && element.yf ==connections[1].y))){
+        let fil1 = new Fil(element.xi, element.yi, connections[1].x, connections[1].y);
+        let fil2 = new Fil(connections[1].x, connections[1].y, element.xf, element.yf);
+        let index = fils.indexOf(element);
+        fils.splice(index, 1);
+        fils.push(fil1, fil2);
+        actions.push({type:DELETE,objet:element,index},
           {type:CREATE,objet:fil1}, {type:CREATE,objet:fil2});
-        verifierCouperFil(fil1, actions);
-        verifierCouperFil(fil2, actions);
-        return;
       }
     }
   }
@@ -702,8 +742,8 @@ function setModificationFilPos(borneG, borneD, posReference, posUpdate, actions)
       });
     }
   }
-  addActionFil(borneG, posUpdate[0], posReference[0], actions);
-  addActionFil(borneD, posUpdate[1], posReference[1], actions);
+  addActionFil(borneG, posReference[0], posUpdate[0], actions);
+  addActionFil(borneD, posReference[1], posUpdate[1], actions);
 }
 
 function getAllConnection(element){
@@ -761,6 +801,7 @@ function ajustementAutomatiqueComposant(composant, actions){
     if(penteFil==Infinity || penteFil==0)
       couperFil(fil,composant, actions)
   }
+  verifierSplitNewComposant(composant, actions);
 }
 
 /**
@@ -817,7 +858,12 @@ function mousePressed() {
     if (element.inBounds(x, y)) {
       initDrag(element, element.x, element.y);
       let connections = element.getConnections();
-      drag.pastAttribute = {x:drag.x, y:drag.y, bornes:connections};
+      drag.pastAttribute = {
+        x : drag.x, 
+        y : drag.y, 
+        bornes : connections,
+        orientation : drag.orientation
+      };
       draggedAnchor = {
         left: filStart(connections[0].x, connections[0].y, false),
         right: filStart(connections[1].x, connections[1].y, false)
@@ -918,7 +964,6 @@ function mouseReleased() {
       if(drag.longueur()>0){
         let actions = [{type:CREATE, objet:drag}]
         ajustementAutomatiqueFil(drag, actions);
-        creatNoeud(drag);
         addActions(actions);
       }else {
         let fil = fils.pop();
@@ -933,12 +978,13 @@ function mouseReleased() {
             objet:drag, 
             changements:[
             	{attribut:'x', ancienne_valeur:drag.pastAttribute.x, nouvelle_valeur:drag.x},
-              {attribut:'y', ancienne_valeur:drag.pastAttribute.y, nouvelle_valeur:drag.y}
+              {attribut:'y', ancienne_valeur:drag.pastAttribute.y, nouvelle_valeur:drag.y},
+              {attribut:'orientation', ancienne_valeur:drag.pastAttribute.orientation, nouvelle_valeur:drag.orientation}
             ]
           }];
-          ajustementAutomatiqueComposant(drag, actions);
           setModificationFilPos(draggedAnchor.left, draggedAnchor.right,
             drag.getConnections(), drag.pastAttribute.bornes, actions);
+          ajustementAutomatiqueComposant(drag, actions);
           addActions(actions);
         } else{
           // Annuler le mouvement
@@ -1033,16 +1079,17 @@ function keyPressed() {
         selection.rotate(keyIsDown(SHIFT));
         if(validComposantPos(selection)){
           updateFilPos(left, right, pastConnect, selection.getConnections());
-          let actions = [{
-            type:MODIFIER, 
-            objet:selection, 
-            changements:[
-              {attribut:'orientation', ancienne_valeur:pRotate, nouvelle_valeur:selection.orientation}
-            ]
-          }];
-          setModificationFilPos(left, right, selection.getConnections(), pastConnect, actions);
-          addActions(actions);
-
+          if(drag==null){
+            let actions = [{
+              type:MODIFIER, 
+              objet:selection, 
+              changements:[
+                {attribut:'orientation', ancienne_valeur:pRotate, nouvelle_valeur:selection.orientation}
+              ]
+            }];
+            setModificationFilPos(left, right, selection.getConnections(), pastConnect, actions);
+            addActions(actions);
+          }
         } else{
           selection.orientation = pRotate;
         }

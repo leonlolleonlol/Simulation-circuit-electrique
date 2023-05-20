@@ -17,6 +17,7 @@ function addActions(action){
     for (const a of action) {
       validerAction(a);
     }
+    action.reverse();
   }else validerAction(action);
   undo_list.push(action);
   applyLimitActions();
