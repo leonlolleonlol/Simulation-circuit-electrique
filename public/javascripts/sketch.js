@@ -6,7 +6,10 @@ let origin; // variable qui permet de savoir lorsque l'on crée un nouveau élé
 // et pour cela, on doit savoir quel composant panneau de choix est l'origine
 let components;// Liste de composants du circuit
 let fils;// Liste des fils du circuit
+let name;
+let id;
 
+let noeuds;
 // Variable nécessaire pour placer la grille
 let grid;
 const composants_panneau = [new Batterie(58, 215, 12),
@@ -19,11 +22,11 @@ let redo_button;
 let reset_button;
 let logout_button;
 let animation_button;
+let projet_name;
 
 let undo_tip;
 let redo_tip;
 let reset_tip;
-let logout_tip;
 let animation_tip;
 
 let baseCircuit = 'circuit3';
@@ -44,21 +47,30 @@ function setup() {
   let telecharger_button = select('#download');
   let upload_button = select('#upload');
   let sauvegarder_button = select('#save');
+  
+  projet_name = select('#projet-input');
   undo_button = select('#undo');
   redo_button = select('#redo')
   reset_button = select('#reset');
-  logout_button = select('#logout');
+  logout_button = select('#logout')??select('#login');
   animation_button= select('#animate');
   undo_tip = select('#undo-tip');
   redo_tip = select('#redo-tip');
   reset_tip = select('#reset-tip');
-  logout_tip = select('#logout-tip');
   animation_tip = select('#animation-tip');
   let animate_image = select('#animate_image');
   //----------------------------------------
   reset_button.mousePressed(refresh);
   undo_button.mousePressed(undo);
   redo_button.mousePressed(redo);
+  projet_name.elt.addEventListener('keyup',function(e){
+    if (e.key === 'Enter' || e.keyCode === 13) {
+      name = projet_name.value();
+      projet_name.elt.blur()
+    }
+  });
+  projet_name.changed(()=>{name = projet_name.value();})
+  name = projet_name.value();
   animation_button.mousePressed(() => {
     animate=!animate;
     if(animate){
@@ -86,11 +98,16 @@ function setup() {
   setTooltip(redo_button,'#redo-tip');
   setTooltip(reset_button,'#reset-tip');
   setTooltip(animation_button,'#animation-tip');
-  setTooltip(logout_button,'#logout-tip');
+  setTooltip(logout_button, select('#logout-tip')!=null ? '#logout-tip' : '#login-tip');
   c1 = new Circuit(true);
 
-  loadLocalCircuit();
-  test();
+  let projet = select('#circuit');
+  if(projet!=null){
+    load(JSON.parse(projet.value()));
+  }else{
+    loadLocalCircuit();
+  }
+  //test();
 
 }
 
@@ -182,12 +199,13 @@ function initComponents(){
   animate=1;
   fils = [];
   components = [];
+  noeuds = [];
   drag = null;
   selection = null;
   origin = null;
   percent=0;
   grid = {
-    offsetY: 30,
+    offsetY: 40,
     tailleCell: 30,
     translateX: 0,
     translateY: 0,
@@ -203,6 +221,12 @@ function initPosition(){
 
 //DOM -------------------------------
 
+/**
+ * Applique une animation au tooltip. Cette animation consiste à attendre 1 seconde
+ * avant que le tooltip s'affiche
+ * @param {p5.Button} button Le bouton associé avec le tooltip
+ * @param {string} tooltipId l'identifiant du tooltip
+ */
 function setTooltip(button,tooltipId){
   //http://jsfiddle.net/xaliber/TxxQh/
   let tooltip = select(tooltipId);
@@ -263,6 +287,7 @@ function draw() {
   drawGrid();
   drawFils();
   drawComposants();
+  drawNoeuds();
   drawComponentsChooser();
   if (origin != null) {
     push();
@@ -368,6 +393,34 @@ function drawComposants(){
 }
 
 /**
+ * Dessine les noeuds et les connections
+ */
+function drawNoeuds() {
+  updateNoeud();
+  push();
+  rectMode(CENTER);
+  translate(grid.translateX, grid.translateY);
+  for (let noeud of noeuds) {
+    push();
+    translate(noeud.x, noeud.y);
+    if(noeud.connections.length>2){
+      strokeWeight(1.5);
+      rotate(PI/4);
+      stroke('#8A2387');
+      fill('#8A2387');
+      square(0, 0, 5.5);
+    }else{
+      strokeWeight(2);
+      stroke('#00308F');
+      fill('#007FFF');
+      circle(0, 0, 5);
+    }
+    pop();
+  }
+  pop();
+}
+
+/**
  * Permet de trouver la position idéal en x et y à partir de la 
  * position de la souris
  * @param {number} offsetX Le décalage en x
@@ -405,7 +458,7 @@ function isElementSelectionner(element){
  * Cette vérification ne prend en compte que le décalage de la grille par rapport au canvas
  * @param {number} x la position en y (doit inclure translateX si nécéssaire)
  * @param {number} y la position en x (doit inclure translateY si nécéssaire)
- * @returns boolean si notre point se situe dans la grille
+ * @returns {boolean} Le point se situe dans la grille
  */
 function inGrid(x, y){
   return x > grid.offsetX && y > grid.offsetY
@@ -452,8 +505,18 @@ function filStart(x, y, first = true){
   return !first ? connections : null;
 }
 
+/**
+ * Permet de récupérer tout les fils et composants dont l'une de leurs bornes 
+ * à la même position qu'un coordonné x et y. 
+ * **ATTENTION**: Elle inclut aussi la position du composant qui a les coordonés
+ * @param {number} x coordoné en x 
+ * @param {number} y coordoné en y
+ * @param {boolean} first Condition s'y l'on veut que s'arrêter au premier composant trouvé
+ * Ce paramètre est seulement important si l'on veut vérifier la précence ou l'absence de connection
+ * @returns {Array} Tout les éléments qui sont connecter à cette position. 
+ */
 function getPossibleConnections(x, y, first = false) {
-  return filStart(x, y, false).concat(getConnectingComposant(x, y, false));
+  return filStart(x, y, first).concat(getConnectingComposant(x, y, first));
 }
 
 
@@ -462,6 +525,7 @@ function getPossibleConnections(x, y, first = false) {
  * 1. Ordonner les points initiaux et finaux plus petit au plus grand (xi doit être < que xf)
  * 2. Unir certains fils possible en un seul fil
  * 3. Coupe le fil dépendant des composants par lequel il passe
+ * 4. Coupe le fil pour respecter les noeuds
  * @param {Fil} fil Le nouveau fil
  * @param {Array} actions La liste d'actions ou l'on va enregistrer les actions interne 
  * effectuer dans la fonction
@@ -484,8 +548,9 @@ function ajustementAutomatiqueFil(fil, actions){
       actions.push({type:DELETE, objet:testFil, index});
       index--;
     }
-  }
+  }  
   verifierCouperFil(fil,actions);
+  verifierCouperNoeud(fil, actions);
 }
 
 /**
@@ -502,9 +567,85 @@ function verifierCouperFil(fil, actions){
     for (const composant of components) {
       let continuer = couperFil(fil, composant, actions);
       if(!continuer)
-        break;
+      return; 
     }
   }
+}
+
+/**
+ * Vérifie si un fil à besoin d'être coupé pour connecter à un composant ou un autre fil.
+ * @param {Fil} fil Le fil à vérifier
+ * @param {Array} actions La liste d'action à enregistrer dans l'historique
+ */
+function verifierCouperNoeud(fil, actions){
+  for (let index = 0; index < fils.length; index++) {
+    const element = fils[index];
+    if(element!=fil){
+      let pointIntersect = element.intersection(fil);
+      if(pointIntersect!=null){
+        if(!((element.xi ==pointIntersect.x && element.yi ==pointIntersect.y) || 
+        (element.xf ==pointIntersect.x && element.yf ==pointIntersect.y))){
+          splitFil(element, actions, pointIntersect);
+          index--;
+        }
+        if(!((fil.xi ==pointIntersect.x && fil.yi ==pointIntersect.y) || 
+        (fil.xf ==pointIntersect.x && fil.yf ==pointIntersect.y))){
+          let newFils = splitFil(fil, actions, pointIntersect);
+          verifierCouperNoeud(newFils[0], actions);
+          verifierCouperNoeud(newFils[1], actions);
+          return;
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Après la modification ou la création d'un composant, coupe tout les fil qui sont connecter
+ * avec le composant. Cette méthode complète {@link couperFil} pour toute les situations où un
+ * composant n'est pas perpendiculaire avec le fil
+ * @param {Composant} composant 
+ * @param {Array} actions 
+ */
+function verifierSplitNewComposant(composant, actions) {
+  let connections = composant.getConnections();
+  let left = filStart(connections[0].x, connections[0].y, false);
+  let right = filStart(connections[1].x, connections[1].y, false);
+  let bornes = [left, right];
+  for (let index = 0; index < bornes.length; index++) {
+    const borne = bornes[index];
+    const connection = connections[index];
+    if(borne!=null){
+      for (const element of borne) {
+        if(!((element.xi ==connection.x && element.yi ==connection.y) || 
+        (element.xf ==connection.x && element.yf ==connection.y))){
+          splitFil(element, actions, connection);
+        }
+      }
+    }
+  }
+}
+
+
+/**
+ * Coupe un fil en deux nouveau fils. Supprime aussi l'ancien fil du répertoire
+ * @param {Fil} fil 
+ * @param {Array} actions 
+ * @param {object} borneSeparation1 Borne de fin du nouveau fil 1. Peut aussi servir de borne
+ * de début du deuxième fil
+ * @param {object} [borneSeparation2] Borne optionnel du début du nouveau fil 2. 
+ * @return {Array} Les nouveaux fils
+ */
+function splitFil(fil, actions, borneSeparation1, borneSeparation2){
+  borneSeparation2 ??= borneSeparation1;
+  let fil1 = new Fil(fil.xi, fil.yi, borneSeparation1.x, borneSeparation1.y);
+  let fil2 = new Fil(borneSeparation2.x, borneSeparation2.y, fil.xf, fil.yf);
+  let index = fils.indexOf(fil);
+  fils.splice(index, 1);
+  fils.push(fil1, fil2);
+  actions.push({type:DELETE,objet:fil,index},
+    {type:CREATE,objet:fil1}, {type:CREATE,objet:fil2});
+  return [fil1, fil2];
 }
 
 /**
@@ -536,32 +677,158 @@ function couperFil(fil, composant, actions){
       return false;
     }else if(piInBound && !pfInBound){
       //Raccourcir le fil pour le point initial
-      actions.push({type:MODIFIER, objet:fil, changements:[
-        {attribut:'xi', ancienne_valeur:fil.xi, nouvelle_valeur:borne2.x},
-        {attribut:'yi', ancienne_valeur:fil.yi, nouvelle_valeur:borne2.y}]});
+      actions.push({
+        type:MODIFIER, 
+        objet:fil, 
+        changements:[
+          {attribut:'xi', ancienne_valeur:fil.xi, nouvelle_valeur:borne2.x},
+          {attribut:'yi', ancienne_valeur:fil.yi, nouvelle_valeur:borne2.y}
+        ]
+      });
       fil.xi = borne2.x;
       fil.yi = borne2.y;
     }else if(!piInBound && pfInBound){
       //raccourcir le fil pour le point final
-      actions.push({type:MODIFIER, objet:fil, changements:[
-        {attribut:'xf', ancienne_valeur:fil.xf, nouvelle_valeur:borne1.x},
-        {attribut:'yf', ancienne_valeur:fil.yf, nouvelle_valeur:borne1.y}]});
+      actions.push({
+        type:MODIFIER, 
+        objet:fil, 
+        changements:[
+          {attribut:'xf', ancienne_valeur:fil.xf, nouvelle_valeur:borne1.x},
+          {attribut:'yf', ancienne_valeur:fil.yf, nouvelle_valeur:borne1.y}
+        ]
+      });
       fil.xf = borne1.x;
       fil.yf = borne1.y;
     }else if(fil.inBoxBounds(composant.x,composant.y)){
-      // couper le fil en deux nouveaux fils
-      let fil1 = new Fil(fil.xi, fil.yi, borne1.x, borne1.y);
-      let fil2 = new Fil(borne2.x,borne2.y, fil.xf, fil.yf);
-      fils.splice(index,1);
-      fils.push(fil1, fil2);
-      actions.push({type:DELETE,objet:fil,index},
-        {type:CREATE,objet:fil1}, {type:CREATE,objet:fil2});
-      verifierCouperFil(fil1, actions);
-      verifierCouperFil(fil2, actions);
+      let newFils = splitFil(fil, actions, borne1, borne2);
+      verifierCouperFil(newFils[0], actions);
+      verifierCouperFil(newFils[1], actions);
       return false;
     }
   }
   return true;
+}
+
+/**
+ * Fonctionnalité permettant de colé la position d'un fil avec celle des bornes d'un composant.
+ * Cette fonction va spécifiquement mettre à jour la position de chaque fil associé aux bornes
+ * d'un composant en prennant em compte la précédente connection qu'il y avait avant le modification
+ * du composant
+ * @param {Array} borneG Tout les fils qui connecte avec la borne négative du composant
+ * @param {Array} borneD Tout les fils qui connecte avec la borne postive du composant
+ * @param {object} posReference Les bornes positives et négative précédente. 
+ * Cette position sert à trouver quel borne du fil exactement il faut modifier (inital ou final)
+ * @param {object} posUpdate Les bornes positives et négative mise-à-jour. Ce sont les valeurs
+ * de positions que l'on veut mettre à jour dans les fils
+ */
+function updateFilPos(borneG, borneD, posReference, posUpdate){
+  let changeFil = (array, a, b) => {
+    for (const element of array) {
+      if(element.xi == a.x && element.yi == a.y){
+        element.xi = b.x;
+        element.yi = b.y;
+      }else{
+        element.xf = b.x;
+        element.yf = b.y;
+      }
+    }
+  }
+  changeFil(borneG, posReference[0], posUpdate[0]);
+  changeFil(borneD, posReference[1], posUpdate[1]);
+}
+
+/**
+ * Enregistre dans une liste d'actions les changements effectuer sur les fils en liens avec
+ * la fonctionnalité des fils ancré
+ * @param {Array} borneG Tout les fils qui connecte avec la borne négative du composant
+ * @param {Array} borneD Tout les fils qui connecte avec la borne postive du composant
+ * @param {object} posReference Les bornes positives et négative précédente. 
+ * Cette position sert à trouver quel borne du fil exactement a été modifier (inital ou final)
+ * @param {object} posUpdate Les bornes positives et négative mise-à-jour. Ce sont les valeurs
+ * de positions que l'on veut mettre à jour dans les fils
+ * @param {Array} actions La liste d'action qui va être enregistrer dans {@link addActions}
+ * @see updateFilPos 
+ */
+function setModificationFilPos(borneG, borneD, posReference, posUpdate, actions){
+  let addActionFil = function(array, a, b, actions) {
+    for (const element of array) {
+      let leftMod = element.xi == a.x && element.yi == a.y;
+      let x = leftMod ? 'xi' : 'xf';
+      let y = leftMod ? 'yi' : 'yf';
+      actions.push({
+        type:MODIFIER, 
+        objet:element, 
+        changements:[
+          {attribut:x, ancienne_valeur:b.x, nouvelle_valeur:a.x},
+          {attribut:y, ancienne_valeur:b.y, nouvelle_valeur:a.y}
+        ]
+      });
+    }
+  }
+  addActionFil(borneG, posReference[0], posUpdate[0], actions);
+  addActionFil(borneD, posReference[1], posUpdate[1], actions);
+}
+
+/**
+ * @typedef {Connection}
+ * @property {Array} connections - La liste de tout les composant relier sur une cordonné x et y.
+ * @property {number} x - La cordonné en x de la connection
+ * @property {number} y - La cordonné en y de la connection.
+ */
+
+/**
+ * @typedef {ConnectionPair} 
+ * @global
+ * @property {Connection} left - La connection de gauche du composant.
+ * @property {Connection} right - La connection de droite du composant.
+ */
+
+
+/**
+ * Récupère toute les connections qui sont relier au cordonné d'un composant ou d'un fil.
+ * Pour un composant, ce sont par contre les cordonné des bornes qui sont récupérer. En fait,
+ * cette méthode est une dérivé de {@link getPossibleConnections} puisqu'elle ne fait qu'assembler
+ * les résultats fournis en un seul objet.
+ * @param {(Composant|Fil)} element L'élément du circuit que l'on veut récupérer les connections
+ * @returns {ConnectionPair} Les connections pour chaqu'une des bornes de l'élément (2 bornes)
+ * @see getConnections Pour récupérer position borne
+ * @see getPossibleConnections C'est la méthode qui récupère vraiment les connections
+ */
+function getAllConnection(element){
+  let initial;
+  let final;
+  if(element instanceof Composant){
+    let bornes = element.getConnections();
+    initial = bornes[0];
+    final = bornes[1];
+  }else{
+    initial = {x:element.xi, y:element.yi};
+    final = {x:element.xf, y:element.yf};
+  }
+  let connectL = getPossibleConnections(initial.x, initial.y, false);
+  let connectR = getPossibleConnections(final.x, final.y, false);
+  return {
+    left:{connections:connectL, x:initial.x, y:initial.y}, 
+    right:{connections:connectR, x:final.x, y:final.y,}
+  };
+}
+
+
+/**
+ * Met à jour les positions des noeuds et des connections.
+ */
+function updateNoeud(){
+  noeuds.length = 0;
+  let joinElement = fils.concat(components)
+  for (const element of joinElement) {
+    let connections = getAllConnection(element);
+    if(!noeuds.includes(connections.left) && connections.left.connections.length>1){
+      noeuds.push(connections.left);
+    }
+    if(!noeuds.includes(connections.right) && connections.right.connections.length>1){
+      noeuds.push(connections.right);
+    }
+  }
 }
 
 /**
@@ -586,6 +853,7 @@ function ajustementAutomatiqueComposant(composant, actions){
     if(penteFil==Infinity || penteFil==0)
       couperFil(fil,composant, actions)
   }
+  verifierSplitNewComposant(composant, actions);
 }
 
 /**
@@ -641,8 +909,13 @@ function mousePressed() {
   for (let element of components) {
     if (element.inBounds(x, y)) {
       initDrag(element, element.x, element.y);
-      drag.pastPos = {x:drag.x, y:drag.y};
       let connections = element.getConnections();
+      drag.pastAttribute = {
+        x : drag.x, 
+        y : drag.y, 
+        bornes : connections,
+        orientation : drag.orientation
+      };
       draggedAnchor = {
         left: filStart(connections[0].x, connections[0].y, false),
         right: filStart(connections[1].x, connections[1].y, false)
@@ -672,25 +945,6 @@ function mousePressed() {
   if(inGrid(mouseX/grid.scale,mouseY/grid.scale))
     drag = grid;
 }
-function creatNoeud(fil){
-  //Pas besoin de cette fonction, les points on déjà été trier
-  fil.trierPoint();
-  f1 = new Fil(fil.xi, fil.yi,fil.xf,fil.yf);
-  // étape 1 : vérifier les deux cas de présence de noeud 
-  for (const nfil of fils) {
-    if(nfil !== fil){
-      if((fil.yi - nfil.yi) * (fil.yi-nfil.yf) <= 0 && (fil.yi !== nfil.yi && nfil.yi !== nfil.yf)){
-        f1.UsePrint();
-      }
-    }
-  }
-  for(let i = 0; i < fils.length - 1; i++){
-      if(fils[i].xi === fils[i+1].xi || fils[i].yi === fils[i+1].yi){
-        //if(fil.yi != fils[i].yi && fil.yf != fils[i].yf){
-        }
-   // }  
-  }
-}
 
 /**
  * Met à jour les informations des éléments drag sur notre grille
@@ -717,23 +971,8 @@ function mouseDragged() {
       let pastConnect = drag.getConnections();//connection précédente
       drag.x = point.x;
       drag.y = point.y
-      let connections = drag.getConnections();//connection avec le nouveau changement
-      //se base sur la précédente position pour trouver la bonne borne du fil à modifier
-      let changeFil = function name(array, a, b) {
-        for (const element of array) {
-          if(element.xi == a.x && element.yi == a.y){
-            element.xi = b.x;
-            element.yi = b.y;
-          }else{
-            element.xf = b.x;
-            element.yf = b.y;
-          }
-        }
-      }
-      changeFil(draggedAnchor.left, pastConnect[0], connections[0]);
-      changeFil(draggedAnchor.right, pastConnect[1], connections[1]);
+      updateFilPos(draggedAnchor.left, draggedAnchor.right, pastConnect, drag.getConnections());
     }
-    
   }
 }
 
@@ -758,7 +997,6 @@ function mouseReleased() {
       if(drag.longueur()>0){
         let actions = [{type:CREATE, objet:drag}]
         ajustementAutomatiqueFil(drag, actions);
-        creatNoeud(drag);
         addActions(actions);
       }else {
         let fil = fils.pop();
@@ -767,16 +1005,25 @@ function mouseReleased() {
         }
       }
     } else if(drag instanceof Composant) {
-        if(validComposantPos(drag) && dist(drag.pastPos.x, drag.pastPos.y, drag.x, drag.y) > 0){
-          let actions = [{type:MODIFIER, objet:drag, changements:[
-            	{attribut:'x', ancienne_valeur:drag.pastPos.x, nouvelle_valeur:drag.x},
-              {attribut:'y', ancienne_valeur:drag.pastPos.y, nouvelle_valeur:drag.y}]}];
+        if(validComposantPos(drag) && dist(drag.pastAttribute.x, drag.pastAttribute.y, drag.x, drag.y) > 0){
+          let actions = [{
+            type:MODIFIER, 
+            objet:drag, 
+            changements:[
+            	{attribut:'x', ancienne_valeur:drag.pastAttribute.x, nouvelle_valeur:drag.x},
+              {attribut:'y', ancienne_valeur:drag.pastAttribute.y, nouvelle_valeur:drag.y},
+              {attribut:'orientation', ancienne_valeur:drag.pastAttribute.orientation, nouvelle_valeur:drag.orientation}
+            ]
+          }];
+          setModificationFilPos(draggedAnchor.left, draggedAnchor.right,
+            drag.getConnections(), drag.pastAttribute.bornes, actions);
           ajustementAutomatiqueComposant(drag, actions);
           addActions(actions);
         } else{
           // Annuler le mouvement
-          drag.x = drag.pastPos.x;
-          drag.y = drag.pastPos.y;
+          updateFilPos(draggedAnchor.left, draggedAnchor.right, drag.getConnections(), drag.pastAttribute.bornes);
+          drag.x = drag.pastAttribute.x;
+          drag.y = drag.pastAttribute.y;
         }
       draggedAnchor = null;
     }
@@ -858,16 +1105,28 @@ function keyPressed() {
       return false;
     } else if(keyCode === 84 && selection!=null){
       if(selection instanceof Composant){
+        let pastConnect = selection.getConnections();
+        let left = filStart(pastConnect[0].x, pastConnect[0].y, false);
+        let right = filStart(pastConnect[1].x, pastConnect[1].y, false);
         let pRotate = selection.orientation;
         selection.rotate(keyIsDown(SHIFT));
         if(validComposantPos(selection)){
-          addActions({type:MODIFIER, objet:selection, changements:[
-          {attribut:'orientation', ancienne_valeur:pRotate, nouvelle_valeur:selection.orientation}]});
+          updateFilPos(left, right, pastConnect, selection.getConnections());
+          if(drag==null){
+          let actions = [{
+            type:MODIFIER, 
+            objet:selection, 
+            changements:[
+              {attribut:'orientation', ancienne_valeur:pRotate, nouvelle_valeur:selection.orientation}
+            ]
+          }];
+          setModificationFilPos(left, right, selection.getConnections(), pastConnect, actions);
+          addActions(actions);
+          }
         } else{
           selection.orientation = pRotate;
         }
       }
-      return false;
     } else if(keyCode === 82 || keyCode === 83 || keyCode === 65
         /*|| keyCode === 67 || keyCode === 68*/){
       let point = findGridLock(grid.translateX, grid.translateY);
@@ -888,7 +1147,6 @@ function keyPressed() {
         //circuit.ajouterComposante(newC);
         addActions(actions);
       }
-      return false;
     }
   }
 }
@@ -917,7 +1175,7 @@ function refresh() {
 }
 
 
-// BackEnd connection
+// BACKEND--------------------------------------------
 
 /**
  * Cette fonction permet de load un circuit à partir de donnée Json. Cette fonction est très
@@ -927,6 +1185,8 @@ function refresh() {
  * @param {object} data Un objet représentant nos données
  */
 function load(data){
+  id = data.id;
+  name = data.name??('Circuit inconnus ' +id);
   let tempElements = data.components.concat(data.fils);
   components.length = fils.length = 0;
   let map = new Map();
@@ -963,7 +1223,7 @@ function load(data){
  * @returns {string}
  */
 function getStringData(){
-  let informations = {components, fils};
+  let informations = {id, name, components, fils};
   let caches = [];// permet d'enregistrer un objet une fois et d'utiliser des numéros d'identification les autres fois
   return JSON.stringify(informations, function(key, value){
     if(value instanceof Composant || value instanceof Fil){
@@ -1046,7 +1306,9 @@ function telecharger(){
     let url = window.URL || window.webkitURL;
     let link = url.createObjectURL(blob);
     let a = document.createElement("a");
-    a.download = "circuit.json";
+    if(name!='Circuit inconnus')
+      a.download = name+".json";
+    else a.download = "circuit.json";
     a.href = link;
     a.click();
   }

@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <style>
+        body {
+            background-color: <%=user.color%>;
+        }
+      </style>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,18 +26,26 @@
     </a>
         <br></br>
     <div id="user-info">
-        <h1> Bonjour <%= user.prenom %> !</h1>
+        <h1> Bonjour <%= user.prenom.charAt(0).toUpperCase() + user.prenom.slice(1) %> !</h1>
     </div>
     <br>
     <h2>Projets</h2>
-    <% if(user.projets!=null){ %>
-        <ul>
-        <% for(const projet of user.projets){ %>
-            <li>
-                <a href="/editeur/"+<%= projet.id %> ><%= projet.name %></a>
-            </li>
-        <% } %>
-        </ul>
-    <% } %>
+    <% if (user.details>0) { %>
+        <h3>Vous n'avez jamais sauvegardé des circuits.</h3>
+      <% } else { %>
+        <h3>Votre dernier circuit est sauvegardé!</h3>
+      <% } %>
+    <script>
+        function sendSaveCircuit(projet, user){
+            fetch('/editeur', {
+                method: 'POST',
+                body: user,
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+        }
+    </script>
+    
 </body>
 </html>

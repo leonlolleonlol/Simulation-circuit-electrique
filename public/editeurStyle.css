@@ -4,27 +4,26 @@
   background-color: #FCFCFD;
   border-radius: 4px;
   border-width: 0;
-  box-shadow: rgba(45, 35, 66, 0.4) 0 2px 4px,rgba(45, 35, 66, 0.3) 0 7px 13px -3px,#D6D6E7 0 -3px 0 inset;
+  box-shadow: rgba(45, 35, 66, 0.4) 0 2px 4px, rgba(45, 35, 66, 0.3) 0 7px 13px -3px, #D6D6E7 0 -3px 0 inset;
   box-sizing: border-box;
   color: #36395A;
   cursor: pointer;
   display: inline-flex;
+  position: relative;
   width: 40px;
   height: 36px;
   justify-content: center;
   line-height: 1;
   list-style: none;
-  padding-left: 16px;
-  padding-right: 16px;
-  position: relative;
+  padding: 0 16px;
   text-align: left;
   text-decoration: none;
-  transition: box-shadow .15s,transform .15s;
+  transition: box-shadow .15s, transform .15s;
   user-select: none;
   -webkit-user-select: none;
   touch-action: manipulation;
   white-space: nowrap;
-  will-change: box-shadow,transform;
+  will-change: box-shadow, transform;
 }
 
 .button-jump:focus {
@@ -40,172 +39,98 @@
   box-shadow: #D6D6E7 0 3px 7px inset;
   transform: translateY(2px);
 }
-.button {
-    border: none;
-    color: white;
-    text-align: center;
-    display: inline-block;
-    font-size: 16px;
-    transition-duration: 0.4s;
-    cursor: pointer;
-    height:fill-content;
-}
-.button1 {
-    background-color: white; 
-    color: black; 
-}
-.button1:hover {
-    background-color: #00ff99;
-    color: white;
-}
-a {
-    color: black;
-    text-decoration: none;
+
+button {
+  display: inline-flex;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
 }
 
-#side-user{
-  float: right;
+.username {
+  font: bold 16px Gadugi;
+  color: #505050;
 }
 
-#acceuil {
-    position:absolute;
-    top: 10px;
-    left: 10px;
-}
-#download {
-    position:absolute;
-    top: 10px;
-    left: 55px;
+.side-user, .nav-bar, .historique, .grid-choice {
+  display: flex;
+  position: absolute;
 }
 
-#upload {
-  position:absolute;
+.side-user {
   top: 10px;
-  left: 100px;
+  right: 50px;
+  align-items: center;
+  gap: 10px;
 }
 
-#save {
-    position:absolute;
-    top: 10px;
-    left: 145px;
+.nav-bar {
+  top: 10px;
+  left: 10px;
+  gap: 10px;
 }
 
+.historique {
+  top: 95px;
+  gap: 2px;
+}
 
-#undo {
-    position: absolute;
-    top: 95px;
-    width: 40px;
-    height: 30px;
+.grid-choice {
+  top: 150px;
 }
-  
-#redo {
-    position: absolute;
-    top: 95px;
-    left:50px;
-    width: 40px;
-    height: 30px;
+
+#projet-name {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  margin-left: -100px;
+  width: 100px;
+  height: 100px;
+
 }
-#reset {
-    position: absolute;
-    top: 95px;
-    left: 92px;
-    width: 40px;
-    height: 30px;
+
+#projet-input {
+  width: 175px;
+  height: 30px;
+  background: #A9A9A9;
+  border-radius: 5px;
+  border-color: transparent;
+  font-family: Cascadia Code ExtraLight;
+  font-size: 15px;
+  text-align: center;
 }
+
+#projet-input:focus {
+  outline-style: none;
+  box-shadow: none;
+  background-color: #A9A9A9;
+  border: solid 2px #696969;
+
+}
+
+.historique-item {
+  width: 40px;
+  height: 30px;
+}
+
 #animate {
-    position: absolute;
-    top: 440px;
-    left:50px;
-    width: 40px;
-    height: 40px;
-}
-  
-#line-grid {
-    position:absolute;
-    top:150px;
-}
-  
-#point-grid{
-    position:absolute;
-    top:150px;
-    left: 48px;
-}
-  
-#point-line-grid {
-    position:absolute;
-    top:150px;
-    left: 88px;
-}
-  
-.icon {
-    width: 24px;
-    height: 24px;
-}
-
-#line-grid-tip{
-  width: 60px;
-  left: 58px;
-}
-#line-grid-tip::after {
-  left: 20px;
-}
-
-#point-grid-tip{
-  width: 70px;
-  left: 43px;
-}
-
-#pointLine-grid-tip{
-  width: 100px;
-  left: 28px;
-}
-
-#acceuil-tip{
-  width: 60px;
-  left: 58px;
-}
-
-#download-tip{
-  width: 80px;
-  left: 48px;
-}
-
-#upload-tip{
-  width: 80px;
-  left: 48px;
-}
-
-#save-tip{
-  width: 90px;
-  left: 43px;
-}
-
-#logout-tip{
-  width: 100px;
+  position: absolute;
+  top: 440px;
   left: 50px;
+  padding: 5px;
 }
 
-#undo-tip{
-  width: 60px;
-  left: 58px;
+.icon {
+  width: 24px;
+  height: 24px;
+}
+
+#undo-tip {
+  left: -2px;
 }
 
 #undo-tip::after {
   left: 20px;
-}
-
-#redo-tip{
-  width: 60px;
-  left: 48px;
-}
-#reset-tip{
-  width: 90px;
-  left: 33px;
-}
-
-#animation-tip{
-  width: 120px;
-  left: 18px;
 }
 
 /*https://www.w3schools.com/howto/howto_css_tooltip.asp*/
@@ -215,10 +140,10 @@ a {
   color: #fff;
   text-align: center;
   border-radius: 6px;
-  padding: 5px 0;
+  padding: 5px;
   position: absolute;
+  white-space: nowrap;
   z-index: 1;
-  margin-left: -60px;
 }
 
 .tooltip::after {

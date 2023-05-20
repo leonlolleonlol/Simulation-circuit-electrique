@@ -1,31 +1,36 @@
-const express = require('express');
-const { pool } = require("./dbConfig");
 const bcrypt = require("bcrypt");
-const session=require("express-session");
-const flash=require("express-flash");
-const app = express()
+const bodyParser = require('body-parser');
+const express = require('express');
+const flash = require("express-flash");
+const rateLimit  = require('express-rate-limit');
+const session = require("express-session");
 const passport=require("passport");
+const path = require('path');
+
 const initializePassport=require("./passportConfig");
-var bodyParser = require('body-parser');
+const { pool } = require("./dbConfig");
+
+const app = express();
+
+var limiter = rateLimit ({
+	windowMs: 15 * 60 * 1000, // 15 minutes
+	max: 1000, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+	standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+	legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+
+});
+initializePassport(passport);
+
+// apply rate limiter to all requests
+app.use(limiter);
+
+
 app.use(bodyParser.urlencoded({
   extended: true
 }));
-initializePassport(passport);
 app.use(bodyParser.json());
-const port = 3000;
-const path = require('path')
-require('nerdamer'); 
-// Load additional modules. These are not required.  
-require('nerdamer/Solve');
 app.use(express.static(path.join(__dirname,'public')));
 app.use(express.static(path.join(__dirname,'public/javascripts')));
-app.listen(port, () => {
-  var url = `http://localhost:${port}`
-  console.log('Server listen on '+url);
-  var start = (process.platform == 'darwin'? 'open': process.platform == 'win32' ? 'start' : 'xdg-open');
-  require('child_process').exec(start + ' ' + url+'/acceuil');
-})
-app.set("view engine", "ejs");
 app.use(session({
   secret: 'secret',
   resave: false,
@@ -34,16 +39,28 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
+
+app.set("view engine", "ejs");
+
+app.listen(3000, () => {
+  var url = `http://localhost:3000`
+  console.log('Server listen on '+url);
+  var start = (process.platform == 'darwin'? 'open': process.platform == 'win32' ? 'start' : 'xdg-open');
+  require('child_process').exec(start + ' ' + url+'/acceuil');
+});
+
 app.get('/', function(req, res) {
   res.sendFile(path.join(__dirname, '/acceuil.html'));
 });
+
 app.get('/users/register', checkAuthenticated, function(req, res) {
   res.render('register');
 });
+
 app.post('/users/register', async(req, res)=>{
-  let { name, prenom,  email, password, password2 } = req.body;
+  let { name, prenom,  email, password, password2,color } = req.body;
   let errors = [];
-  if (!name || !prenom || !email || !password || !password2) {
+  if (!name || !prenom || !email || !password || !password2|| !color) {
     errors.push({ message: "Please enter all fields" });
   }
 
@@ -70,14 +87,14 @@ app.post('/users/register', async(req, res)=>{
         if (results.rows.length > 0||errors.length > 0) {
           if(errors.length<1)
             errors.push({ message: "Email already registered!" });
-          return res.status(404).render("register", { errors, name, prenom , email, password, password2 });
+          return res.status(404).render("register", { errors, name, prenom , email, password, password2, color });
         }
         else{
           pool.query(
-            `INSERT INTO users (name, prenom, email, password)
-                VALUES ($1, $2, $3, $4)
+            `INSERT INTO users (name, prenom, email, password, color)
+                VALUES ($1, $2, $3, $4, $5)
                 RETURNING id, password`,
-            [name, prenom, email, hashedPassword],
+            [name, prenom, email, hashedPassword, color],
             (err, results) => {
               if (err) {
                 throw err;
@@ -105,15 +122,24 @@ app.post(
   })
 );
 
-let currentEmail;
 app.post('/query', async(req, res) => {
   let string=JSON.stringify(req.body).replace(/([a-zA-Z0-9_]+?):/g, '"$1":');
   try {
     const result = await pool.query(
-      'UPDATE users SET details = $1 WHERE email = $2',
+      'UPDATE users SET details=array_append(details, $1::jsonb) WHERE email = $2',
       [string,req.user.email]
     );
-    res.sendStatus(200); // Send a success response to the client
+  } catch (err) {
+    console.error('Error:', err.message);
+    console.error('Stack trace:', err.stack);
+    res.sendStatus(500);
+  }
+  //A chaque qu'on save, on s'assure qu'on n'avait pas save le meme circuit precedemment
+  try {
+    const resultTwo = await pool.query(
+      'UPDATE users SET details=(SELECT array_agg(DISTINCT element) FROM unnest(details) AS element) WHERE email=$1',
+      [req.user.email]
+    );
   } catch (err) {
     console.error('Error:', err.message);
     console.error('Stack trace:', err.stack);
@@ -128,11 +154,26 @@ app.get("/users/logout", async (req, res) => {
     res.redirect("/");
   });
 });
-app.get('/users/dashboard', checkNotAuthenticated, function(req, res) {
+app.get('/users/dashboard', checkNotAuthenticated, async(req, res)=> {
+  let obtainedRow=0;
+  try {
+    const result = await pool.query(
+      'SELECT * FROM users WHERE details is null AND email = $1',
+      [req.user.email]
+    );
+    if(result.rows.length>0)
+      obtainedRow=1;
+  } catch (err) {
+    console.error('Error:', err.message);
+    console.error('Stack trace:', err.stack);
+    res.sendStatus(500);
+  }
   res.render("dashboard", {user:{
     id:req.user.name,//bientôt req.user.id
     name:req.user.name,
-    prenom:req.user.prenom
+    prenom:req.user.prenom,
+    details: obtainedRow,
+    color: req.user.color
     //projets:req.user.projets,
   } });
 });
@@ -158,7 +199,8 @@ function checkAuthenticatedForEditor(req, res) {
   if (req.isAuthenticated())
     return res.render("editeur", {user:{
       name:req.user.name,
-      prenom:req.user.prenom
+      prenom:req.user.prenom,
+      color:req.user.color
     } });
   else
     return res.redirect(path.join(__dirname, '/'));

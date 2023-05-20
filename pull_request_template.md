@@ -1,10 +1,7 @@
-## Describe your changes
+## Description des changements
 
-## Issue ticket number and link
-
-## Checklist before requesting a review
-- [ ] I have performed a self-review of my code
-- [ ] If it is a core feature, I have added thorough tests.
-- [ ] Do we need to implement analytics?
-- [ ] Will this be part of a product update? If yes, please write one phrase about this update.
+## Chose à faire avant de demander une révision
+- [ ] J'ai effectuer une révision de mon code
+- [ ] J'ai tester mon code si le code implémentait une fonctionnalité importante.
+- [ ] Le code est bien documenter
 
