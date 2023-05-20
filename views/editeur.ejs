@@ -42,9 +42,8 @@
   <div id="projet-name">
     <input id="projet-input" type="text" value="Circuit inconnus"></input>
   </div>
-
+  <div class="side-user">
 <% if(typeof user != 'undefined' && typeof user.name != 'undefined'){ %>
-  <div id="side-user">
       <span class="username"><%= user.name %></span>
       <a href="/users/logout">
         <button id="logout">
@@ -52,46 +51,48 @@
           <span class="tooltip bottom" id="logout-tip">Déconnexion</span>
         </button>
       </a>
-  </div>
 
 <% }else{ %>
-  <div id="side-user">
     <a href="/users/login">
-      <button id="noUser">
-        <img class="icon" src = "images/icons/user-circle.svg" alt="Connexion"/>
-        <span class="tooltip bottom" id="logout-tip">Connexion</span>
+      <button id="login">
+        <img class="icon" src="images/icons/user-circle.svg" alt="Connexion" />
+        <span class="tooltip bottom" id="login-tip">Connexion</span>
       </button>
     </a>
-  </div>
 <% } %>
-  <button id="undo">
-    <img class="icon" src = "images/icons/undo.svg" alt="undo"/>
-    <span class="tooltip top" id="undo-tip">Annuler</span>
-  </button>
-  <button id="redo">
-    <img class="icon" src = "images/icons/redo.svg" alt="redo"/>
-    <span class="tooltip top" id="redo-tip">Refaire</span>
-  </button>
-  <button id="reset">
-    <img class="icon" src = "images/icons/refresh.svg" alt="effacer tout"/>
-    <span class="tooltip top" id="reset-tip">Recommencer</span>
-  </button>
-
+  </div>
+  <div class="historique">
+    <button id="undo" class="historique-item">
+      <img class="icon" src="images/icons/undo.svg" alt="undo" />
+      <span class="tooltip top" id="undo-tip">Annuler</span>
+    </button>
+    <button id="redo" class="historique-item">
+      <img class="icon" src="images/icons/redo.svg" alt="redo" />
+      <span class="tooltip top" id="redo-tip">Refaire</span>
+    </button>
+    <button id="reset" class="historique-item">
+      <img class="icon" src="images/icons/refresh.svg" alt="effacer tout" />
+      <span class="tooltip top" id="reset-tip">Recommencer</span>
+    </button>
+  </div>
+  <div class="grid-choice">
+    <button id="line-grid">
+      <img class="icon" src="images/icons/line-grid.svg" alt="Grid line choice" />
+      <span class="tooltip top" id="line-grid-tip">Grid line</span>
+    </button>
+    <button id="point-grid">
+      <img class="icon" src="images/icons/dot-grid.svg" alt="Grid point choice" />
+      <span class="tooltip top" id="point-grid-tip">Grid point</span>
+    </button>
+    <button id="point-line-grid">
+      <img class="icon" src="images/icons/point-line-grid.svg" alt="Grid point line choice" />
+      <span class="tooltip top" id="pointLine-grid-tip">Grid point & line</span>
+    </button>
+  </div>
   <button id="animate">
     <img class="icon" id="animate_image" src = "images/icons/square.svg" alt="Animation"/>
     <span class="tooltip bottom" id="animation-tip">Arrêter l'animation</span>
   </button>
-  <button id="line-grid">
-    <img class="icon" src = "images/icons/line-grid.svg" alt="Grid line choice"/>
-    <span class="tooltip top" id="line-grid-tip">Grid line</span>
-  </button>
-  <button id="point-grid">
-    <img class="icon" src = "images/icons/dot-grid.svg" alt="Grid point choice"/>
-    <span class="tooltip top" id="point-grid-tip">Grid point</span>
-  </button>
-  <button id="point-line-grid">
-    <img class="icon" src = "images/icons/point-line-grid.svg" alt="Grid point line choice"/>
-    <span class="tooltip top" id="pointLine-grid-tip">Grid point & line</span>
-  </button>
+
 </body>
 </html>

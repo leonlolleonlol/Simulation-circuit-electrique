@@ -51,7 +51,7 @@ function setup() {
   undo_button = select('#undo');
   redo_button = select('#redo')
   reset_button = select('#reset');
-  logout_button = select('#logout')??select('#noUser');
+  logout_button = select('#logout')??select('#login');
   animation_button= select('#animate');
   undo_tip = select('#undo-tip');
   redo_tip = select('#redo-tip');
@@ -97,7 +97,7 @@ function setup() {
   setTooltip(redo_button,'#redo-tip');
   setTooltip(reset_button,'#reset-tip');
   setTooltip(animation_button,'#animation-tip');
-  setTooltip(logout_button,'#logout-tip');
+  setTooltip(logout_button, select('#logout-tip')!=null ? '#logout-tip' : '#login-tip');
   c1 = new Circuit(true);
 
   let projet = select('#circuit');
