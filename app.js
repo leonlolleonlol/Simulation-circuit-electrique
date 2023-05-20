@@ -200,6 +200,7 @@ function checkAuthenticatedForEditor(req, res) {
     return res.render("editeur", {user:{
       name:req.user.name,
       prenom:req.user.prenom,
+      color:req.user.color
     } });
   else
     return res.redirect(path.join(__dirname, '/'));
