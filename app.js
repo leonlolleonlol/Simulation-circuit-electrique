@@ -126,34 +126,9 @@ app.post('/query', async(req, res) => {
   let string=JSON.stringify(req.body).replace(/([a-zA-Z0-9_]+?):/g, '"$1":');
   try {
     const result = await pool.query(
-      `SELECT arr.position, arr.projet
-       FROM users, jsonb_array_elements(projets)
-       arr(projet, position)
-       WHERE email = $1 and arr.position=Cast((SELECT arr.position  
-        FROM users, jsonb_array_elements(projets) with ordinality 
-        arr(projet, position) 
-        WHERE arr.projet->>'id' = $2) as int)
-        `,
-       [req.body.user.email, req.body.id] 
-    );
-    if(results.rows.length !=0){
-      await pool.query(
-        `UPDATE users
-         SET projets[$3]= $1 
-         WHERE email = $2`, [req.body.projet, req.body.user.email, result.rows[0].position] 
-      );
-    }else{
-      await pool.query(
-        `UPDATE users
-         SET projets=array_append(projets, $1) 
-         WHERE email = $2`, [req.body.projet, req.body.user.email] 
-      );
-    }
-    /*await pool.query(
-      'UPDATE users SET details = $1 WHERE email = $2',
+      'UPDATE users SET details=array_append(details, $1) WHERE email = $2',
       [string,req.user.email]
-    );*/
-    res.sendStatus(200); // Send a success response to the client
+    );
   } catch (err) {
     console.error('Error:', err.message);
     console.error('Stack trace:', err.stack);
