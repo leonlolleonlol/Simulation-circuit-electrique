@@ -1,31 +1,37 @@
-const express = require('express');
-const { pool } = require("./dbConfig");
 const bcrypt = require("bcrypt");
-const session=require("express-session");
-const flash=require("express-flash");
-const app = express()
+const bodyParser = require('body-parser');
+const express = require('express');
+const flash = require("express-flash");
+const rateLimit  = require('express-rate-limit');
+const session = require("express-session");
+const lusca = require('lusca');
 const passport=require("passport");
+const path = require('path');
+
 const initializePassport=require("./passportConfig");
-var bodyParser = require('body-parser');
+const { pool } = require("./dbConfig");
+
+const app = express();
+
+var limiter = rateLimit ({
+	windowMs: 15 * 60 * 1000, // 15 minutes
+	max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+	standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+	legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+
+});
+initializePassport(passport);
+
+// apply rate limiter to all requests
+app.use(limiter);
+
+
 app.use(bodyParser.urlencoded({
   extended: true
 }));
-initializePassport(passport);
 app.use(bodyParser.json());
-const port = 3000;
-const path = require('path')
-require('nerdamer'); 
-// Load additional modules. These are not required.  
-require('nerdamer/Solve');
 app.use(express.static(path.join(__dirname,'public')));
 app.use(express.static(path.join(__dirname,'public/javascripts')));
-app.listen(port, () => {
-  var url = `http://localhost:${port}`
-  console.log('Server listen on '+url);
-  var start = (process.platform == 'darwin'? 'open': process.platform == 'win32' ? 'start' : 'xdg-open');
-  require('child_process').exec(start + ' ' + url+'/acceuil');
-})
-app.set("view engine", "ejs");
 app.use(session({
   secret: 'secret',
   resave: false,
@@ -34,12 +40,25 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
+app.use(lusca.csrf());
+
+app.set("view engine", "ejs");
+
+app.listen(3000, () => {
+  var url = `http://localhost:3000`
+  console.log('Server listen on '+url);
+  var start = (process.platform == 'darwin'? 'open': process.platform == 'win32' ? 'start' : 'xdg-open');
+  require('child_process').exec(start + ' ' + url+'/acceuil');
+});
+
 app.get('/', function(req, res) {
   res.sendFile(path.join(__dirname, '/acceuil.html'));
 });
+
 app.get('/users/register', checkAuthenticated, function(req, res) {
   res.render('register');
 });
+
 app.post('/users/register', async(req, res)=>{
   let { name, prenom,  email, password, password2,colorPicker } = req.body;
   let errors = [];
