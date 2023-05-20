@@ -158,6 +158,38 @@ class Fil{
   }
 
   /**
+   * Permet de trouver l'intersection entre deux fils. Cette fonction est différente
+   * de {@link overlap} puisque il faut que la droite n'intersecte en un endroit (pas
+   * paralèlle).
+   * @param {Fil} fil Le fil que l'on veut comparer
+   * @returns {object} Une position ou null si rien n'a été trouvé
+   */
+  intersection(fil){
+    let f1 = this.getFunction();
+    let f2 = fil.getFunction();
+    let yfunction1 = Math.abs(f1.pente)!=Infinity
+    let yfunction2 = Math.abs(f2.pente)!=Infinity;
+    let yCord;
+    let xCord;
+    if(Math.abs(f1.pente) !== Math.abs(f2.pente)){
+      if(yfunction1 && yfunction2){
+        xCord = (f1.ordonneX - f2.ordonneX) / (f2.pente - f1.pente);
+        yCord = f1.pente * xCord + f1.ordonneX;
+      }else if(yfunction1 && !yfunction2){
+        xCord = f2.ordonneY;
+        yCord = f1.pente * xCord + f1.ordonneX;
+      }else if(!yfunction1 && yfunction2){
+        xCord = f1.ordonneY;
+        yCord = f2.pente * xCord + f2.ordonneX;
+      }
+    }else return null;
+
+    if(this.inBoxBounds(xCord, yCord) && fil.inBoxBounds(xCord, yCord)){
+      return {x: xCord, y:yCord};
+    }
+  }
+
+  /**
    * Ordonne les points du plus petit au plus grand selon l'orientation.
    * - Si l'orientation est vertical (`fil.pente() == Infinity`), trier selon y
    * - Sinon, trier selon x

@@ -9,6 +9,7 @@ let fils;// Liste des fils du circuit
 let name;
 let id;
 
+let noeuds;
 // Variable nécessaire pour placer la grille
 let grid;
 const composants_panneau = [new Batterie(58, 215, 12),
@@ -198,6 +199,7 @@ function initComponents(){
   animate=1;
   fils = [];
   components = [];
+  noeuds = [];
   drag = null;
   selection = null;
   origin = null;
@@ -279,6 +281,7 @@ function draw() {
   drawGrid();
   drawFils();
   drawComposants();
+  drawNoeuds();
   drawComponentsChooser();
   if (origin != null) {
     push();
@@ -379,6 +382,30 @@ function drawComposants(){
   translate(grid.translateX, grid.translateY);
   for (let element of components) {
     element.draw();
+  }
+  pop();
+}
+
+function drawNoeuds() {
+  push();
+  rectMode(CENTER);
+  translate(grid.translateX, grid.translateY);
+  for (let noeud of noeuds) {
+    push();
+    translate(noeud.x, noeud.y);
+    if(noeud.connections.length>2){
+      strokeWeight(1.5);
+      rotate(PI/4);
+      stroke('#8A2387');
+      fill('#8A2387');
+      square(0, 0, 5.5);
+    }else{
+      strokeWeight(2);
+      stroke('black');
+      fill('gray');
+      circle(0, 0, 5);
+    }
+    pop();
   }
   pop();
 }
@@ -500,7 +527,7 @@ function ajustementAutomatiqueFil(fil, actions){
       actions.push({type:DELETE, objet:testFil, index});
       index--;
     }
-  }
+  }  
   verifierCouperFil(fil,actions);
 }
 
@@ -518,7 +545,36 @@ function verifierCouperFil(fil, actions){
     for (const composant of components) {
       let continuer = couperFil(fil, composant, actions);
       if(!continuer)
-        break;
+        return;
+    }
+  }
+  for (let index = 0; index < fils.length; index++) {
+    const element = fils[index];
+    let pointIntersect = element.intersection(fil);
+    if(pointIntersect!=null){
+      if(!((element.xi ==pointIntersect.x && element.yi ==pointIntersect.y) || 
+      (element.xf ==pointIntersect.x && element.yf ==pointIntersect.y))){
+        let fil1 = new Fil(element.xi, element.yi, pointIntersect.x, pointIntersect.y);
+        let fil2 = new Fil(pointIntersect.x, pointIntersect.y, element.xf, element.yf);
+        fils.splice(index,1);
+        fils.push(fil1, fil2);
+        actions.push({type:DELETE,objet:element,index},
+          {type:CREATE,objet:fil1}, {type:CREATE,objet:fil2});
+        verifierCouperFil(fil1, actions);
+        verifierCouperFil(fil2, actions);
+        index--;
+      }
+      if(!((fil.xi ==pointIntersect.x && fil.yi ==pointIntersect.y) || 
+      (fil.xf ==pointIntersect.x && fil.yf ==pointIntersect.y))){
+        let fil1 = new Fil(fil.xi, fil.yi, pointIntersect.x, pointIntersect.y);
+        let fil2 = new Fil(pointIntersect.x, pointIntersect.y, fil.xf, fil.yf);
+        let index = fils.indexOf(fil);
+        actions.push({type:DELETE,objet:fil,index},
+          {type:CREATE,objet:fil1}, {type:CREATE,objet:fil2});
+        verifierCouperFil(fil1, actions);
+        verifierCouperFil(fil2, actions);
+        return;
+      }
     }
   }
 }
@@ -648,6 +704,39 @@ function setModificationFilPos(borneG, borneD, posReference, posUpdate, actions)
   }
   addActionFil(borneG, posUpdate[0], posReference[0], actions);
   addActionFil(borneD, posUpdate[1], posReference[1], actions);
+}
+
+function getAllConnection(element){
+  let initial;
+  let final;
+  if(element instanceof Composant){
+    let bornes = element.getConnections();
+    initial = bornes[0];
+    final = bornes[1];
+  }else{
+    initial = {x:element.xi, y:element.yi};
+    final = {x:element.xf, y:element.yf};
+  }
+  let connectL = getPossibleConnections(initial.x, initial.y, false);
+  let connectR = getPossibleConnections(final.x, final.y, false);
+  return {
+    left:{connections:connectL, x:initial.x, y:initial.y}, 
+    right:{connections:connectR, x:final.x, y:final.y,}
+  };
+}
+
+function updateNoeud(){
+  noeuds.length = 0;
+  let joinElement = fils.concat(components)
+  for (const element of joinElement) {
+    let connections = getAllConnection(element);
+    if(!noeuds.includes(connections.left) && connections.left.connections.length>1){
+      noeuds.push(connections.left);
+    }
+    if(!noeuds.includes(connections.right) && connections.right.connections.length>1){
+      noeuds.push(connections.right);
+    }
+  }
 }
 
 /**
@@ -1046,6 +1135,7 @@ function load(data){
       }
     }
   }
+  updateNoeud();
 }
 
 /**

@@ -208,7 +208,7 @@ class Ampoule extends Resisteur {
   */
   draw() {
     if(isElementSelectionner(this))
-      selectionBox(this.x, this.y, 80, 45, 'rgba(255,255,0,0.2)');
+      selectionBox(this.x, this.y, 80, 45, this.orientation, 'rgba(255,255,0,0.2)');
     ampoule(this.x,this.y, this.orientation);
   }
   getMenu(){
@@ -236,7 +236,7 @@ class Condensateur extends Composant {
    */
   draw() {
     if(isElementSelectionner(this)) 
-      selectionBox(this.x, this.y, 80, 50, 'rgba(54,209,220,0.2)');
+      selectionBox(this.x, this.y, 80, 50, this.orientation, 'rgba(54,209,220,0.2)');
     condensateur(this.x, this.y, this.orientation);
   }
 }
@@ -278,7 +278,7 @@ class Batterie extends Composant {
    */
   draw() {
     if(isElementSelectionner(this)) 
-      selectionBox(this.x, this.y, 80, 40, 'rgba(0,255,0,0.2)', blendBG('rgba(0,0,0,0.4)'));
+      selectionBox(this.x, this.y, 80, 40, this.orientation, 'rgba(0,255,0,0.2)', blendBG('rgba(0,0,0,0.4)'));
     batterie(this.x, this.y, this.orientation);
   }
 }
@@ -308,7 +308,7 @@ class Diode extends Composant {
    */
   draw() {
     if(isElementSelectionner(this))
-      selectionBox(this.x, this.y, 50, 50, 'rgba(32,189,255,0.2)');
+      selectionBox(this.x, this.y, 50, 50, this.orientation, 'rgba(32,189,255,0.2)');
     diode(this.x, this.y, this.orientation);
   }
   
