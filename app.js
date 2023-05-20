@@ -126,7 +126,7 @@ app.post('/query', async(req, res) => {
   let string=JSON.stringify(req.body).replace(/([a-zA-Z0-9_]+?):/g, '"$1":');
   try {
     const result = await pool.query(
-      'UPDATE users SET details=array_append(details, $1) WHERE email = $2',
+      'UPDATE users SET details=array_append(details, $1::jsonb) WHERE email = $2',
       [string,req.user.email]
     );
   } catch (err) {
