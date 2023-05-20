@@ -58,9 +58,9 @@ app.get('/users/register', checkAuthenticated, function(req, res) {
 });
 
 app.post('/users/register', async(req, res)=>{
-  let { name, prenom,  email, password, password2,colorPicker } = req.body;
+  let { name, prenom,  email, password, password2,color } = req.body;
   let errors = [];
-  if (!name || !prenom || !email || !password || !password2|| !colorPicker) {
+  if (!name || !prenom || !email || !password || !password2|| !color) {
     errors.push({ message: "Please enter all fields" });
   }
 
@@ -87,14 +87,14 @@ app.post('/users/register', async(req, res)=>{
         if (results.rows.length > 0||errors.length > 0) {
           if(errors.length<1)
             errors.push({ message: "Email already registered!" });
-          return res.status(404).render("register", { errors, name, prenom , email, password, password2, colorPicker });
+          return res.status(404).render("register", { errors, name, prenom , email, password, password2, color });
         }
         else{
           pool.query(
             `INSERT INTO users (name, prenom, email, password, color)
                 VALUES ($1, $2, $3, $4, $5)
                 RETURNING id, password`,
-            [name, prenom, email, hashedPassword, colorPicker],
+            [name, prenom, email, hashedPassword, color],
             (err, results) => {
               if (err) {
                 throw err;
@@ -173,7 +173,7 @@ app.get('/users/dashboard', checkNotAuthenticated, async(req, res)=> {
     name:req.user.name,
     prenom:req.user.prenom,
     details: obtainedRow,
-    color: req.user.colorPicker
+    color: req.user.color
     //projets:req.user.projets,
   } });
 });
