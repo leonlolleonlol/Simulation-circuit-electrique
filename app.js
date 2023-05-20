@@ -4,7 +4,6 @@ const express = require('express');
 const flash = require("express-flash");
 const rateLimit  = require('express-rate-limit');
 const session = require("express-session");
-const lusca = require('lusca');
 const passport=require("passport");
 const path = require('path');
 
@@ -40,7 +39,6 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
-app.use(lusca.csrf());
 
 app.set("view engine", "ejs");
 
