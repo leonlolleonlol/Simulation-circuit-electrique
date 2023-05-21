@@ -6,15 +6,12 @@
         background-color: <%=user.color%>;
     }
   </style>
-  <link rel="stylesheet" href="editeurStyle.css">
+  <link rel="stylesheet" href="/editeurStyle.css">
   <link rel="icon" type="image/svg" href="/images/icons/cpu.svg">
 </head>
 <body>
   <% if(typeof projet!= 'undefined'){ %>
-    <script id="circuit" type="application/json"><%= projet %></script>
-  <%}%>
-  <% if(typeof user!= 'undefined' && typeof user.color!= 'undefined'){ %>
-    <script id="color" type="application/json"><%= user.color %></script>
+    <script id="circuit" type="application/json"><%- JSON.stringify(projet) %></script>
   <%}%>
   <script src="lib/p5.min.js"></script>
   <script src="nerdamer/all.min.js"></script>
@@ -27,7 +24,7 @@
   <script src="sketch.js"></script>
   <div class="nav-bar">
     <%if(typeof user != 'undefined'){%>
-      <a href="dashboard">
+      <a href="/users/dashboard">
         <button id="acceuil" class="button-jump">
           <img class="icon" src = "images/icons/home.svg" alt="Acceuil"/>
           <span class="tooltip bottom" id="acceuil-tip">Acceuil</span>
@@ -56,7 +53,7 @@
   </div>
 
   <div id="projet-name">
-    <input id="projet-input" type="text" value="Circuit inconnus"></input>
+    <input id="projet-input" type="text" value="<%= typeof projet!='undefined' ? projet.name : 'Circuit inconnus' %>"></input>
   </div>
   <div class="side-user">
 <% if(typeof user != 'undefined' && typeof user.name != 'undefined'){ %>

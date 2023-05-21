@@ -5,13 +5,7 @@
         body {
             background-color: <%=user.color%>;
         }
-        .bottom-left {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            margin: 10px;
-        }
-      </style>
+    </style>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,7 +14,6 @@
     <title>Dashboard</title>
 </head>
 <body>
-    
     <div id="user-info">
         <a href="/users/logout" class="w3-bar-item w3-button">
             <img src="../images/icons/log-out.svg" alt="Déconnexion"/>
@@ -35,48 +28,17 @@
     <div id="user-info">
         <h1> Bonjour <%= user.prenom.charAt(0).toUpperCase() + user.prenom.slice(1) %> !</h1>
     </div>
-    <script>
-      function updateTime() {
-        const currentTime = new Date().toLocaleTimeString();
-        document.getElementById('current-time').textContent = currentTime;
-      }
-  
-      // Update the time every second
-      setInterval(updateTime, 1000);
-  
-      // Initial call to set the time immediately
-      updateTime();
-    </script>
-
     <br>
     <h2>Projets</h2>
-    <% if (user.details>0) { %>
-        <h3>Vous n'avez jamais sauvegardé des circuits.</h3>
-      <% } else { %>
-        <h5>Votre dernier circuit était sauvegardé : <%= user.lastsavetime %> <%= user.lastsavedate %></h5>
+    <ul>
+      <% for (const projet of user.projets) { %>
+        <li>
+            <a href="editeur/<%=projet.id %>">
+                <button><%= projet.name %></button>
+            </a>
+        </li>
       <% } %>
-    <% for (const projet of user.projets) { %>
-        <span><%= projet.name %></span>
-        <br>
-      <%  }%>
-    <script>
-        function sendSaveCircuit(projet, user){
-            fetch('/editeur', {
-                method: 'POST',
-                body: user,
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
-        }
-    </script>
-    <%
-    const currentDate = new Date();
-    const formattedDate = currentDate.toDateString();
-  %>
-    <div class="bottom-left">
-        <p>Current date: <%= formattedDate %><p id="current-time"></p></p>
-    </div>
+    </ul>  
     
 </body>
 </html>

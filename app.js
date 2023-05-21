@@ -30,6 +30,9 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname,'public')));
+app.use('/users/editeur', express.static('public'))
+app.use('/users/editeur', express.static('node_modules'))
+app.use('/users/editeur', express.static('public/javascripts'));
 app.use(express.static(path.join(__dirname,'public/javascripts')));
 app.use(session({
   secret: 'secret',
@@ -182,7 +185,7 @@ app.get('/users/dashboard', checkNotAuthenticated, async(req, res)=> {
     res.sendStatus(500);
   }
   res.render("dashboard", {user:{
-    id:req.user.name,//bientôt req.user.id
+    id:req.user.email,
     name:req.user.name,
     prenom:req.user.prenom,
     projets: projets,
@@ -201,6 +204,20 @@ app.get('/nerdamer/all.min.js', function(req, res) {
 });
 app.get('/editeur', checkAuthenticatedForEditor,function(req, res) {
 });
+
+app.get('/users/editeur/:id',function(req, res) {
+     console.log();
+    res.render("editeur", {
+      user:{
+        name:req.user.name,
+        prenom:req.user.prenom,
+        color:req.user.color,
+      },
+      projet:req.user.details.find(element => element.id == req.params.id ) 
+    });
+});
+
+
 function checkAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
     return res.redirect("/users/dashboard");
@@ -209,19 +226,6 @@ function checkAuthenticated(req, res, next) {
 }
 function checkAuthenticatedForEditor(req, res) {
   if (req.isAuthenticated())
-    return res.render("editeur", {user:{
+    res.render("editeur", {user:{
       name:req.user.name,
       prenom:req.user.prenom,
-      color:req.user.color
-    } });
-  else
-    return res.redirect(path.join(__dirname, '/'));
-}
-
-function checkNotAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) {
-    return next();
-  }
-  res.redirect("/users/login");
-}
-
