@@ -1273,8 +1273,6 @@ async function sauvegarder() {
       referrerPolicy: "no-referrer",
       body: data,
     }).then(function(response){
-      //les actions à faire lorsque notre action réussis
-      console.log('JSON data saved successfully');
    }).catch(function() {
     alert('Votre sauvegarde a échouer');
   }); 

@@ -5,6 +5,12 @@
         body {
             background-color: <%=user.color%>;
         }
+        .bottom-left {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            margin: 10px;
+        }
       </style>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -28,12 +34,25 @@
     <div id="user-info">
         <h1> Bonjour <%= user.prenom.charAt(0).toUpperCase() + user.prenom.slice(1) %> !</h1>
     </div>
+    <script>
+      function updateTime() {
+        const currentTime = new Date().toLocaleTimeString();
+        document.getElementById('current-time').textContent = currentTime;
+      }
+  
+      // Update the time every second
+      setInterval(updateTime, 1000);
+  
+      // Initial call to set the time immediately
+      updateTime();
+    </script>
+
     <br>
     <h2>Projets</h2>
     <% if (user.details>0) { %>
         <h3>Vous n'avez jamais sauvegardé des circuits.</h3>
       <% } else { %>
-        <h3>Votre dernier circuit est sauvegardé!</h3>
+        <h5>Votre dernier circuit était sauvegardé à : <%= user.lastsavetime %> <%= user.lastsavedate %></h5>
       <% } %>
     <script>
         function sendSaveCircuit(projet, user){
@@ -46,6 +65,12 @@
             });
         }
     </script>
-    
+    <%
+    const currentDate = new Date();
+    const formattedDate = currentDate.toDateString();
+  %>
+    <div class="bottom-left">
+        <p>Current date: <%= formattedDate %><p id="current-time"></p></p>
+    </div>
 </body>
 </html>

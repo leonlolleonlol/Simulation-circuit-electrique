@@ -145,6 +145,30 @@ app.post('/query', async(req, res) => {
     console.error('Stack trace:', err.stack);
     res.sendStatus(500);
   }
+  const currentDate = new Date();
+  const formattedDate = currentDate.toDateString();
+  try {
+    const resultThree = await pool.query(
+      'UPDATE users SET lastsavedate = $1 WHERE email = $2',
+      [formattedDate,req.user.email]
+    );
+  } catch (err) {
+    console.error('Error:', err.message);
+    console.error('Stack trace:', err.stack);
+    res.sendStatus(500);
+  }
+  const currentTime = new Date();
+  const formattedTime =currentTime.toLocaleTimeString();
+  try {
+    const resultFour = await pool.query(
+      'UPDATE users SET lastsavetime = $1 WHERE email = $2',
+      [formattedTime,req.user.email]
+    );
+  } catch (err) {
+    console.error('Error:', err.message);
+    console.error('Stack trace:', err.stack);
+    res.sendStatus(500);
+  }
 });
 
 app.get("/users/logout", async (req, res) => {
@@ -173,7 +197,9 @@ app.get('/users/dashboard', checkNotAuthenticated, async(req, res)=> {
     name:req.user.name,
     prenom:req.user.prenom,
     details: obtainedRow,
-    color: req.user.color
+    color: req.user.color,
+    lastsavedate: req.user.lastsavedate,
+    lastsavetime: req.user.lastsavetime
     //projets:req.user.projets,
   } });
 });
