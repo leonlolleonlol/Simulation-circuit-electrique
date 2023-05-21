@@ -229,3 +229,16 @@ function checkAuthenticatedForEditor(req, res) {
     res.render("editeur", {user:{
       name:req.user.name,
       prenom:req.user.prenom,
+      color:req.user.color,
+    } });
+  else
+    return res.redirect(path.join(__dirname, '/'));
+}
+
+function checkNotAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.redirect("/users/login");
+}
+
