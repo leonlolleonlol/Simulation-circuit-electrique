@@ -13,6 +13,9 @@
   <% if(typeof projet!= 'undefined'){ %>
     <script id="circuit" type="application/json"><%= projet %></script>
   <%}%>
+  <% if(typeof user!= 'undefined' typeof user.color!= 'undefined'){ %>
+    <script id="circuit" type="application/json"><%= user.color %></script>
+  <%}%>
   <script src="lib/p5.min.js"></script>
   <script src="nerdamer/all.min.js"></script>
   <script src="constantes.js"></script>
@@ -23,12 +26,21 @@
   <script src="Forme.js"></script>
   <script src="sketch.js"></script>
   <div class="nav-bar">
+    <%if(typeof user != 'undefined'){%>
+      <a href="dashboard">
+        <button id="acceuil" class="button-jump">
+          <img class="icon" src = "images/icons/home.svg" alt="Acceuil"/>
+          <span class="tooltip bottom" id="acceuil-tip">Acceuil</span>
+        </button>
+      </a>
+    <%}else {%>
     <a href="acceuil">
       <button id="acceuil" class="button-jump">
         <img class="icon" src = "images/icons/home.svg" alt="Acceuil"/>
         <span class="tooltip bottom" id="acceuil-tip">Acceuil</span>
       </button>
     </a>
+    <% } %>
     <button id="download" class="button-jump">
       <img class="icon" src = "images/icons/download.svg" alt="Télécharger"/>
       <span class="tooltip bottom" id="download-tip">Télécharger</span>
