@@ -106,6 +106,7 @@ function setup() {
     load(JSON.parse(projet.value()));
   }else{
     loadLocalCircuit();
+    id = Date.now();
   }
   //test();
 
@@ -369,11 +370,13 @@ function drawFils() {
     strokeWeight(4);
     for (let element of fils){
       let nbCharge = Math.floor(element.longueur()/grid.tailleCell);
-      let decalageCharge = (percent*(1+Math.floor(element.courant))/nbCharge) % 1
-      for(let i = 0;i < nbCharge;i++){
-        let percentCharge = (decalageCharge + i/nbCharge)% 1;
-        let pos = posAtPercent(element, percentCharge);
-        circle(pos.x,pos.y,10);
+      let decalageCharge = (percent*(Math.ceil(element.courant))/nbCharge) % 1;
+      if(element.courant!=0){
+        for(let i = 0;i < nbCharge;i++){
+          let percentCharge = (decalageCharge + i/nbCharge)% 1;
+          let pos = posAtPercent(element, percentCharge);
+          circle(pos.x,pos.y,10);
+        }
       }
     }
   }

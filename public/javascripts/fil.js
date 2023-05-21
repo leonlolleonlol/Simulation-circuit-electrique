@@ -19,7 +19,7 @@ class Fil{
     this.yi = yi;
     this.xf = xf;
     this.yf = yf;
-    this.courant = 0;
+    this.courant = 2;
     this.id = Date.now();
     this.type = FIL;
     

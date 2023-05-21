@@ -123,52 +123,43 @@ app.post(
 );
 
 app.post('/query', async(req, res) => {
-  let string=JSON.stringify(req.body).replace(/([a-zA-Z0-9_]+?):/g, '"$1":');
+  let projets;
   try {
     const result = await pool.query(
-      'UPDATE users SET details=array_append(details, $1::jsonb) WHERE email = $2',
-      [string,req.user.email]
-    );
+      'SELECT details FROM users WHERE email = $1',
+      [req.user.email]
+    );  
+    projets = result.rows[0].details;
   } catch (err) {
     console.error('Error:', err.message);
     console.error('Stack trace:', err.stack);
     res.sendStatus(500);
   }
+  let idTest = req.body.id;
+  let index = projets.findIndex(element => element.id ==idTest);
+  console.log(index);
+  req.body.lastSave = (new Date()).toDateString();
   //A chaque qu'on save, on s'assure qu'on n'avait pas save le meme circuit precedemment
   try {
-    const resultTwo = await pool.query(
-      'UPDATE users SET details=(SELECT array_agg(DISTINCT element) FROM unnest(details) AS element) WHERE email=$1',
-      [req.user.email]
-    );
+    if(index!=-1){
+      await pool.query(
+        `UPDATE users
+        SET details[$3]= $1 
+        WHERE email = $2`, [req.body, req.user.email, index] 
+      );
+    }else{
+      await pool.query(
+        `UPDATE users
+        SET details=array_append(details, $1) 
+        WHERE email = $2`, [req.body, req.user.email] 
+      );  
+    }
   } catch (err) {
     console.error('Error:', err.message);
     console.error('Stack trace:', err.stack);
     res.sendStatus(500);
   }
-  const currentDate = new Date();
-  const formattedDate = currentDate.toDateString();
-  try {
-    const resultThree = await pool.query(
-      'UPDATE users SET lastsavedate = $1 WHERE email = $2',
-      [formattedDate,req.user.email]
-    );
-  } catch (err) {
-    console.error('Error:', err.message);
-    console.error('Stack trace:', err.stack);
-    res.sendStatus(500);
-  }
-  const currentTime = new Date();
-  const formattedTime =currentTime.toLocaleTimeString();
-  try {
-    const resultFour = await pool.query(
-      'UPDATE users SET lastsavetime = $1 WHERE email = $2',
-      [formattedTime,req.user.email]
-    );
-  } catch (err) {
-    console.error('Error:', err.message);
-    console.error('Stack trace:', err.stack);
-    res.sendStatus(500);
-  }
+  res.sendStatus(200);
 });
 
 app.get("/users/logout", async (req, res) => {
@@ -179,14 +170,13 @@ app.get("/users/logout", async (req, res) => {
   });
 });
 app.get('/users/dashboard', checkNotAuthenticated, async(req, res)=> {
-  let obtainedRow=0;
+  let projets;
   try {
     const result = await pool.query(
-      'SELECT * FROM users WHERE details is null AND email = $1',
+      'SELECT details FROM users WHERE email = $1',
       [req.user.email]
     );
-    if(result.rows.length>0)
-      obtainedRow=1;
+    projets = result.rows[0].details;
   } catch (err) {
     console.error('Error:', err.message);
     console.error('Stack trace:', err.stack);
@@ -196,11 +186,8 @@ app.get('/users/dashboard', checkNotAuthenticated, async(req, res)=> {
     id:req.user.name,//bientôt req.user.id
     name:req.user.name,
     prenom:req.user.prenom,
-    details: obtainedRow,
+    projets: projets,
     color: req.user.color,
-    lastsavedate: req.user.lastsavedate,
-    lastsavetime: req.user.lastsavetime
-    //projets:req.user.projets,
   } });
 });
 
