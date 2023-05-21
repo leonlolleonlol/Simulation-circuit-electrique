@@ -137,7 +137,6 @@ app.post('/query', async(req, res) => {
   }
   let idTest = req.body.id;
   let index = projets.findIndex(element => element.id ==idTest);
-  console.log(index);
   req.body.lastSave = (new Date()).toDateString();
   //A chaque qu'on save, on s'assure qu'on n'avait pas save le meme circuit precedemment
   try {

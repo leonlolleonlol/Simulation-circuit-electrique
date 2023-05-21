@@ -103,7 +103,7 @@ function setup() {
 
   let projet = select('#circuit');
   if(projet!=null){
-    load(JSON.parse(projet.value()));
+    load(JSON.parse(projet.elt.innerText));
   }else{
     loadLocalCircuit();
     id = Date.now();
@@ -371,13 +371,13 @@ function drawFils() {
       let nbCharge = Math.floor(element.longueur()/grid.tailleCell);
       let decalageCharge = (percent*(Math.ceil(element.courant))/nbCharge) % 1;
       if(element.courant!=0){
-        for(let i = 0;i < nbCharge;i++){
-          let percentCharge = (decalageCharge + i/nbCharge)% 1;
-          let pos = posAtPercent(element, percentCharge);
-          circle(pos.x,pos.y,10);
-        }
+      for(let i = 0;i < nbCharge;i++){
+        let percentCharge = (decalageCharge + i/nbCharge)% 1;
+        let pos = posAtPercent(element, percentCharge);
+        circle(pos.x,pos.y,10);
       }
     }
+  }
   }
   pop();
 }
@@ -578,7 +578,7 @@ function verifierCouperFil(fil, actions){
  * Pente égale à infinis ou égale à 0
  * @param {number} pente 
  */
-function isPenteContstante(pente){
+function isPenteConstante(pente){
   return Math.abs(pente)==0 || Math.abs(pente)==Infinity;
 }
 
@@ -590,7 +590,7 @@ function isPenteContstante(pente){
 function verifierCouperNoeud(fil, actions){
   for (let index = 0; index < fils.length; index++) {
     const element = fils[index];
-    if(element!=fil && isPenteContstante(fil.pente()) && isPenteContstante(element.pente()) ){
+    if(element!=fil && isPenteConstante(fil.pente()) && isPenteConstante(element.pente()) ){
       let pointIntersect = element.intersection(fil);
       if(pointIntersect!=null){
         if(!((element.xi ==pointIntersect.x && element.yi ==pointIntersect.y) || 
@@ -1195,7 +1195,7 @@ function refresh() {
  * @param {object} data Un objet représentant nos données
  */
 function load(data){
-  id = data.id;
+  id = data.id??Date.now();
   name = data.name??('Circuit inconnus ' +id);
   let tempElements = data.components.concat(data.fils);
   components.length = fils.length = 0;
@@ -1283,6 +1283,8 @@ async function sauvegarder() {
       referrerPolicy: "no-referrer",
       body: data,
     }).then(function(response){
+      //les actions à faire lorsque notre action réussis
+      console.log('JSON data saved successfully');
    }).catch(function() {
     alert('Votre sauvegarde a échouer');
   }); 
