@@ -41,7 +41,7 @@ function undo(){
         if(selection == action.objet){
           selection = null;
         }
-      }else if(action.type===DELETE){
+      }else if(action.type===SUPPRIMER){
         if(action.objet.getType()!=FIL){
           components.splice(action.index, 0, action.objet);
         }else fils.splice(action.index, 0, action.objet);
@@ -72,7 +72,7 @@ function redo(){
             components.push(action.objet);
           } else fils.push(action.objet);
           break;
-        case DELETE:
+        case SUPPRIMER:
           if(action.objet.getType()!=FIL){
             components.splice(action.index, 1);
           } else fils.splice(action.index, 1);
@@ -91,14 +91,14 @@ function redo(){
  * Vérifier si une action est bien construite pour ne pas enregistrer des prochaines
  * erreurs. Voici les construction possible:
  *  - type:CREATE, objet:cible
- *  - type:DELETE, objet:cible, index:indexSupression
+ *  - type:SUPPRIMER, objet:cible, index:indexSupression
  *  - type:MODIFIER, objet:cible, 
  *    changements:[{attribut:variable, ancienne_valeur:a, nouvelle_valeur:b},...]
  * @param {*} action L'action que l'on veut vérifier
  * @throws Une erreur de mauvaise construcution de l'action
  */
 function validerAction(action){
-  if(action.type !== CREATE && action.type !== DELETE && 
+  if(action.type !== CREATE && action.type !== SUPPRIMER && 
      action.type !== MODIFIER)
     throw new Error('L\'action '+action.type+' n\'est pas recconnus'+
     'comme type d\'action');

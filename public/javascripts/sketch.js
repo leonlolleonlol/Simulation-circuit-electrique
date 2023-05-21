@@ -573,6 +573,14 @@ function verifierCouperFil(fil, actions){
 }
 
 /**
+ * Pente égale à infinis ou égale à 0
+ * @param {number} pente 
+ */
+function isPenteContstante(pente){
+  return Math.abs(pente)==0 || Math.abs(pente)==Infinity;
+}
+
+/**
  * Vérifie si un fil à besoin d'être coupé pour connecter à un composant ou un autre fil.
  * @param {Fil} fil Le fil à vérifier
  * @param {Array} actions La liste d'action à enregistrer dans l'historique
@@ -580,7 +588,7 @@ function verifierCouperFil(fil, actions){
 function verifierCouperNoeud(fil, actions){
   for (let index = 0; index < fils.length; index++) {
     const element = fils[index];
-    if(element!=fil){
+    if(element!=fil && isPenteContstante(fil.pente()) && isPenteContstante(element.pente()) ){
       let pointIntersect = element.intersection(fil);
       if(pointIntersect!=null){
         if(!((element.xi ==pointIntersect.x && element.yi ==pointIntersect.y) || 
