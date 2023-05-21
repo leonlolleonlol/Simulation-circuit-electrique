@@ -13,8 +13,8 @@
   <% if(typeof projet!= 'undefined'){ %>
     <script id="circuit" type="application/json"><%= projet %></script>
   <%}%>
-  <% if(typeof user!= 'undefined' typeof user.color!= 'undefined'){ %>
-    <script id="circuit" type="application/json"><%= user.color %></script>
+  <% if(typeof user!= 'undefined' && typeof user.color!= 'undefined'){ %>
+    <script id="color" type="application/json"><%= user.color %></script>
   <%}%>
   <script src="lib/p5.min.js"></script>
   <script src="nerdamer/all.min.js"></script>

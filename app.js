@@ -145,13 +145,13 @@ app.post('/query', async(req, res) => {
       await pool.query(
         `UPDATE users
         SET details[$3]= $1 
-        WHERE email = $2`, [req.body, req.user.email, index] 
+        WHERE email = $2`, [JSON.stringify(req.body).replace(/([a-zA-Z0-9_]+?):/g, '"$1":'), req.user.email, index] 
       );
     }else{
       await pool.query(
         `UPDATE users
         SET details=array_append(details, $1) 
-        WHERE email = $2`, [req.body, req.user.email] 
+        WHERE email = $2`, [JSON.stringify(req.body).replace(/([a-zA-Z0-9_]+?):/g, '"$1":'), req.user.email] 
       );  
     }
   } catch (err) {
