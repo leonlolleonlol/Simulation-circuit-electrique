@@ -5,7 +5,7 @@
         body {
             background-color: <%=user.color%>;
         }
-      </style>
+    </style>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,31 +21,33 @@
     </div>
         <br></br>
     <a href="/editeur">
-        <button class="btn" style="font-size: 28px;">Ouvrir l'éditeur
+        <button style="font-size: 35px;">+
+            Nouveau projet
         </button>
     </a>
+        <br></br>
         <br></br>
     <div id="user-info">
         <h1> Bonjour <%= user.prenom.charAt(0).toUpperCase() + user.prenom.slice(1) %> !</h1>
     </div>
     <br>
     <h2>Projets</h2>
-    <% if (user.details>0) { %>
-        <h3>Vous n'avez jamais sauvegardé des circuits.</h3>
-      <% } else { %>
-        <h3>Votre dernier circuit est sauvegardé!</h3>
-      <% } %>
-    <script>
-        function sendSaveCircuit(projet, user){
-            fetch('/editeur', {
-                method: 'POST',
-                body: user,
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
-        }
-    </script>
+    <% if(user.projets!=null) {%>
+    <% let index=0;%>
+    <ul>
+      <% for (const projet of user.projets) { %>
+        <li>
+            <a href="editeur/<%=projet.id %>">
+                <button><%= projet.name %>  (dernière sauvegarde à <%=user.lastsaves[index]%>)</button>
+            </a>
+        </li>
+      <% index++;} %>
+    </ul>
+    <% } %>
+    <br>
+    <h6 style="white-space: pre-line;">Petite anecdote:
+        Lorsque vous rentrez dans un nouveau projet, veuillez changer le nom du projet.
+    </h6>
     
 </body>
 </html>

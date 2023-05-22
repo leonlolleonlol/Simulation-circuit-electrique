@@ -30,6 +30,9 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname,'public')));
+app.use('/users/editeur', express.static('public'))
+app.use('/users/editeur', express.static('node_modules'))
+app.use('/users/editeur', express.static('public/javascripts'));
 app.use(express.static(path.join(__dirname,'public/javascripts')));
 app.use(session({
   secret: 'secret',
@@ -123,28 +126,56 @@ app.post(
 );
 
 app.post('/query', async(req, res) => {
-  let string=JSON.stringify(req.body).replace(/([a-zA-Z0-9_]+?):/g, '"$1":');
+  let projets;
   try {
     const result = await pool.query(
-      'UPDATE users SET details=array_append(details, $1::jsonb) WHERE email = $2',
-      [string,req.user.email]
-    );
+      'SELECT details FROM users WHERE email = $1',
+      [req.user.email]
+    );  
+    projets = result.rows[0].details;
   } catch (err) {
     console.error('Error:', err.message);
     console.error('Stack trace:', err.stack);
     res.sendStatus(500);
   }
+  let idTest = req.body.id;
+  let index =-1;
+  if (projets!=null)
+    index = projets.findIndex(element => element.id ==idTest);
+  let date = (new Date()).toLocaleDateString();
+  let time = (new Date()).toLocaleTimeString();
+  const momentOfSave = date + " " + time;
   //A chaque qu'on save, on s'assure qu'on n'avait pas save le meme circuit precedemment
   try {
-    const resultTwo = await pool.query(
-      'UPDATE users SET details=(SELECT array_agg(DISTINCT element) FROM unnest(details) AS element) WHERE email=$1',
-      [req.user.email]
-    );
+    if(index!=-1){
+      await pool.query(
+        `UPDATE users
+        SET details[$3]= $1 
+        WHERE email = $2`, [JSON.stringify(req.body).replace(/([a-zA-Z0-9_]+?):/g, '"$1":'), req.user.email, index] 
+      );
+      await pool.query(
+        `UPDATE users
+        SET lastsave[$3]= $1 
+        WHERE email = $2`, [momentOfSave, req.user.email, index] 
+      );
+    }else{
+      await pool.query(
+        `UPDATE users
+        SET details=array_append(details, $1) 
+        WHERE email = $2`, [JSON.stringify(req.body).replace(/([a-zA-Z0-9_]+?):/g, '"$1":'), req.user.email] 
+      );
+      await pool.query(
+        `UPDATE users
+        SET lastsave=array_append(lastsave, $1) 
+        WHERE email = $2`, [momentOfSave, req.user.email] 
+      );   
+    }
   } catch (err) {
     console.error('Error:', err.message);
     console.error('Stack trace:', err.stack);
     res.sendStatus(500);
   }
+  res.sendStatus(200);
 });
 
 app.get("/users/logout", async (req, res) => {
@@ -155,26 +186,25 @@ app.get("/users/logout", async (req, res) => {
   });
 });
 app.get('/users/dashboard', checkNotAuthenticated, async(req, res)=> {
-  let obtainedRow=0;
+  let projets;
   try {
     const result = await pool.query(
-      'SELECT * FROM users WHERE details is null AND email = $1',
+      'SELECT details FROM users WHERE email = $1',
       [req.user.email]
     );
-    if(result.rows.length>0)
-      obtainedRow=1;
+    projets = result.rows[0].details;
   } catch (err) {
     console.error('Error:', err.message);
     console.error('Stack trace:', err.stack);
     res.sendStatus(500);
   }
   res.render("dashboard", {user:{
-    id:req.user.name,//bientôt req.user.id
+    id:req.user.email,
     name:req.user.name,
     prenom:req.user.prenom,
-    details: obtainedRow,
-    color: req.user.color
-    //projets:req.user.projets,
+    projets: projets,
+    color: req.user.color,
+    lastsaves: req.user.lastsave,
   } });
 });
 
@@ -189,6 +219,20 @@ app.get('/nerdamer/all.min.js', function(req, res) {
 });
 app.get('/editeur', checkAuthenticatedForEditor,function(req, res) {
 });
+
+app.get('/users/editeur/:id',function(req, res) {
+     console.log();
+    res.render("editeur", {
+      user:{
+        name:req.user.name,
+        prenom:req.user.prenom,
+        color:req.user.color,
+      },
+      projet:req.user.details.find(element => element.id == req.params.id ) 
+    });
+});
+
+
 function checkAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
     return res.redirect("/users/dashboard");
@@ -197,10 +241,10 @@ function checkAuthenticated(req, res, next) {
 }
 function checkAuthenticatedForEditor(req, res) {
   if (req.isAuthenticated())
-    return res.render("editeur", {user:{
+    res.render("editeur", {user:{
       name:req.user.name,
       prenom:req.user.prenom,
-      color:req.user.color
+      color:req.user.color,
     } });
   else
     return res.redirect(path.join(__dirname, '/'));

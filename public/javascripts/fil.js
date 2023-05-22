@@ -19,7 +19,7 @@ class Fil{
     this.yi = yi;
     this.xf = xf;
     this.yf = yf;
-    this.courant = 0;
+    this.courant = 2;
     this.id = Date.now();
     this.type = FIL;
     
@@ -73,11 +73,12 @@ class Fil{
    * {@link Fil#inBounds | Fil.inBounds()}
    * @returns {boolean}
    */
-  inBoxBounds(x, y){
-    return x > Math.min(this.xi - 10, this.xf - 10) && 
-    x < Math.max(this.xi + 10, this.xf + 10) && 
-    y > Math.min(this.yi - 10, this.yf - 10) && 
-    y < Math.max(this.yi + 10, this.yf + 10);
+  inBoxBounds(x, y, approximation){
+    approximation ??= 10;
+    return x > Math.min(this.xi - approximation, this.xf - approximation) && 
+    x < Math.max(this.xi + approximation, this.xf + approximation) && 
+    y > Math.min(this.yi - approximation, this.yf - approximation) && 
+    y < Math.max(this.yi + approximation, this.yf + approximation);
   }
 
   /**
@@ -167,24 +168,25 @@ class Fil{
   intersection(fil){
     let f1 = this.getFunction();
     let f2 = fil.getFunction();
+    if(Math.abs(f1.pente) == Math.abs(f2.pente)){
+      return null;
+    }
     let yfunction1 = Math.abs(f1.pente)!=Infinity
     let yfunction2 = Math.abs(f2.pente)!=Infinity;
     let yCord;
     let xCord;
-    if(Math.abs(f1.pente) !== Math.abs(f2.pente)){
-      if(yfunction1 && yfunction2){
-        xCord = (f1.ordonneX - f2.ordonneX) / (f2.pente - f1.pente);
-        yCord = f1.pente * xCord + f1.ordonneX;
-      }else if(yfunction1 && !yfunction2){
-        xCord = f2.ordonneY;
-        yCord = f1.pente * xCord + f1.ordonneX;
-      }else if(!yfunction1 && yfunction2){
-        xCord = f1.ordonneY;
-        yCord = f2.pente * xCord + f2.ordonneX;
-      }
-    }else return null;
+    if(yfunction1 && yfunction2){
+      xCord = (f1.ordonneX - f2.ordonneX) / (f2.pente - f1.pente);
+      yCord = f1.pente * xCord + f1.ordonneX;
+    }else if(yfunction1 && !yfunction2){
+      xCord = f2.ordonneY;
+      yCord = f1.pente * xCord + f1.ordonneX;
+    }else if(!yfunction1 && yfunction2){
+      xCord = f1.ordonneY;
+      yCord = f2.pente * xCord + f2.ordonneX;
+    }
 
-    if(this.inBoxBounds(xCord, yCord) && fil.inBoxBounds(xCord, yCord)){
+    if(this.inBoxBounds(xCord, yCord, 1) && fil.inBoxBounds(xCord, yCord, 1)){
       return {x: xCord, y:yCord};
     }
   }

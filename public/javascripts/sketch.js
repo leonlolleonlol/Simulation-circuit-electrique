@@ -103,12 +103,12 @@ function setup() {
 
   let projet = select('#circuit');
   if(projet!=null){
-    load(JSON.parse(projet.value()));
+    load(JSON.parse(projet.elt.innerText));
   }else{
     loadLocalCircuit();
+    id = Date.now();
   }
   //test();
-
 }
 
 function test(){
@@ -369,13 +369,15 @@ function drawFils() {
     strokeWeight(4);
     for (let element of fils){
       let nbCharge = Math.floor(element.longueur()/grid.tailleCell);
-      let decalageCharge = (percent*(1+Math.floor(element.courant))/nbCharge) % 1
+      let decalageCharge = (percent*(Math.ceil(element.courant))/nbCharge) % 1;
+      if(element.courant!=0){
       for(let i = 0;i < nbCharge;i++){
         let percentCharge = (decalageCharge + i/nbCharge)% 1;
         let pos = posAtPercent(element, percentCharge);
         circle(pos.x,pos.y,10);
       }
     }
+  }
   }
   pop();
 }
@@ -573,6 +575,14 @@ function verifierCouperFil(fil, actions){
 }
 
 /**
+ * Pente égale à infinis ou égale à 0
+ * @param {number} pente 
+ */
+function isPenteConstante(pente){
+  return Math.abs(pente)==0 || Math.abs(pente)==Infinity;
+}
+
+/**
  * Vérifie si un fil à besoin d'être coupé pour connecter à un composant ou un autre fil.
  * @param {Fil} fil Le fil à vérifier
  * @param {Array} actions La liste d'action à enregistrer dans l'historique
@@ -580,7 +590,7 @@ function verifierCouperFil(fil, actions){
 function verifierCouperNoeud(fil, actions){
   for (let index = 0; index < fils.length; index++) {
     const element = fils[index];
-    if(element!=fil){
+    if(element!=fil && isPenteConstante(fil.pente()) && isPenteConstante(element.pente()) ){
       let pointIntersect = element.intersection(fil);
       if(pointIntersect!=null){
         if(!((element.xi ==pointIntersect.x && element.yi ==pointIntersect.y) || 
@@ -1185,7 +1195,7 @@ function refresh() {
  * @param {object} data Un objet représentant nos données
  */
 function load(data){
-  id = data.id;
+  id = data.id??Date.now();
   name = data.name??('Circuit inconnus ' +id);
   let tempElements = data.components.concat(data.fils);
   components.length = fils.length = 0;

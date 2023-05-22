@@ -4,11 +4,11 @@
  */
 
 /** @const {Quadrillage} POINT */
-POINT = 'point';
+const POINT = 'point';
 /** @const {Quadrillage} QUADRILLE */
-QUADRILLE = 'quadrille';
+const QUADRILLE = 'quadrille';
 /** @const {Quadrillage} QUADRILLEPOINT */
-QUADRILLEPOINT = 'quadrille avec point';
+const QUADRILLEPOINT = 'quadrille avec point';
 
 /**
  * @typedef {ComposantType}
@@ -16,26 +16,26 @@ QUADRILLEPOINT = 'quadrille avec point';
  */
 
 /** @const {ComposantType} RESISTEUR */
-RESISTEUR = 'resisteur';
+const RESISTEUR = 'resisteur';
 /** @const {ComposantType} CONDENSATEUR */
-CONDENSATEUR = 'condensateur';
+const CONDENSATEUR = 'condensateur';
 /** @const {ComposantType} AMPOULE */
-AMPOULE = 'ampoule';
+const AMPOULE = 'ampoule';
 /** @const {ComposantType} DIODE */
-DIODE = 'diode';
+const DIODE = 'diode';
 /** @const {ComposantType} BATTERIE */
-BATTERIE = 'batterie'
+const BATTERIE = 'batterie'
 /** @const {ComposantType} NOEUD */
-NOEUD = 'noeud';
+const NOEUD = 'noeud';
 /** @const {ComposantType} FIL */
-FIL = 'fil';
+const FIL = 'fil';
 /** @const {ComposantType} CIRCUIT */
-CIRCUIT = 'circuit';
+const CIRCUIT = 'circuit';
 
 
-SEULEMENTR = "seulementR";
-SEULEMENTC = "seulementC";
-RC = "RC";
+const SEULEMENTR = "seulementR";
+const SEULEMENTC = "seulementC";
+const RC = "RC";
 
 /**
  * @typedef {ActionType} 
@@ -43,11 +43,11 @@ RC = "RC";
  */
 
 /** @const {ActionType} CREATE */
-CREATE = 'create';
-/** @const {ActionType} DELETE */
-DELETE = 'delete';
+const CREATE = 'create';
+/** @const {ActionType} SUPPRIMER */
+const SUPPRIMER = 'supprimer';
 /** @const {ActionType} MODIFIER */
-MODIFIER = 'modifier';
+const MODIFIER = 'modifier';
 
 
 /**
@@ -56,11 +56,11 @@ MODIFIER = 'modifier';
  */
 
 /** @const {Pos} DROITE */
-DROITE = 'droite';
+const DROITE = 'droite';
 /** @const {Pos} GAUCHE */
-GAUCHE = 'gauche';
+const GAUCHE = 'gauche';
 /** @const {Pos} HAUT */
-HAUT = 'haut';
+const HAUT = 'haut';
 /** @const {Pos} BAS */
-BAS = 'bas';
+const BAS = 'bas';
 
