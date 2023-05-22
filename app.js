@@ -6,6 +6,7 @@ const rateLimit  = require('express-rate-limit');
 const session = require("express-session");
 const passport=require("passport");
 const path = require('path');
+const { DateTime } = require("luxon");
 
 const initializePassport=require("./passportConfig");
 const { pool } = require("./dbConfig");
@@ -142,9 +143,13 @@ app.post('/query', async(req, res) => {
   let index =-1;
   if (projets!=null)
     index = projets.findIndex(element => element.id ==idTest);
-  let date = (new Date()).toLocaleDateString();
-  let time = (new Date()).toLocaleTimeString();
-  const momentOfSave = date + " " + time;
+
+    // Get the current date and time in the user's local time zone
+    var now = DateTime.local();
+    
+    // Format the date and time as a string in the user's local time zone
+    var localDateTimeString = now.toLocaleString(DateTime.DATETIME_MED);
+    
   //A chaque qu'on save, on s'assure qu'on n'avait pas save le meme circuit precedemment
   try {
     if(index!=-1){
@@ -156,7 +161,7 @@ app.post('/query', async(req, res) => {
       await pool.query(
         `UPDATE users
         SET lastsave[$3]= $1 
-        WHERE email = $2`, [momentOfSave, req.user.email, index] 
+        WHERE email = $2`, [localDateTimeString, req.user.email, index] 
       );
     }else{
       await pool.query(
@@ -167,7 +172,7 @@ app.post('/query', async(req, res) => {
       await pool.query(
         `UPDATE users
         SET lastsave=array_append(lastsave, $1) 
-        WHERE email = $2`, [momentOfSave, req.user.email] 
+        WHERE email = $2`, [localDateTimeString, req.user.email] 
       );   
     }
   } catch (err) {
