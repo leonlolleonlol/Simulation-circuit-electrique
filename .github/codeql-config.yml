@@ -1,4 +1,5 @@
 name: "My CodeQL config"
 paths-ignore: 
   - node_modules
+  - documentation
   - public/javascripts/lib
