@@ -124,6 +124,36 @@ app.post(
     failureFlash: true
   })
 );
+app.post('/delete', async(req, res) => {
+  var itemId = req.body.itemId;
+  try {
+      await pool.query(
+        `UPDATE users
+        SET details[$2]= null 
+        WHERE email = $1`, [req.user.email, itemId] 
+      );
+      await pool.query(
+        `UPDATE users
+        SET lastsave[$2]= null 
+        WHERE email = $1`, [req.user.email, itemId] 
+      );
+      await pool.query(
+        `UPDATE users
+        SET details= array_remove(details, NULL) 
+        WHERE email = $1`, [req.user.email] 
+      );
+      await pool.query(
+        `UPDATE users
+        SET lastsave= array_remove(lastsave, NULL) 
+        WHERE email = $1`, [req.user.email] 
+      );
+  } catch (err) {
+    console.error('Error:', err.message);
+    console.error('Stack trace:', err.stack);
+    res.sendStatus(500);
+  }
+  res.redirect("/users/dashboard");
+});
 
 app.post('/query', async(req, res) => {
   let projets;
