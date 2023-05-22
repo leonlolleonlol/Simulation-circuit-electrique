@@ -12,8 +12,8 @@ let id;
 let noeuds;
 // Variable nécessaire pour placer la grille
 let grid;
-const composants_panneau = [new Batterie(58, 215, 12),
-  new Resisteur(58, 275, 25), new Ampoule(58, 335, 40)]; // Le panneau de choix des composants
+const composants_panneau = [new Composant(BATTERIE, 58, 215, 12),
+  new Composant(RESISTEUR, 58, 275, 25), new Composant(AMPOULE, 58, 335, 40)]; // Le panneau de choix des composants
 
 
 // liens vers des éléments DOM utiles
@@ -890,13 +890,7 @@ function copyComposant(original){
   // Création d'un nouveau composants selon le composant sélectionner
   let x = original.x/grid.scale - grid.translateX;
   let y = original.y/grid.scale - grid.translateY;
-  switch (original.getType()) {
-    case BATTERIE: return new Batterie(x, y, 0);
-    case RESISTEUR: return new Resisteur(x, y, 0);
-    case AMPOULE: return new Ampoule(x, y, 0);
-    case CONDENSATEUR: return new Condensateur(x, y, 0);
-    case DIODE: return new Diode(x, y);
-  }
+  return new Composant(original.getType(), x, y, 0);
 }
 
 /**
@@ -1142,11 +1136,11 @@ function keyPressed() {
       let point = findGridLock(grid.translateX, grid.translateY);
       let newC = function(x, y) {
           switch (keyCode) {
-            case 83: return new Batterie(x, y, 0);//s
-            case 82: return new Resisteur(x, y, 0);//r
-            case 65: return new Ampoule(x, y, 0);//a
-            case 67: return new Condensateur(x, y, 0);//c
-            case 68 : return new Diode(x, y);//d
+            case 83: return Composant(BATTERIE, x, y, 0);//s
+            case 82: return new Composant(RESISTEUR, x, y, 0);//r
+            case 65: return new Composant(AMPOULE, x, y, 0);//a
+            case 67: return new Composant(CONDENSATEUR, x, y, 0);//c
+            case 68: return new Composant(DIODE, x, y);//d
           };
         }(point.x,point.y);
       if(validComposantPos(newC)){
@@ -1257,12 +1251,7 @@ function getComposantVide(type){
   // La fonction pourrait aussi se faire avec Object.create()
   switch (type) {
     case FIL: return new Fil();
-    case BATTERIE: return new Batterie();
-    case RESISTEUR: return new Resisteur();
-    case AMPOULE: return new Ampoule();
-    case CONDENSATEUR: return new Condensateur();
-    case DIODE: return new Diode();
-    default: return new Composant();
+    default: return new Composant(type, 0, 0, 16, 16, 0);
   }
 }
 

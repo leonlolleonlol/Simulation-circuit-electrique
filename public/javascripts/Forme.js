@@ -4,11 +4,14 @@
  * @param {number} y coordoné en y du composant
  * @param {number} orientation rotation du composant en radians
  */
-function resisteur(x, y, orientation) {
+function resisteur(x, y, orientation, focus) {
   push();
   rectMode(CENTER);
   strokeWeight(2);
   appliquerTransformation(x, y, orientation);
+  if(focus){
+    selectionBox(80, 45, 'rgba(255,165,108,0.2)');
+  }
   createColorGradient(-25, -10, 25, 10,
     {stop:0, color:'rgb(241,39,17)'}, 
     {stop:1, color:'rgb(245,175,25)'});
@@ -28,11 +31,15 @@ function resisteur(x, y, orientation) {
  * @param {number} y coordoné en y du composant
  * @param {number} orientation rotation du composant en radians
  */
-function batterie(x, y, orientation) {
+function batterie(x, y, orientation, focus) {
   push();
   rectMode(CENTER);
   strokeWeight(2);
   appliquerTransformation(x, y, orientation);
+  if(focus){
+    selectionBox(80, 40, 'rgba(0,255,0,0.2)', 'rgba(0,0,0,0.4)')
+  }
+  selectionBox(80, 40, 'rgba(0,255,0,0.2)', blendBG('rgba(0,0,0,0.4)'));
   createColorGradient(-25, -10, 25, -10,
    {stop:0, color:'rgb(0,0,0)'}, 
    {stop:0.35, color:'rgb(0,0,0)'}, 
@@ -49,11 +56,14 @@ function batterie(x, y, orientation) {
  * @param {number} y coordoné en y du composant
  * @param {number} orientation rotation du composant en radians
  */
-function condensateur(x, y, orientation) {
+function condensateur(x, y, orientation, focus) {
   push();
   rectMode(CENTER);
   strokeWeight(2);
   appliquerTransformation(x, y, orientation);
+  if(focus){
+    selectionBox(80, 50, 'rgba(54,209,220,0.2)');
+  }
   createColorGradient(-25, -10, 25, -10,
    {stop:0, color:'rgb(54,209,220)'}, 
    {stop:0.5, color:'rgb(91,134,229)'}, 
@@ -72,12 +82,15 @@ function condensateur(x, y, orientation) {
  * @param {number} y coordoné en y du composant
  * @param {number} orientation rotation du composant en radians
  */
-function diode(x, y, orientation) {
+function diode(x, y, orientation, focus) {
   push();
   rectMode(CENTER);
   strokeWeight(2);
 
   appliquerTransformation(x, y, orientation);
+  if(focus){
+    selectionBox(50, 50, 'rgba(32,189,255,0.2)');
+  }
   let gradCercle = drawingContext.createLinearGradient(-15, -10, 15, 10);
   gradCercle.addColorStop(1, "rgb(252,70,107)");
   gradCercle.addColorStop(0, "rgb(63,94,251)");
@@ -117,11 +130,14 @@ function diode(x, y, orientation) {
  * @param {number} y coordoné en y du composant
  * @param {number} orientation rotation du composant en radians
  */
-function ampoule(x, y, orientation) {
+function ampoule(x, y, orientation, focus) {
   push();
   strokeWeight(2);
   rectMode(CENTER);
   appliquerTransformation(x, y, orientation);
+  if(focus){
+    selectionBox(80, 45, 'rgba(255,255,0,0.2)')
+  }
   let couleurs = [{stop:0, color:'rgb(62, 81, 81)'}, {stop:1, color:'rgb(222, 203, 164)'}];
   createColorGradient(-30, -10, -13, -10, ...couleurs);
   rect(-17, 0, 6, 22, 0, 8, 8, 0);
@@ -206,13 +222,10 @@ function getAlphaColor(c, alpha){
  * @param {number} width La largeur de la boîte de sélection
  * @param {number} height La hauteur de la boîte de sélection
  */
-function selectionBox(x, y, width, height, orientation, innerColor, borderColor) {
+function selectionBox(width, height, innerColor, borderColor) {
   push();
-  appliquerTransformation(x, y, orientation);
-  rectMode(CENTER);
-  strokeWeight(2);
   fill(innerColor);
-  stroke(borderColor==null ? blendBG(getAlphaColor(innerColor, 0.4)) : borderColor);
+  stroke(blendBG(borderColor==null ? getAlphaColor(innerColor, 0.4) : borderColor));
   rect(0, 0, width,height, 10);
   pop();
 }
