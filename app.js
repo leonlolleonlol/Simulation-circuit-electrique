@@ -204,6 +204,7 @@ app.get('/users/dashboard', checkNotAuthenticated, async(req, res)=> {
     prenom:req.user.prenom,
     projets: projets,
     color: req.user.color,
+    lastsaves: req.user.lastsave,
   } });
 });
 
