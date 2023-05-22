@@ -12,8 +12,8 @@ let id;
 let noeuds;
 // Variable nécessaire pour placer la grille
 let grid;
-const composants_panneau = [new Composant(BATTERIE, 58, 215, 12),
-  new Composant(RESISTEUR, 58, 275, 25), new Composant(AMPOULE, 58, 335, 40)]; // Le panneau de choix des composants
+const composants_panneau = [new Composant(BATTERIE, 58, 215),
+  new Composant(RESISTEUR, 58, 275), new Composant(AMPOULE, 58, 335)]; // Le panneau de choix des composants
 
 
 // liens vers des éléments DOM utiles
