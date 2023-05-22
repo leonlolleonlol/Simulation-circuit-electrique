@@ -32,36 +32,6 @@ class Composant {
     this.composantePrecedente = [];
     this.dejaPasser = false;
   }
-
-  /**
-   * Dessine un composant quelconque sur le canvas. Utilise la librairie p5.js pour le faire. 
-   * Chaque implémentation doit toujours commencer avec un `push()` et finir avec un `pop()` pour 
-   * que chaque modification des attributs de dessin soit annuler à la sortie de la méthode.
-   * @abstract
-   */
-  draw() {
-    let focus = isElementSelectionner(this);
-    let type = this.getType();
-    switch (type) {
-      case RESISTEUR:
-        resisteur(this.x, this.y, this.orientation, focus);
-        break;
-      case AMPOULE:
-        ampoule(this.x, this.y, this.orientation, focus);
-        break;
-      case CONDENSATEUR:
-        condensateur(this.x, this.y, this.orientation, focus);
-        break;
-      case BATTERIE:
-        batterie(this.x, this.y, this.orientation, focus);
-        break;
-      case DIODE:
-        diode(this.x, this.y, this.orientation, focus);
-        break;
-      default: throw `Le type ${type} de dessin n'est pas pas un type valide`;
-    }
-  }
-
   /**
    * Permet de calculer si un cordonné (x, y) se situe dans le périmètre de contact 
    * du composant.

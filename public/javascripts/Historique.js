@@ -133,3 +133,17 @@ function resetHistorique() {
   undo_list.length = 0;
   redo_list.length = 0;
 }
+
+/*
+ * Efface tout les composants sur la grille et remet tout les 
+ * système à zéro.
+ */
+function refresh() {
+  while(undo_list.length !=0){
+    undo()
+  } 
+  redo_list.length =0;
+  drag = null;
+  selection = null;
+  origin = null;
+}

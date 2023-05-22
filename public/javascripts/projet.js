@@ -5,6 +5,16 @@ let name;
 let id;
 
 
+function initProjet(){
+  let projet = select('#circuit');
+  if(projet!=null){
+    load(JSON.parse(projet.elt.innerText));
+  }else{
+    loadLocalCircuit();
+    id = Date.now();
+  }
+}
+
 /**
  * Cette fonction permet de load un circuit à partir de donnée Json. Cette fonction est très
  * importante puisque certaine donné doivent être résolue (transformé en bon format) comme 

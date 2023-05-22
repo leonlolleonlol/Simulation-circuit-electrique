@@ -24,29 +24,7 @@ class Fil {
     this.type = FIL;
 
   }
-
-  /**
-   * Aller voir {@link Composant#draw | Composant.draw()}
-   */
-  draw() {
-    push();
-    if (isElementSelectionner(this) && !isElementSelectionner(drag)) {
-      push();
-      strokeWeight(30);
-      stroke('rgba(255, 165, 0, 0.2)');
-      let mul = this.yi > this.yf ? -1 : 1;
-      let decalageX = 9 * Math.sin(this.angle()) * mul;
-      let decalageY = 9 * Math.cos(this.angle()) * mul;
-      line(this.xi + decalageX, this.yi + decalageY,
-        this.xf - decalageX, this.yf - decalageY);
-      pop();
-    }
-    stroke('orange');
-    strokeWeight(4);
-    line(this.xi, this.yi, this.xf, this.yf);
-    pop();
-  }
-
+  
   /**
    * Permet de déterminer si une position se situe dans l'aire de contact du fil.
    * Le rayon d'approximation permis est toujours de 15 exlu
