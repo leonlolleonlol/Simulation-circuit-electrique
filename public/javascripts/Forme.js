@@ -9,12 +9,12 @@ function resisteur(x, y, orientation, focus) {
   rectMode(CENTER);
   strokeWeight(2);
   appliquerTransformation(x, y, orientation);
-  if(focus){
+  if (focus) {
     selectionBox(80, 45, 'rgba(255,165,108,0.2)');
   }
   createColorGradient(-25, -10, 25, 10,
-    {stop:0, color:'rgb(241,39,17)'}, 
-    {stop:1, color:'rgb(245,175,25)'});
+    { stop: 0, color: 'rgb(241,39,17)' },
+    { stop: 1, color: 'rgb(245,175,25)' });
 
   // Embout du résisteur
   quad(-20, -10, -30, -4, -30, 4, -20, 10);
@@ -36,15 +36,15 @@ function batterie(x, y, orientation, focus) {
   rectMode(CENTER);
   strokeWeight(2);
   appliquerTransformation(x, y, orientation);
-  if(focus){
+  if (focus) {
     selectionBox(80, 40, 'rgba(0,255,0,0.2)', 'rgba(0,0,0,0.4)')
   }
   selectionBox(80, 40, 'rgba(0,255,0,0.2)', blendBG('rgba(0,0,0,0.4)'));
   createColorGradient(-25, -10, 25, -10,
-   {stop:0, color:'rgb(0,0,0)'}, 
-   {stop:0.35, color:'rgb(0,0,0)'}, 
-   {stop:0.85, color:'rgb(0,255,0)'},
-   {stop:1, color:'rgb(0,255,0)'});
+    { stop: 0, color: 'rgb(0,0,0)' },
+    { stop: 0.35, color: 'rgb(0,0,0)' },
+    { stop: 0.85, color: 'rgb(0,255,0)' },
+    { stop: 1, color: 'rgb(0,255,0)' });
 
   rect(0, 0, 60, 20, 7.5);
   pop();
@@ -61,13 +61,13 @@ function condensateur(x, y, orientation, focus) {
   rectMode(CENTER);
   strokeWeight(2);
   appliquerTransformation(x, y, orientation);
-  if(focus){
+  if (focus) {
     selectionBox(80, 50, 'rgba(54,209,220,0.2)');
   }
   createColorGradient(-25, -10, 25, -10,
-   {stop:0, color:'rgb(54,209,220)'}, 
-   {stop:0.5, color:'rgb(91,134,229)'}, 
-   {stop:1, color:'rgb(54,209,220)'});
+    { stop: 0, color: 'rgb(54,209,220)' },
+    { stop: 0.5, color: 'rgb(91,134,229)' },
+    { stop: 1, color: 'rgb(54,209,220)' });
 
   rect(-12, 0, 15, 30, 3.75);
   rect(12, 0, 15, 30, 3.75);
@@ -88,7 +88,7 @@ function diode(x, y, orientation, focus) {
   strokeWeight(2);
 
   appliquerTransformation(x, y, orientation);
-  if(focus){
+  if (focus) {
     selectionBox(50, 50, 'rgba(32,189,255,0.2)');
   }
   let gradCercle = drawingContext.createLinearGradient(-15, -10, 15, 10);
@@ -135,10 +135,10 @@ function ampoule(x, y, orientation, focus) {
   strokeWeight(2);
   rectMode(CENTER);
   appliquerTransformation(x, y, orientation);
-  if(focus){
+  if (focus) {
     selectionBox(80, 45, 'rgba(255,255,0,0.2)')
   }
-  let couleurs = [{stop:0, color:'rgb(62, 81, 81)'}, {stop:1, color:'rgb(222, 203, 164)'}];
+  let couleurs = [{ stop: 0, color: 'rgb(62, 81, 81)' }, { stop: 1, color: 'rgb(222, 203, 164)' }];
   createColorGradient(-30, -10, -13, -10, ...couleurs);
   rect(-17, 0, 6, 22, 0, 8, 8, 0);
   rect(-25, 0, 10, 7);
@@ -166,10 +166,10 @@ function pointGrid(color) {
   push();
   stroke(color);
   strokeWeight(6);
-  let offsetX = grid.offsetX + (grid.translateX-grid.offsetX) % grid.tailleCell;
-  let offsetY = grid.offsetY + (grid.translateY-grid.offsetY) % grid.tailleCell;
-  for (let i = 0; i < windowWidth/grid.scale + grid.offsetX; i+=grid.tailleCell) {
-    for (let j = 0; j < windowHeight/grid.scale + grid.offsetY; j+=grid.tailleCell) {
+  let offsetX = grid.offsetX + (grid.translateX - grid.offsetX) % grid.tailleCell;
+  let offsetY = grid.offsetY + (grid.translateY - grid.offsetY) % grid.tailleCell;
+  for (let i = 0; i < windowWidth / grid.scale + grid.offsetX; i += grid.tailleCell) {
+    for (let j = 0; j < windowHeight / grid.scale + grid.offsetY; j += grid.tailleCell) {
       point(offsetX + i, offsetY + j);
     }
   }
@@ -184,13 +184,13 @@ function lineGrid(color) {
   push();
   stroke(color);
   strokeWeight(2);
-  let offsetX = grid.offsetX + (grid.translateX-grid.offsetX) % grid.tailleCell;
-  for (let i = 0; i < windowWidth/grid.scale + grid.offsetX; i+=grid.tailleCell) {
-    line(offsetX + i, grid.offsetY, offsetX + i , height/grid.scale);
+  let offsetX = grid.offsetX + (grid.translateX - grid.offsetX) % grid.tailleCell;
+  for (let i = 0; i < windowWidth / grid.scale + grid.offsetX; i += grid.tailleCell) {
+    line(offsetX + i, grid.offsetY, offsetX + i, height / grid.scale);
   }
-  let offsetY = grid.offsetY + (grid.translateY-grid.offsetY) % grid.tailleCell;
-  for (let j = 0; j < windowHeight/grid.scale + grid.offsetY; j+=grid.tailleCell) {
-    line(grid.offsetX, offsetY + j, width/grid.scale, offsetY + j);
+  let offsetY = grid.offsetY + (grid.translateY - grid.offsetY) % grid.tailleCell;
+  for (let j = 0; j < windowHeight / grid.scale + grid.offsetY; j += grid.tailleCell) {
+    line(grid.offsetX, offsetY + j, width / grid.scale, offsetY + j);
   }
   pop();
 }
@@ -204,12 +204,12 @@ function lineGrid(color) {
  * @param {number} orientation angle de rotation (en radians)
  * @see https://p5js.org/reference/#group-Transform
  */
-function appliquerTransformation(x, y, orientation){
+function appliquerTransformation(x, y, orientation) {
   translate(x, y);
   rotate(orientation);
 }
 
-function getAlphaColor(c, alpha){
+function getAlphaColor(c, alpha) {
   let copy = color(c);
   copy.setAlpha(alpha);
   return copy;
@@ -225,8 +225,8 @@ function getAlphaColor(c, alpha){
 function selectionBox(width, height, innerColor, borderColor) {
   push();
   fill(innerColor);
-  stroke(blendBG(borderColor==null ? getAlphaColor(innerColor, 0.4) : borderColor));
-  rect(0, 0, width,height, 10);
+  stroke(blendBG(borderColor == null ? getAlphaColor(innerColor, 0.4) : borderColor));
+  rect(0, 0, width, height, 10);
   pop();
 }
 

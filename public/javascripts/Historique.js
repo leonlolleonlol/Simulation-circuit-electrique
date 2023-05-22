@@ -11,14 +11,14 @@ const limitActions = 100;// La limite du tableau undo_list
  * @param {*} action Liste d'actions que l'on veut enregistrer pour l'historique. 
  * Peut être une liste.
  */
-function addActions(action){
+function addActions(action) {
   redo_list.length = 0;
-  if(action instanceof Array){
+  if (action instanceof Array) {
     for (const a of action) {
       validerAction(a);
     }
     action.reverse();
-  }else validerAction(action);
+  } else validerAction(action);
   undo_list.push(action);
   applyLimitActions();
 }
@@ -27,27 +27,27 @@ function addActions(action){
 /**
  * Annuler la dernière action ou liste d'action effectué par l'utilisateur
  */
-function undo(){
-  if(undo_list.length > 0){
+function undo() {
+  if (undo_list.length > 0) {
     let actions = undo_list.pop();
     redo_list.push(actions);
-    if(!(actions instanceof Array))
+    if (!(actions instanceof Array))
       actions = [actions];
-    for(const action of actions){
-      if(action.type===CREATE){
-        if(action.objet.getType()!=FIL){
-          components.splice(components.indexOf(action.objet),1);
-        } else fils.splice(fils.indexOf(action.objet),1);
-        if(selection == action.objet){
+    for (const action of actions) {
+      if (action.type === CREATE) {
+        if (action.objet.getType() != FIL) {
+          components.splice(components.indexOf(action.objet), 1);
+        } else fils.splice(fils.indexOf(action.objet), 1);
+        if (selection == action.objet) {
           selection = null;
         }
-      }else if(action.type===SUPPRIMER){
-        if(action.objet.getType()!=FIL){
+      } else if (action.type === SUPPRIMER) {
+        if (action.objet.getType() != FIL) {
           components.splice(action.index, 0, action.objet);
-        }else fils.splice(action.index, 0, action.objet);
-        
-      }else if(action.type===MODIFIER){
-        for(const changement of action.changements){
+        } else fils.splice(action.index, 0, action.objet);
+
+      } else if (action.type === MODIFIER) {
+        for (const changement of action.changements) {
           action.objet[changement.attribut] = changement.ancienne_valeur;
         }
       }
@@ -59,26 +59,26 @@ function undo(){
 /**
  * Refaire la dernière action ou liste d'action annuler par l'utilisateur
  */
-function redo(){
-  if(redo_list.length > 0){
+function redo() {
+  if (redo_list.length > 0) {
     let actions = redo_list.pop();
     undo_list.push(actions);
-    if(!(actions instanceof Array))
+    if (!(actions instanceof Array))
       actions = [actions];
     for (const action of actions) {
       switch (action.type) {
         case CREATE:
-          if(action.objet.getType()!=FIL){
+          if (action.objet.getType() != FIL) {
             components.push(action.objet);
           } else fils.push(action.objet);
           break;
         case SUPPRIMER:
-          if(action.objet.getType()!=FIL){
+          if (action.objet.getType() != FIL) {
             components.splice(action.index, 1);
           } else fils.splice(action.index, 1);
           break;
         case MODIFIER:
-          for(const changement of action.changements){
+          for (const changement of action.changements) {
             action.objet[changement.attribut] = changement.nouvelle_valeur;
           }
           break;
@@ -97,22 +97,22 @@ function redo(){
  * @param {*} action L'action que l'on veut vérifier
  * @throws Une erreur de mauvaise construcution de l'action
  */
-function validerAction(action){
-  if(action.type !== CREATE && action.type !== SUPPRIMER && 
-     action.type !== MODIFIER)
-    throw new Error('L\'action '+action.type+' n\'est pas recconnus'+
-    'comme type d\'action');
-  if(!(action.objet instanceof Composant || action.objet.getType()===FIL))
+function validerAction(action) {
+  if (action.type !== CREATE && action.type !== SUPPRIMER &&
+    action.type !== MODIFIER)
+    throw new Error('L\'action ' + action.type + ' n\'est pas recconnus' +
+      'comme type d\'action');
+  if (!(action.objet instanceof Composant || action.objet.getType() === FIL))
     throw new Error('La cible du changement n\'est pas préciser');
-  if(action.type === MODIFIER){
-    if(!action.changements instanceof Array)
+  if (action.type === MODIFIER) {
+    if (!action.changements instanceof Array)
       throw new Error('Les changements mentionner dans l\'action devrait'
-      +'être un tableau');
-    for(const changement of action.changements){
-      if(!changement.attribut instanceof String)
-        throw new Error('L\'attribut n\'est pas du bon type: type =' +typeof changement.attribut);
-      else if(changement.ancienne_valeur==null || 
-        changement.nouvelle_valeur==null)
+        + 'être un tableau');
+    for (const changement of action.changements) {
+      if (!changement.attribut instanceof String)
+        throw new Error('L\'attribut n\'est pas du bon type: type =' + typeof changement.attribut);
+      else if (changement.ancienne_valeur == null ||
+        changement.nouvelle_valeur == null)
         throw new Error('Un des attributs pour le changement n\'est pas définis');
     }
   }
@@ -121,8 +121,8 @@ function validerAction(action){
 /**
  * Appliquer une limite sur la mémoire de l'historique
  */
-function applyLimitActions(){
-  if(undo_list.length > limitActions)
+function applyLimitActions() {
+  if (undo_list.length > limitActions)
     undo_list.shift();
 }
 
