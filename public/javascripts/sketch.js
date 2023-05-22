@@ -97,7 +97,7 @@ function drawComponentsChooser() {
     stroke("rgba(52,52,52,0.78)");
     rect(composant.x, composant.y + 10, 120, 60);
     if (composant != origin)
-      composant.draw();
+      drawComposant(composant);
     noStroke();
     fill('black');
     textSize(16);
@@ -387,13 +387,13 @@ function ampoule(x, y, orientation, focus) {
 
 function drawFil(xi, yi, xf, yf, orientation, focus){
   push();
-  if (focus/*isElementSelectionner(this) && !isElementSelectionner(drag)*/) {
+  if (focus) {
     push();
     strokeWeight(30);
     stroke('rgba(255, 165, 0, 0.2)');
     let mul = yi > yf ? -1 : 1;
     let decalageX = 9 * Math.sin(orientation) * mul;
-    let decalageY = 9 * Math.cos(this.angle()) * mul;
+    let decalageY = 9 * Math.cos(orientation) * mul;
     line(xi + decalageX, yi + decalageY, xf - decalageX, yf - decalageY);
     pop();
   }

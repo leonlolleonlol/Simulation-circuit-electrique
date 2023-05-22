@@ -109,6 +109,7 @@ function mouseDragged() {
             drag.y = point.y
             updateFilPos(draggedAnchor.left, draggedAnchor.right, pastConnect, drag.getConnections());
         }
+        return false;
     }
 }
 
@@ -268,7 +269,7 @@ function keyPressed() {
             let point = findGridLock(grid.translateX, grid.translateY);
             let newC = function (x, y) {
                 switch (keyCode) {
-                    case 83: return Composant(BATTERIE, x, y, 0);//s
+                    case 83: return new Composant(BATTERIE, x, y, 0);//s
                     case 82: return new Composant(RESISTEUR, x, y, 0);//r
                     case 65: return new Composant(AMPOULE, x, y, 0);//a
                     case 67: return new Composant(CONDENSATEUR, x, y, 0);//c
