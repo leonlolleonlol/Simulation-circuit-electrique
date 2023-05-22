@@ -145,7 +145,7 @@ app.post('/query', async(req, res) => {
     index = projets.findIndex(element => element.id ==idTest);
 
     // Get the current date and time in the user's local time zone
-    var now = DateTime.local();
+    var now = DateTime.now().setZone("America/Montreal")
     
     // Format the date and time as a string in the user's local time zone
     var localDateTimeString = now.toLocaleString(DateTime.DATETIME_MED);
