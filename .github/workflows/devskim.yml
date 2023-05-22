@@ -32,3 +32,6 @@ jobs:
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: devskim-results.sarif
+      - uses: microsoft/devskim-action@v1
+        with:
+          directory-to-scan: public/javascripts
