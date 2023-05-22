@@ -41,12 +41,23 @@ class Composant {
    */
   draw() {
     let focus = isElementSelectionner(this);
+    let type = this.getType();
     switch (type) {
-      case RESISTEUR:resisteur(this.x, this.y, this.orientation, focus);
-      case AMPOULE: ampoule(this.x, this.y, this.orientation, focus);
-      case CONDENSATEUR: condensateur(this.x, this.y, this.orientation, focus);
-      case BATTERIE: batterie(this.x, this.y, this.orientation, focus);
-      case DIODE: diode(this.x, this.y, this.orientation, focus);
+      case RESISTEUR:
+        resisteur(this.x, this.y, this.orientation, focus);
+        break;
+      case AMPOULE: 
+        ampoule(this.x, this.y, this.orientation, focus);
+        break;
+      case CONDENSATEUR: 
+        condensateur(this.x, this.y, this.orientation, focus);
+        break;
+      case BATTERIE: 
+        batterie(this.x, this.y, this.orientation, focus);
+        break;
+      case DIODE: 
+        diode(this.x, this.y, this.orientation, focus);
+        break;
       default: throw `Le type ${type} de dessin n'est pas pas un type valide`;
     }
   }
