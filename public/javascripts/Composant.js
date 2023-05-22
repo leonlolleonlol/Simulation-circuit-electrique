@@ -1,24 +1,31 @@
 
 
 /** 
- * Cet interface permet de définir tout les méthode nécéssaire pour le programme
+ * Classe pour le modèle de vue. C'est aussi utilisé présentement pour les calculs.
+ * Elle rassemble toute les méthodes et les attribut pour dessiner un composant sur le
+ * canvas. Pour modifier si l'on veut dessiner un condensateur ou un resisteur,
+ * on modifie l'attribut `type` du composant. Il est par contre important d'utiliser la 
+ * méthode {@link setObjectType} puisque d'autre attributs sont calculé selon celui-ci
  */
 class Composant {
 
   /**
    * Créer un composant avec une position, des valeurs mathématique =0 et un identifiant unique
-   * @param {number} x 
-   * @param {number} y
-   * @param {number} width
-   * @param {number} height
+   * @param {number} [x] 
+   * @param {number} [y]
+   * @param {string} type
+   * @param {number} [orientation = 0]
    */
-  constructor(x, y, width, height){
+  constructor(type, x=0, y=0, orientation=0){
+    //information importante pour la sauvegarde
     this.id = Date.now();// Donne un identifiant unique à chaque composant
     this.x = x;
     this.y = y;
-    this.width = width;
-    this.height = height;
-    // on crée automatiquement une classe de tension
+    this.orientation = orientation;
+
+    Composant.setObjectType(this, type);
+
+    // Inoformation pour les calculs
     this.courant = 0;
     this.tension = 0;
     this.prochaineComposante = [];
@@ -33,7 +40,15 @@ class Composant {
    * @abstract
    */
   draw() {
-    throw new Error('Cette fonction ne peut pas être appelé de l\'interface');
+    let focus = isElementSelectionner(this);
+    switch (type) {
+      case RESISTEUR:resisteur(this.x, this.y, this.orientation, focus);
+      case AMPOULE: ampoule(this.x, this.y, this.orientation, focus);
+      case CONDENSATEUR: condensateur(this.x, this.y, this.orientation, focus);
+      case BATTERIE: batterie(this.x, this.y, this.orientation, focus);
+      case DIODE: diode(this.x, this.y, this.orientation, focus);
+      default: throw `Le type ${type} de dessin n'est pas pas un type valide`;
+    }
   }
 
   /**
@@ -45,12 +60,7 @@ class Composant {
    * @returns {boolean}
    */
   inBounds(x, y) {
-    if(this.orientation % PI === 0)
-      return x >= this.x - this.width / 2 && x <= this.x + this.width / 2 &&
-          y >= this.y - this.height / 2 && y <= this.y + this.height / 2;
-    else
-      return x >= this.x - this.height / 2 && x <= this.x + this.height / 2 &&
-          y >= this.y - this.width / 2 && y <= this.y + this.width / 2;
+    return rectInBound(x, y);
   }
 
   /**
@@ -95,22 +105,23 @@ class Composant {
   }
 
   /**
-   * 
+   * Retourne une borne à quelle  une position x y touche. La position retourner n'est pas (x, y)
+   * mais c'est juste savoir si la borne touché est en haut, en bas, à droite ou à gauche.
    * @param {number} x 
    * @param {number} y 
-   * @param {number} approximation 
-   * @returns La borne que le position touche ou null
+   * @param {number} [approximation = 0] 
+   * @returns La borne revoie le position relative touché ou sinon undefined
    */
-  getBorne(x, y, approximation){
+  getBorne(x, y, approximation=0){
     if(this.orientation % PI == 0){
-      if(dist(this.x + 60/2, this.y, x, y) < approximation)
+      if(dist(this.x + 60/2, this.y, x, y) <= approximation)
         return DROITE;
-      else if (dist(this.x - 60/2, this.y, x, y) < approximation)
+      else if (dist(this.x - 60/2, this.y, x, y) <= approximation)
         return GAUCHE;
     } else if (this.orientation % HALF_PI == 0){
-      if(dist(this.x, this.y + 60/2, x, y) < approximation)
+      if(dist(this.x, this.y + 60/2, x, y) <= approximation)
         return BAS;
-      else if (dist(this.x, this.y - 60/2, x, y) < approximation)
+      else if (dist(this.x, this.y - 60/2, x, y) <= approximation)
         return HAUT;
     }
   }
@@ -121,14 +132,6 @@ class Composant {
    */
   rotate(inverse){
     this.orientation = (this.orientation + (inverse?-HALF_PI:HALF_PI)) % TWO_PI
-  }
-
-
- /** Retourne les valeurs importantes à montrer à l'utilisateur dans une array
-  * @returns 
-  */
-  getMenu(){
-    throw "getMenu est appelé dans la class mère";
   }
   /**
    * Donne à prochaineComposante la valeur passée en paramètre
@@ -154,65 +157,50 @@ class Composant {
   }
 
   /**
-   * 
+   * Le titre utilisé pour l'affichage
    */
   getTitle(){
     return this.titre;
+  }
+
+  static setObjectType(composant, type){
+    composant.type = type;
+    let info = getContextObject(type);
+    if(info.radius == null){
+      composant.width = 60;
+      composant.height = info.height;
+    }else composant.radius = info.radius;
+    if(info.inBoundsType == 'round'){
+      composant.inBounds = roundInBound;
+    }else composant.inBounds = rectInBound;//pour éviter erreur par défaux roudInBound
+    this.titre = info.titre;
   }
 } 
 
 /** 
  * @extends Composant 
+ * @deprecated
  */
 class Resisteur extends Composant {
   constructor(x, y, resistance, orientation) {
-      super(x, y, 60, 25);
+      super(RESISTEUR, x, y, orientation);
       this.resistance = resistance;
-      this.orientation = orientation??0;
-      this.type = RESISTEUR;
-      this.titre = 'Résisteur';
   }
-
-    getMenu(){
-      return ["DeltaV: " + this.tension, "Courant: " + this.courant, "Résistance: " + this.resistance];
-    }
     getEq(sens){
       return (sens?'-':'')+this.resistance+this.symbole;
     }
-
-  /**
-   * @inheritdoc
-   */
-  draw() {
-    if(isElementSelectionner(this)) 
-      selectionBox(this.x, this.y, 80, 45, this.orientation, 'rgba(255,165,108,0.2)');
-    resisteur(this.x, this.y, this.orientation);
-  }
 }
 
 
 /**
  * Représentation d'une ampoule
- * @extends Resisteur 
+ * @extends Composant 
+ * @deprecated
  */
 class Ampoule extends Resisteur {
   constructor(x, y, resistance, orientation) {
-      super(x, y, resistance, orientation);
-      this.height = 22;
-      this.type = AMPOULE;
-      this.titre = 'Ampoule';
-  }
-
- /**
-  * @inheritdoc
-  */
-  draw() {
-    if(isElementSelectionner(this))
-      selectionBox(this.x, this.y, 80, 45, this.orientation, 'rgba(255,255,0,0.2)');
-    ampoule(this.x,this.y, this.orientation);
-  }
-  getMenu(){
-    return ["Position x: " + this.x, "Position y: " + this.y, "DeltaV: " + this.tension, "Courant: " + this.courant, "Résistance: " + this.resistance];
+      super(x, y,resistanc, orientation);
+      Composant.setObjectType(this, AMPOULE);
   }
 }
 
@@ -223,63 +211,24 @@ class Ampoule extends Resisteur {
  */
 class Condensateur extends Composant {
   constructor(x, y, capacite, orientation) {
-    super(x, y, 60, 30);
+    super(CONDENSATEUR, x, y, orientation);
     this.capacite = capacite;
     this.charge = 0;
-    this.orientation = orientation??0;
-    this.type = CONDENSATEUR;
-    this.titre = 'Condensateur';
-  }
-  
-  /**
-   * @inheritdoc
-   */
-  draw() {
-    if(isElementSelectionner(this)) 
-      selectionBox(this.x, this.y, 80, 50, this.orientation, 'rgba(54,209,220,0.2)');
-    condensateur(this.x, this.y, this.orientation);
   }
 }
 
 /**
  * Représentation d'une source de courant (batterie)
  * @extends Composant 
+ * @deprecated
  */
 class Batterie extends Composant {
   constructor(x, y, tension, orientation) {
-      super(x, y, 60, 30);
+      super(x, y, BATTERIE, orientation);
       this.tension = tension;
-      this.orientation = orientation??0;
-      this.type = BATTERIE;
-      this.titre = 'Batterie';
   }
   getEq(sens){
-    if(sens){
-      if(this.orientation % PI ===0){
-        return -this.tension
-      }else{
-        return this.tension
-      }
-    }else {
-      if(this.orientation % PI ===0){
-        return this.tension
-      }else{
-        return -this.tension
-      }
-    }
-  }
-    
-  getMenu(){
-    return ["Position x: " + this.x, "Position y: " + this.y, "DeltaV: " + this.tension, "Charge: " + this.charge, "Capacité: " + this.capacite];
-  }
-
-  /**
-   * @inheritdoc
-   */
-  draw() {
-    if(isElementSelectionner(this)) 
-      selectionBox(this.x, this.y, 80, 40, this.orientation, 'rgba(0,255,0,0.2)', blendBG('rgba(0,0,0,0.4)'));
-    batterie(this.x, this.y, this.orientation);
+    return (this.orientaion % PI === 0 || sens) && !(this.orientaion % PI === 0 && sens) ? -this.tension : this.tension;
   }
 }
 
@@ -291,32 +240,8 @@ class Batterie extends Composant {
  */
 class Diode extends Composant {
   constructor(x, y, orientation) {
-    super(x, y, 38, 38);
+    super(x, y, 38, 38, DIODE, orientation);
     this.radius = 19;
-    this.orientation = orientation??0;
-    this.type = DIODE;
-    this.titre = 'Diode';
-  }
-  inBounds(x, y) {
-    return x >= this.x - this.radius && x <= this.x + this.radius && 
-      y >= this.y - this.radius && y <= this.y + this.radius;
-
-}
-  
-  /**
-   * @inheritdoc
-   */
-  draw() {
-    if(isElementSelectionner(this))
-      selectionBox(this.x, this.y, 50, 50, this.orientation, 'rgba(32,189,255,0.2)');
-    diode(this.x, this.y, this.orientation);
-  }
-  
-  /**
-   * @inheritdoc
-   */
-  getMenu(){
-    return ["Position x: " + this.x, "Position y: " + this.y, "Sens: " + this.orientation];
   }
 }
 
@@ -328,7 +253,7 @@ class Diode extends Composant {
  */
 class Noeuds extends Composant {
   constructor(x, y){
-    super(x, y, 0, 0);
+    super(x, y, 0, 0, NOEUD, 'Noeud', 0);
     this.circuitsEnParallele = []; //Array de Circuit qui sont en parallèle (Ceux en série sont dans la class Circuit())
 
     //C'est variable sont utile pour calculer l'équivalence du noeud
@@ -337,7 +262,7 @@ class Noeuds extends Composant {
     this.tensionEQ = 0;
 
     //Sert stocker le type de circuit. AKA -> seulement des résistances, seulement des condensateurs ou RC.
-    this.type;
+    this.type='';
     this.titre = 'Nœud'
 
     //Indique si le courant à un chemin pour passer dans au moins une des branches
@@ -469,4 +394,64 @@ function validComposantPos(composant){
     return false;
   return !components.some(element =>element.checkConnection(composant.x,composant.y,1) || composant.checkConnection(element.x,element.y,1));
 }
-  
+
+function rectInBound(x, y){
+  if(this.orientation % PI === 0)
+    return x >= this.x - this.width / 2 && x <= this.x + this.width / 2 &&
+      y >= this.y - this.height / 2 && y <= this.y + this.height / 2;
+  else if(this.orientation % HALF_PI === 0)
+    return x >= this.x - this.height / 2 && x <= this.x + this.height / 2 &&
+      y >= this.y - this.width / 2 && y <= this.y + this.width / 2;
+  else {
+    let taille = Math.max(this.width, this.height);
+    return x >= this.x - taille / 2 && x <= this.x + taille / 2 &&
+      y >= this.y - taille / 2 && y <= this.y + taille / 2;
+  }
+}
+
+function roundInBound(x, y){
+  return x >= this.x - this.radius && x <= this.x + this.radius && 
+         y >= this.y - this.radius && y <= this.y + this.radius;
+}
+
+
+function getContextObject(type){
+  switch (type) {
+    case RESISTEUR: return resisteurStaticInfo;
+    case AMPOULE: return ampouleStaticInfo;
+    case CONDENSATEUR: return condensateurStaticInfo;
+    case DIODE: return diodeStaticInfo;
+    case BATTERIE: return batterieStaticInfo;
+    default: throw 'Le type n\'est pas supporté';
+  }
+}
+
+const resisteurStaticInfo = Object.freeze({
+  titre: 'Résisteur',
+  height: 25,
+  inBoundsType: 'rect',
+});
+
+const ampouleStaticInfo = Object.freeze({
+  titre: 'Ampoule',
+  height: 22,
+  inBoundsType: 'rect',
+});
+
+const condensateurStaticInfo = Object.freeze({
+  titre: 'Condensateur',
+  height: 30,
+  inBoundsType: 'rect',
+});;
+
+const batterieStaticInfo = Object.freeze({
+  titre: 'Batterie',  
+  height: 30,
+  inBoundsType: 'rect',
+});;
+
+const diodeStaticInfo = Object.freeze({
+  titre: 'Diode',
+  radius:19,
+  inBoundsType: 'round',
+});;
