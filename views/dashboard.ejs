@@ -30,6 +30,7 @@
     </div>
     <br>
     <h2>Projets</h2>
+    <% if(user.projets!=null) {%>
     <ul>
       <% for (const projet of user.projets) { %>
         <li>
@@ -38,7 +39,8 @@
             </a>
         </li>
       <% } %>
-    </ul>  
+    </ul>
+    <% } %>
     
 </body>
 </html>

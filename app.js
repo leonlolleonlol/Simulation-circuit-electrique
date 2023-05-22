@@ -139,8 +139,12 @@ app.post('/query', async(req, res) => {
     res.sendStatus(500);
   }
   let idTest = req.body.id;
-  let index = projets.findIndex(element => element.id ==idTest);
-  req.body.lastSave = (new Date()).toDateString();
+  let index =-1;
+  if (projets!=null)
+    index = projets.findIndex(element => element.id ==idTest);
+  let date = (new Date()).toLocaleDateString();
+  let time = (new Date()).toLocaleTimeString();
+  const momentOfSave = date + " " + time;
   //A chaque qu'on save, on s'assure qu'on n'avait pas save le meme circuit precedemment
   try {
     if(index!=-1){
@@ -149,12 +153,22 @@ app.post('/query', async(req, res) => {
         SET details[$3]= $1 
         WHERE email = $2`, [JSON.stringify(req.body).replace(/([a-zA-Z0-9_]+?):/g, '"$1":'), req.user.email, index] 
       );
+      await pool.query(
+        `UPDATE users
+        SET lastsave[$3]= $1 
+        WHERE email = $2`, [momentOfSave, req.user.email, index] 
+      );
     }else{
       await pool.query(
         `UPDATE users
         SET details=array_append(details, $1) 
         WHERE email = $2`, [JSON.stringify(req.body).replace(/([a-zA-Z0-9_]+?):/g, '"$1":'), req.user.email] 
-      );  
+      );
+      await pool.query(
+        `UPDATE users
+        SET lastsave=array_append(lastsave, $1) 
+        WHERE email = $2`, [momentOfSave, req.user.email] 
+      );   
     }
   } catch (err) {
     console.error('Error:', err.message);
