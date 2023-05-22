@@ -39,7 +39,6 @@ function batterie(x, y, orientation, focus) {
   if (focus) {
     selectionBox(80, 40, 'rgba(0,255,0,0.2)', 'rgba(0,0,0,0.4)')
   }
-  selectionBox(80, 40, 'rgba(0,255,0,0.2)', blendBG('rgba(0,0,0,0.4)'));
   createColorGradient(-25, -10, 25, -10,
     { stop: 0, color: 'rgb(0,0,0)' },
     { stop: 0.35, color: 'rgb(0,0,0)' },

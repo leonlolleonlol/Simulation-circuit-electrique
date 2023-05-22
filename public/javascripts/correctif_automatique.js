@@ -23,7 +23,7 @@ function ajustementAutomatiqueFil(fil, actions) {
       fil.xf = array[array.length - 1].x;
       fil.yf = array[array.length - 1].y;
       fils.splice(index, 1);
-      actions.push({ type: DELETE, objet: testFil, index });
+      actions.push({ type: SUPPRIMER, objet: testFil, index });
       index--;
     }
   }
@@ -121,7 +121,7 @@ function splitFil(fil, actions, borneSeparation1, borneSeparation2) {
   let index = fils.indexOf(fil);
   fils.splice(index, 1);
   fils.push(fil1, fil2);
-  actions.push({ type: DELETE, objet: fil, index },
+  actions.push({ type: SUPPRIMER, objet: fil, index },
     { type: CREATE, objet: fil1 }, { type: CREATE, objet: fil2 });
   return [fil1, fil2];
 }
@@ -151,7 +151,7 @@ function couperFil(fil, composant, actions) {
     if (piInBound && pfInBound) {
       //supprimer le fil
       fils.splice(index, 1);
-      actions.push({ type: DELETE, objet: fil, index });
+      actions.push({ type: SUPPRIMER, objet: fil, index });
       return false;
     } else if (piInBound && !pfInBound) {
       //Raccourcir le fil pour le point initial
@@ -280,7 +280,7 @@ function ajustementAutomatiqueComposant(composant, actions) {
   if (composantSuperpose != null) {
     let index = components.indexOf(composantSuperpose);
     components.splice(index, 1);
-    actions.push({ type: DELETE, objet: composantSuperpose, index });
+    actions.push({ type: SUPPRIMER, objet: composantSuperpose, index });
   }
   for (const fil of fils) {
     if (fil.isPenteConstante())

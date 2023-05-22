@@ -236,7 +236,7 @@ function keyPressed() {
                 index = fils.indexOf(selection)
                 fils.splice(index, 1);
             }
-            addActions({ type: DELETE, objet: selection, index });
+            addActions({ type: SUPPRIMER, objet: selection, index });
             selection = null;
             return false;
         } else if (keyCode === 84 && selection != null) {

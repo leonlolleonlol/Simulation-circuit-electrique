@@ -21,7 +21,7 @@ function load(data) {
 
   // Réaffecter les méthodes de classe
   tempElements.map((element) => {
-    let objetVide = element.type == FIL ? new Fil() : Composant(type);
+    let objetVide = element.type == FIL ? new Fil() : new Composant(element.type);
     let object = Object.assign(objetVide, element);//ajouter information à l'objet vide
     if (object instanceof Composant) {
       components.push(object);

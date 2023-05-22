@@ -246,7 +246,7 @@ function drawAnimationFils() {
         }
       }  
     }
-  pop();
+    pop();
   }
 }
 
@@ -257,7 +257,6 @@ function drawNoeuds() {
   updateNoeud();
   push();
   rectMode(CENTER);
-  translate(grid.translateX, grid.translateY);
   for (let noeud of noeuds) {
     push();
     translate(noeud.x, noeud.y);

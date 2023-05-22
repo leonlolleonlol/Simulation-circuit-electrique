@@ -184,7 +184,7 @@ class Composant {
     if (info.inBoundsType == 'round') {
       composant.inBounds = roundInBound;
     } else composant.inBounds = rectInBound;//pour éviter erreur par défaux roudInBound
-    this.titre = info.titre;
+    composant.titre = info.titre;
   }
 }
 
