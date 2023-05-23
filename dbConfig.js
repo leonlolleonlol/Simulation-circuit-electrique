@@ -1,4 +1,4 @@
-require("dotenv").config();
+require("dotenv").config();//on utilise les paramètres dans l'autre fichier .env pour connecter à la base de données
 
 const { Pool } = require("pg");
 

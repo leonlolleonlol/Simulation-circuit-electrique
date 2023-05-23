@@ -31,7 +31,7 @@
         <h1> Bonjour <%= user.prenom.charAt(0).toUpperCase() + user.prenom.slice(1) %> !</h1>
     </div>
     <br>
-    <h2>Projets</h2>
+    <h2>Projets</h2><!-- Dans cette boucle, on affiche la liste de tout les circuits enregistrés du user ainsi que l'option de delete à côté -->
     <% if(user.projets!=null) {%>
     <% let index=0;%>
     <ul>

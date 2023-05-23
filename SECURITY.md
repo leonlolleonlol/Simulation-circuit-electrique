@@ -1,9 +1,9 @@
-# Security Policy
+# Politique de sécurité
 
-## Supported Versions
+## Versions prises en charge
 
-Always choose latest version.
+Choisissez toujours la dernière version.
 
-## Reporting a Vulnerability
+## Signalement d'une vulnérabilité
 
-just write an issue and be clear.
+Il suffit d'écrire un problème et d'être clair.

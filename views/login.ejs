@@ -37,12 +37,12 @@
 </head>
 <body>
     <h1 style="color:rgb(0, 0, 0);font-size: 75px;">Login</h1>
-    <ul>
+    <ul> <!-- Message d'un processus réussi (s'il y en a) -->
         <% if(messages.success_msg) { %>
         <li><%= messages.success_msg %></li>
         <% } %>
       </ul>
-      <ul>
+      <ul> <!-- Message d'une erreur (s'il y en a) -->
         <% if (messages.error) { %>
         <li><%= messages.error %></li>
         <% } %>

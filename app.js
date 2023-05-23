@@ -1,12 +1,11 @@
-const bcrypt = require("bcrypt");
-const bodyParser = require('body-parser');
-const express = require('express');
-const flash = require("express-flash");
-const rateLimit  = require('express-rate-limit');
-const session = require("express-session");
-const passport=require("passport");
-const path = require('path');
-const { DateTime } = require("luxon");
+const bcrypt = require("bcrypt"); //encrypte mot de passe
+const bodyParser = require('body-parser'); // le bodyParser est utile et agit comme middleware pour traiter des post et des get
+const express = require('express');//simplifier la création de serveurs web en fournissant une bibliothèque légère et flexible pour gérer les requêtes et les réponses HTTP
+const flash = require("express-flash");//message d'erreur
+const rateLimit  = require('express-rate-limit');//limiter le taux de requêtes d'un utilisateur à une API ou un serveur, prévenant ainsi les abus ou les attaques de force brute.
+const session = require("express-session");//gérer et maintenir les sessions utilisateur dans les applications web basées sur Express.js
+const passport=require("passport");// permet de sécuriser l'accès aux données
+const path = require('path');//manipuler et interagir avec les chemins de fichiers et de répertoires
 
 const initializePassport=require("./passportConfig");
 const { pool } = require("./dbConfig");
@@ -25,11 +24,12 @@ initializePassport(passport);
 // apply rate limiter to all requests
 app.use(limiter);
 
-
+// le bodyParser est utile et agit comme middleware pour traiter des post et des get
 app.use(bodyParser.urlencoded({
   extended: true
 }));
-app.use(bodyParser.json());
+app.use(bodyParser.json());//on utilise des fichiers json
+//importer les ressources externes
 app.use(express.static(path.join(__dirname,'public')));
 app.use('/users/editeur', express.static('public'))
 app.use('/users/editeur', express.static('node_modules'))
@@ -45,7 +45,7 @@ app.use(passport.session());
 app.use(flash());
 
 app.set("view engine", "ejs");
-
+//ouvrir une session rapidement
 app.listen(3000, () => {
   var url = `http://localhost:3000`
   console.log('Server listen on '+url);
@@ -60,7 +60,7 @@ app.get('/', function(req, res) {
 app.get('/users/register', checkAuthenticated, function(req, res) {
   res.render('register');
 });
-
+// on s'assure qu'il n'y a pas d'erreurs lors de l'inscription et on enregistre les infos dans la base de donnees
 app.post('/users/register', async(req, res)=>{
   let { name, prenom,  email, password, password2,color } = req.body;
   let errors = [];
@@ -75,7 +75,7 @@ app.post('/users/register', async(req, res)=>{
   if (password !== password2) {
     errors.push({ message: "Passwords do not match" });
   }
-  else {
+  else {//encryption mot de passe et on s'assure que chaque user a un email unique
     hashedPassword = await bcrypt.hash(password, 10);
     console.log(hashedPassword);
     // Validation passed
@@ -117,6 +117,7 @@ app.post('/users/register', async(req, res)=>{
 app.get('/users/login', checkAuthenticated, function(req, res) {
   res.render("login");
 });
+//L'URL de la redirection dépend si l'authentification a marché ou non
 app.post(
   "/users/login",
   passport.authenticate("local", {
@@ -124,7 +125,7 @@ app.post(
     failureRedirect: "/users/login",
     failureFlash: true
   })
-);
+);//le POST delete suprrime le projet selon index souhaitée et supprime la date de sauvegarde de ce projet
 app.post('/delete', async(req, res) => {
   var itemId = req.body.itemId;
   try {
@@ -155,7 +156,7 @@ app.post('/delete', async(req, res) => {
   }
   res.redirect("/users/dashboard");
 });
-
+//Le POST query enregistre le projet et sa date de sauvegarde en considérant si c'est un nouveau ou un ancien projet
 app.post('/query', async(req, res) => {
   let projets;
   try {
@@ -182,7 +183,7 @@ app.post('/query', async(req, res) => {
     
   //A chaque qu'on save, on s'assure qu'on n'avait pas save le meme circuit precedemment
   try {
-    if(index!=-1){
+    if(index!=-1){//On remplace le projet déjà crée par sa nouvelle valeur
       await pool.query(
         `UPDATE users
         SET details[$3]= $1 
@@ -193,7 +194,7 @@ app.post('/query', async(req, res) => {
         SET lastsave[$3]= $1 
         WHERE email = $2`, [localDateTimeString, req.user.email, index] 
       );
-    }else{
+    }else{// On crée un nouveau projet dans le array details qui contient toutles projets
       await pool.query(
         `UPDATE users
         SET details=array_append(details, $1) 
@@ -219,7 +220,7 @@ app.get("/users/logout", async (req, res) => {
     req.flash("success_msg", "You have logged out");
     res.redirect("/");
   });
-});
+});//Pour le GET dashboard, on donne un id, nom, prénom, projets, couleur et moments de sauvegardes au fichier dashboard.ejs
 app.get('/users/dashboard', checkNotAuthenticated, async(req, res)=> {
   let projets;
   try {
@@ -254,7 +255,7 @@ app.get('/nerdamer/all.min.js', function(req, res) {
 });
 app.get('/editeur', checkAuthenticatedForEditor,function(req, res) {
 });
-
+//On ouvre le projet selon le id du circuit que le user souhaite ouvrir à partir du dashboard(id est la date de sauvegarde)
 app.get('/users/editeur/:id',function(req, res) {
      console.log();
     res.render("editeur", {
@@ -273,7 +274,7 @@ function checkAuthenticated(req, res, next) {
     return res.redirect("/users/dashboard");
   }
   next();
-}
+}//L'éditeur reçoit le nom prenom et la couleur choisie
 function checkAuthenticatedForEditor(req, res) {
   if (req.isAuthenticated())
     res.render("editeur", {user:{

@@ -1,7 +1,7 @@
 const LocalStrategy = require("passport-local").Strategy;
 const { pool } = require("./dbConfig");
 const bcrypt = require("bcrypt");
-
+//Dans cette fonction, on s'assure que les informations entrés lors de l'inscription sont valides
 function initialize(passport) {
   console.log("Initialized");
 
