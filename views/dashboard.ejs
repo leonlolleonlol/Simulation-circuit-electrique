@@ -35,13 +35,17 @@
     <% if(user.projets!=null) {%>
     <% let index=0;%>
     <ul>
-      <% for (const projet of user.projets) { %>
+      <% for (const projet of user.projets) { if (projet!=null) {%>
         <li>
             <a href="editeur/<%=projet.id %>">
                 <button><%= projet.name %>  (dernière sauvegarde à <%=user.lastsaves[index]%>)</button>
+                <form action="/delete" method="POST" style="display: inline;">
+                    <input type="hidden" name="itemId" value="<%= index+1 %>">
+                    <button type="submit" style="color: red;">Delete</button>
+                  </form>
             </a>
         </li>
-      <% index++;} %>
+      <% }index++;} %>
     </ul>
     <% } %>
     <br>

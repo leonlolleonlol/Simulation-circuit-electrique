@@ -2,8 +2,8 @@
  * Cette classe permet de représenter les fils de notre circuit.
  * Chaque est linéaire et peut être dans n'importe quelle direction a n'importe quel angle.
  */
-class Fil{
-  
+class Fil {
+
   /**
    * Créer un nouveau fil avec les arguments du **début du fil** et de la 
    * **fin du fil**. Spécifie aussi un identifiant unique 
@@ -14,7 +14,7 @@ class Fil{
    * @see [Date.now()]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/now} 
    * Fonction qui produit l'identifiant unique
    */
-  constructor(xi, yi, xf, yf){
+  constructor(xi, yi, xf, yf) {
     this.xi = xi;
     this.yi = yi;
     this.xf = xf;
@@ -22,31 +22,9 @@ class Fil{
     this.courant = 2;
     this.id = Date.now();
     this.type = FIL;
-    
-  }
 
-  /**
-   * Aller voir {@link Composant#draw | Composant.draw()}
-   */
-  draw(){
-    push();
-    if(isElementSelectionner(this) && !isElementSelectionner(drag)){
-      push();
-      strokeWeight(30);
-      stroke('rgba(255, 165, 0, 0.2)');
-      let mul = this.yi >this.yf? -1 : 1;
-      let decalageX = 9 * Math.sin(this.angle()) * mul;
-      let decalageY = 9 * Math.cos(this.angle()) * mul;
-      line(this.xi + decalageX, this.yi + decalageY, 
-           this.xf - decalageX, this.yf - decalageY);
-      pop();
-    }
-    stroke('orange');
-    strokeWeight(4);
-    line(this.xi, this.yi, this.xf, this.yf);
-    pop();
   }
-
+  
   /**
    * Permet de déterminer si une position se situe dans l'aire de contact du fil.
    * Le rayon d'approximation permis est toujours de 15 exlu
@@ -55,12 +33,12 @@ class Fil{
    * @returns {boolean}
    * @see {@link Composant#inBounds | Composant.inBounds()}
    */
-  inBounds(x, y){
-    if(!this.inBoxBounds(x, y)){
+  inBounds(x, y) {
+    if (!this.inBoxBounds(x, y)) {
       return false;
     }
     let fx = this.getFunction();
-    let xTest = y * 1/fx.pente + fx.ordonneY;
+    let xTest = y * 1 / fx.pente + fx.ordonneY;
     let yTest = x * fx.pente + fx.ordonneX;
     return dist(xTest, y, x, y) < 15 || dist(x, yTest, x, y) < 15;
   }
@@ -73,22 +51,26 @@ class Fil{
    * {@link Fil#inBounds | Fil.inBounds()}
    * @returns {boolean}
    */
-  inBoxBounds(x, y, approximation){
+  inBoxBounds(x, y, approximation) {
     approximation ??= 10;
-    return x > Math.min(this.xi - approximation, this.xf - approximation) && 
-    x < Math.max(this.xi + approximation, this.xf + approximation) && 
-    y > Math.min(this.yi - approximation, this.yf - approximation) && 
-    y < Math.max(this.yi + approximation, this.yf + approximation);
+    return x > Math.min(this.xi - approximation, this.xf - approximation) &&
+      x < Math.max(this.xi + approximation, this.xf + approximation) &&
+      y > Math.min(this.yi - approximation, this.yf - approximation) &&
+      y < Math.max(this.yi + approximation, this.yf + approximation);
   }
 
   /**
    * Calcule la pente du fil
    * @returns {number}
    */
-  pente(){
-    return (this.yf-this.yi)/(this.xf-this.xi);
+  pente() {
+    return (this.yf - this.yi) / (this.xf - this.xi);
   }
-  
+
+  isPenteConstante() {
+    return this.xi == this.xf || this.yi == this.yf;
+  }
+
   /**
    * @typedef {Object} FunctionObject Cette objet rassemble la pente et l'ordonné à l'origine d'une fonction 
    * `f(x) = mx + b`. Aussi, en faisant `1/pente` et en prennant l'ordonne en y, on peut avoir la
@@ -105,10 +87,12 @@ class Fil{
    * Cette fonction permet d'avoir les donné pour une droite linéaire.
    * @returns {FunctionObject} La fonction représentant le fil
    */
-  getFunction(){
+  getFunction() {
     let penteFil = this.pente();
-    return {pente:penteFil, ordonneX: this.yi - this.xi * penteFil, 
-      ordonneY: this.xi - this.yi * 1/penteFil};
+    return {
+      pente: penteFil, ordonneX: this.yi - this.xi * penteFil,
+      ordonneY: this.xi - this.yi * 1 / penteFil
+    };
   }
 
   /**
@@ -116,15 +100,15 @@ class Fil{
    * @returns l'angle en radian
    * @see {@link Fil#pente | Fil.pente()}
    */
-  angle(){
-    return Math.atan(1/this.pente());
+  angle() {
+    return Math.atan(1 / this.pente());
   }
 
   /**
    * Calcule la longueur du fil. La valeur est toujours positive
    * @returns La longueur du fil
    */
-  longueur(){
+  longueur() {
     return dist(this.xi, this.yi, this.xf, this.yf);
   }
 
@@ -144,15 +128,15 @@ class Fil{
    * let fil6 = new Fil(270, 150, 630, 330) //xi: 270, yi: 150, xf: 630, yf: 330
    * fil5.overlap(filg) //true
    */
-  overlap(fil){
+  overlap(fil) {
     let f1 = this.getFunction();
     let f2 = fil.getFunction();
-    if(Math.abs(f1.pente) === Math.abs(f2.pente) &&
-      Math.abs(f1.ordonneX) === Math.abs(f2.ordonneX)){
-      if((f1.pente == 0 && this.yi===fil.yi)|| Math.abs(f1.pente) != Infinity){
-        return (fil.xi >= this.xi && fil.xi <= this.xf) || (this.xi >= fil.xi && this.xi <=fil.xf);
-      }else if (Math.abs(f1.pente) == Infinity && this.xi===fil.xi){
-        return (fil.yi >= this.yi && fil.xi <= this.yf) || (this.yi >=fil.yi && this.yi <= fil.yf);
+    if (Math.abs(f1.pente) === Math.abs(f2.pente) &&
+      Math.abs(f1.ordonneX) === Math.abs(f2.ordonneX)) {
+      if ((f1.pente == 0 && this.yi === fil.yi) || Math.abs(f1.pente) != Infinity) {
+        return (fil.xi >= this.xi && fil.xi <= this.xf) || (this.xi >= fil.xi && this.xi <= fil.xf);
+      } else if (Math.abs(f1.pente) == Infinity && this.xi === fil.xi) {
+        return (fil.yi >= this.yi && fil.xi <= this.yf) || (this.yi >= fil.yi && this.yi <= fil.yf);
       }
     }
     else return false;
@@ -165,29 +149,29 @@ class Fil{
    * @param {Fil} fil Le fil que l'on veut comparer
    * @returns {object} Une position ou null si rien n'a été trouvé
    */
-  intersection(fil){
+  intersection(fil) {
     let f1 = this.getFunction();
     let f2 = fil.getFunction();
-    if(Math.abs(f1.pente) == Math.abs(f2.pente)){
+    if (Math.abs(f1.pente) == Math.abs(f2.pente)) {
       return null;
     }
-    let yfunction1 = Math.abs(f1.pente)!=Infinity
-    let yfunction2 = Math.abs(f2.pente)!=Infinity;
+    let yfunction1 = Math.abs(f1.pente) != Infinity
+    let yfunction2 = Math.abs(f2.pente) != Infinity;
     let yCord;
     let xCord;
-    if(yfunction1 && yfunction2){
+    if (yfunction1 && yfunction2) {
       xCord = (f1.ordonneX - f2.ordonneX) / (f2.pente - f1.pente);
       yCord = f1.pente * xCord + f1.ordonneX;
-    }else if(yfunction1 && !yfunction2){
+    } else if (yfunction1 && !yfunction2) {
       xCord = f2.ordonneY;
       yCord = f1.pente * xCord + f1.ordonneX;
-    }else if(!yfunction1 && yfunction2){
+    } else if (!yfunction1 && yfunction2) {
       xCord = f1.ordonneY;
       yCord = f2.pente * xCord + f2.ordonneX;
     }
 
-    if(this.inBoxBounds(xCord, yCord, 1) && fil.inBoxBounds(xCord, yCord, 1)){
-      return {x: xCord, y:yCord};
+    if (this.inBoxBounds(xCord, yCord, 1) && fil.inBoxBounds(xCord, yCord, 1)) {
+      return { x: xCord, y: yCord };
     }
   }
 
@@ -196,17 +180,17 @@ class Fil{
    * - Si l'orientation est vertical (`fil.pente() == Infinity`), trier selon y
    * - Sinon, trier selon x
    */
-  trierPoint(){
-    let sortArray = [{x:this.xi, y:this.yi}, {x:this.xf, y:this.yf}];
-    if(Math.abs(this.pente())==Infinity){
+  trierPoint() {
+    let sortArray = [{ x: this.xi, y: this.yi }, { x: this.xf, y: this.yf }];
+    if (Math.abs(this.pente()) == Infinity) {
       sortArray.sort((a, b) => a.y - b.y);
-    }else sortArray.sort((a, b) => a.x - b.x);
+    } else sortArray.sort((a, b) => a.x - b.x);
     this.xi = sortArray[0].x;
     this.yi = sortArray[0].y;
     this.xf = sortArray[1].x;
     this.yf = sortArray[1].y;
   }
-  UsePrint(){
+  UsePrint() {
     print("trying new thing");
   }
 
@@ -215,7 +199,7 @@ class Fil{
    * de la classe
    * @returns FIL 
    */
-  getType(){
+  getType() {
     return this.type;
   }
 }
@@ -229,13 +213,13 @@ class Fil{
  * @param {number} y la position en y
  * @returns Si un nouveau fil peut commencer à cette position
  */
-function validFilBegin(x, y){
-  let point = findGridLock(grid.translateX,grid.translateY)
-  if (!inGrid(mouseX/grid.scale, mouseY/grid.scale) || dist(point.x, point.y, x, y)>10){
+function validFilBegin(x, y) {
+  let point = findGridLock(grid.translateX, grid.translateY)
+  if (!inGrid(mouseX / grid.scale, mouseY / grid.scale) || dist(point.x, point.y, x, y) > 10) {
     return false;
   }
   else {
-    return getConnectingComposant(x, y) != null || filStart(x, y)!=null;
+    return getConnectingComposant(x, y) != null || filStart(x, y) != null;
   }
 }
 
@@ -250,7 +234,7 @@ function posAtPercent(fil, percent) {
   let dx = fil.xf - fil.xi;
   let dy = fil.yf - fil.yi;
   return ({
-      x: fil.xi + dx * percent,
-      y: fil.yi + dy * percent
+    x: fil.xi + dx * percent,
+    y: fil.yi + dy * percent
   });
 }
