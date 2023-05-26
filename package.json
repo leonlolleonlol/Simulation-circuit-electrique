@@ -1,9 +1,9 @@
 {
-  "name": "express-hello-world",
+  "name": "Simulation-circuit-electrique",
   "version": "1.0.0",
   "description": "Simultation d'un circuit électrique",
   "main": "app.js",
-  "repository": "https://github.com/render-examples/express-hello-world",
+  "repository": "https://github.com/leonlolleonlol/Simulation-circuit-electrique",
   "author": "Olivier St-Jean, Leon Kojakian, Esteban Renaud, Axel Shami",
   "license": "MIT",
   "private": false,
